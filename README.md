@@ -22,3 +22,9 @@ Required repository secrets:
 
 The workflow runs only on a schedule or by an owner's manual dispatch. Pull
 requests and forks never run the publication job.
+
+## Public website
+
+The `web` directory contains the Vercel-hosted Next.js site. Predictions and
+results are stored in Supabase. The frozen model remains in the separate
+private repository and is never shipped to Vercel or browser clients.

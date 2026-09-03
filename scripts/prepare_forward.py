@@ -208,7 +208,10 @@ def main() -> None:
             source_frame = schedule.loc[schedule["race_id"].eq(raw_id)].iloc[0]
             race = _race_record(source_frame, cards, titles)
             prediction = _prediction_record(series, race, threshold, quantile, now.isoformat())
-            prediction["tickets"] = prediction["tickets"][:3]
+            # Keep the model's full Top8 ranking for evaluation. The public
+            # product still buys and displays only the first three tickets.
+            prediction["tickets"] = prediction["tickets"][:8]
+            prediction["virtual_stake_yen"] = 300
             prediction.pop("publication_hash", None)
             prediction["publication_hash"] = _sha_bytes(_canonical(prediction))
             state["selected"].append({"race_id_raw": raw_id, "race": race, "prediction": prediction})

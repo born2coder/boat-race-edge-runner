@@ -13,6 +13,12 @@ from scripts.prepare_forward import _safe_extract
 
 
 class RunnerSafetyTests(unittest.TestCase):
+    def test_forward_runner_keeps_top8_and_buys_top3(self) -> None:
+        source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")
+        self.assertIn('prediction["tickets"] = prediction["tickets"][:8]', source)
+        self.assertIn('prediction["virtual_stake_yen"] = 300', source)
+        self.assertNotIn('prediction["tickets"] = prediction["tickets"][:3]', source)
+
     def test_safe_extract_rejects_path_traversal(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
