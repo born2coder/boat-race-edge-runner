@@ -19,3 +19,10 @@ test("shows morning lock and exhibition badge states without changing tickets", 
   assert.match(badge, /展示後は慎重/);
   assert.match(card, /展示後も変更しません/);
 });
+
+test("normalizes historical examples to the displayed flat 100-yen Top3 rule", async () => {
+  const data = await readFile(new URL("../lib/poc.ts", import.meta.url), "utf8");
+  assert.match(data, /normalizeReplayPrediction/);
+  assert.match(data, /stake_yen: 100/);
+  assert.match(data, /virtual_stake_yen: stake/);
+});
