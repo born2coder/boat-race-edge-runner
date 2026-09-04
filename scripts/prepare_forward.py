@@ -148,6 +148,34 @@ def _load_cards(data_root: Path, date: str):
     return cards, titles
 
 
+def _load_service_day_compatible(model_module, data_root: Path, date: str):
+    """Normalize preview timestamps at the frozen model's input boundary.
+
+    The pinned v1 bundle creates timezone-naive NaT columns when previews are
+    absent. Keep the model archive unchanged, but give its loader typed missing
+    timestamps so morning-only data is valid. Missing times remain missing and
+    cannot qualify a race for an exhibition reassessment.
+    """
+    import pandas as pd
+
+    original_preview = model_module._preview
+
+    def timezone_safe_preview(root, source, day):
+        preview = original_preview(root, source, day).copy()
+        column = f"{source}_obtained_at"
+        values = preview[column] if column in preview else pd.Series(
+            pd.NaT, index=preview.index, dtype="datetime64[ns, UTC]"
+        )
+        preview[column] = pd.to_datetime(values, errors="coerce", utc=True).dt.tz_convert("Asia/Tokyo")
+        return preview
+
+    model_module._preview = timezone_safe_preview
+    try:
+        return model_module.load_service_day(data_root, date)
+    finally:
+        model_module._preview = original_preview
+
+
 def _entry(card, frame, lane: int) -> dict[str, Any]:
     get = lambda label, default=0: card.get(f"艇{lane}_{label}", default)
     return {
@@ -282,10 +310,10 @@ def main() -> None:
         _decrypt_model(encrypted, plaintext)
         _safe_extract(plaintext, extracted)
         sys.path.insert(0, str(extracted))
+        from edge_research import hybrid_forward
         from edge_research.hybrid_forward import (
             classify_reassessment,
             load_frozen,
-            load_service_day,
             predict_exhibition,
             predict_morning,
         )
@@ -303,7 +331,7 @@ def main() -> None:
             return
         now = pd.Timestamp(datetime.now(timezone.utc))
         now_jst = now.tz_convert("Asia/Tokyo")
-        schedule = load_service_day(data_root, date)
+        schedule = _load_service_day_compatible(hybrid_forward, data_root, date)
         cards, titles = _load_cards(data_root, date)
 
         if state_path.exists():
