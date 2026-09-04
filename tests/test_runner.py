@@ -27,6 +27,11 @@ class RunnerSafetyTests(unittest.TestCase):
         self.assertIn('classify_reassessment', source)
         self.assertIn('"reassessments": pending_reassessments', source)
 
+    def test_forward_runner_skips_dates_before_the_registered_start(self) -> None:
+        source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")
+        self.assertIn('"reason": "before_genuine_forward_start"', source)
+        self.assertNotIn('raise RuntimeError("Requested date predates the registered forward start")', source)
+
     def test_safe_extract_rejects_path_traversal(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
