@@ -19,19 +19,23 @@ test("ingest endpoint verifies timestamp, nonce and HMAC before accepting data",
   assert.match(route, /safeParse/);
 });
 
-test("ingest contract accepts only the frozen model's fixed Top8 and Top3 stake", async () => {
+test("ingest contract accepts fixed morning Top8 ranking, Top3 stake, and exhibition reassessment", async () => {
   const schema = await readFile(new URL("../lib/ingest-schema.ts", import.meta.url), "utf8");
-  assert.match(schema, /W_dynamic10_v1/);
-  assert.match(schema, /top3-flat100-v1/);
+  assert.match(schema, /W_morning_badge_v1/);
+  assert.match(schema, /morning-top3-flat100-v1/);
+  assert.match(schema, /reassessmentSchema/);
+  assert.match(schema, /exhibition-support-v1/);
   assert.match(schema, /tickets\.length !== 8/);
   assert.match(schema, /virtual_stake_yen !== 300/);
 });
 
-test("frozen forward records are capped at ten and settle only the first three", async () => {
+test("morning forward records are capped at ten and settle only the first three", async () => {
   const repository = await readFile(new URL("../db/ingest-repository.ts", import.meta.url), "utf8");
   const reader = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
-  assert.match(repository, /frozen_forward_hit_v1" \? 10 : 3/);
+  assert.match(repository, /morning_fixed_hit_v1/);
+  assert.match(repository, /prediction_reassessments/);
   assert.match(reader, /tickets\.slice\(0, 3\)/);
+  assert.match(reader, /morning_fixed_hit_v1/);
   assert.match(repository, /official_performance_eligible: prediction\.official_performance_eligible/);
 });
 
@@ -48,6 +52,13 @@ test("Supabase public reads use RLS while writes remain server-only", async () =
   assert.match(migration, /enable row level security/);
   assert.match(migration, /Public can read predictions/);
   assert.match(migration, /revoke all on public\.ingestion_runs, public\.ingestion_nonces/);
+});
+
+test("exhibition badges are stored separately from immutable morning predictions", async () => {
+  const migration = await readFile(new URL("../supabase/migrations/20260904_morning_reassessments.sql", import.meta.url), "utf8");
+  assert.match(migration, /create table if not exists public\.prediction_reassessments/);
+  assert.match(migration, /prediction_id text primary key references public\.predictions/);
+  assert.match(migration, /status in \('supported', 'confirmed', 'cautious'\)/);
 });
 
 test("prediction surface hides internal inputs and model details", async () => {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Database, EyeOff, MapPin, ShieldCheck } from "lucide-react";
 import { PredictionCard } from "@/components/prediction-card";
+import { ReassessmentBadge } from "@/components/reassessment-badge";
 import { getPageFixture, getRecentResultDay } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 
@@ -51,7 +52,7 @@ export default async function Home() {
 
       <section className="today-section" aria-labelledby="today-picks">
         <div className="section-heading venue-heading">
-          <div><p className="section-kicker">TODAY / {current.date}</p><h2 id="today-picks">本日の予想</h2><p>狙いやすいと判断したレースだけを、1日最大10レースまで公開します。</p></div>
+          <div><p className="section-kicker">TODAY / {current.date}</p><h2 id="today-picks">本日の予想</h2><p>朝に10レースを公開し、展示後も買い目は変更せず評価バッジだけを更新します。</p></div>
           <span className="status-label"><CheckCircle2 aria-hidden="true" /> {isWaiting ? "予想を準備中" : `公開中 ${current.recommended_count}R`}</span>
         </div>
 
@@ -68,14 +69,14 @@ export default async function Home() {
             {current.venues.filter((venue) => venue.target_races.length > 0).map((venue) => (
               <article className="venue-target-card has-targets" key={venue.venue_code}>
                 <header><div className="venue-name"><span className="venue-code">{venue.venue_code}</span><div><MapPin aria-hidden="true" /><strong>{venue.venue}</strong></div></div><span className="venue-count is-active">公開 {venue.target_races.length}</span></header>
-                <ul className="venue-race-list">{venue.target_races.map((race) => <li key={race.race_id}><Link href={`/prediction/${race.prediction_id}`}><span>{race.race_no}R</span><strong>{race.race_name}</strong><small>{race.start_time_jst}</small><ArrowRight aria-hidden="true" /></Link></li>)}</ul>
+                <ul className="venue-race-list">{venue.target_races.map((race) => <li key={race.race_id}><Link href={`/prediction/${race.prediction_id}`}><span>{race.race_no}R</span><strong>{race.race_name}</strong><small>{race.start_time_jst}</small><ReassessmentBadge status={race.reassessment_status} waiting={!race.reassessment_status} compact /><ArrowRight aria-hidden="true" /></Link></li>)}</ul>
                 <footer>{venue.race_count}レース開催</footer>
               </article>
             ))}
           </div>
         ) : null}
 
-        <div className="processing-note"><CheckCircle2 aria-hidden="true" /><span>{isWaiting ? "本日の予想を準備しています。" : "予想はレースごとに準備が整い次第公開します。"}</span><small>公開するレースがない場合は、無理に買い目を出さず見送ります。</small></div>
+        <div className="processing-note"><CheckCircle2 aria-hidden="true" /><span>{isWaiting ? "朝の10レース予想を準備しています。" : "朝の買い目を固定公開しています。展示後はバッジだけを更新します。"}</span><small>展示後も3連単3点の買い目は変更しません。</small></div>
       </section>
 
       <section className="replay-section" aria-labelledby="replay-title">

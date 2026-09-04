@@ -67,9 +67,13 @@ export type Prediction = {
   tickets: Ticket[];
   virtual_stake_yen: number;
   published_at: string;
-  publication_mode: "historical_replay" | "private_forward_poc" | "forward_observation_poc" | "frozen_forward_hit_v1";
+  publication_mode: "historical_replay" | "private_forward_poc" | "forward_observation_poc" | "frozen_forward_hit_v1" | "morning_fixed_hit_v1";
   official_performance_eligible: boolean;
   publication_hash: string;
+  reassessment?: {
+    status: "supported" | "confirmed" | "cautious";
+    observed_at: string;
+  } | null;
   race: Race;
   result: null | {
     finishers: Array<{
@@ -122,6 +126,7 @@ export type PocFixture = {
         race_no: number;
         race_name: string;
         start_time_jst: string;
+        reassessment_status?: "supported" | "confirmed" | "cautious" | null;
       }>;
     }>;
     predictions: Prediction[];

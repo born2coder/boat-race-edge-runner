@@ -9,3 +9,13 @@ test("keeps the established BOAT RACE EDGE visual language", async () => {
   assert.match(css, /\.prediction-card/);
   assert.match(css, /@media \(max-width:/);
 });
+
+test("shows morning lock and exhibition badge states without changing tickets", async () => {
+  const badge = await readFile(new URL("../components/reassessment-badge.tsx", import.meta.url), "utf8");
+  const card = await readFile(new URL("../components/prediction-card.tsx", import.meta.url), "utf8");
+  assert.match(badge, /展示待ち/);
+  assert.match(badge, /展示後も有力/);
+  assert.match(badge, /展示確認済み/);
+  assert.match(badge, /展示後は慎重/);
+  assert.match(card, /展示後も変更しません/);
+});

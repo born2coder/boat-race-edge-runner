@@ -6,11 +6,12 @@ kept in a separate private repository.
 
 The scheduled workflow:
 
-1. reads public pre-race CSV files published by BoatraceCSV;
+1. reads the public morning race card and deadline CSV files published by BoatraceCSV;
 2. downloads the frozen model with a repository-scoped read-only credential;
-3. creates at most ten immutable predictions per Japan service day;
-4. publishes only predictions prepared before the five-minute safety cutoff;
-5. never reads odds, results, or payouts while predicting.
+3. locks exactly ten immutable Top3 predictions by 09:30 JST;
+4. re-checks only those ten races after exhibition data arrives and publishes a display badge without changing the tickets;
+5. publishes exhibition badges only before the five-minute safety cutoff;
+6. never reads odds, results, or payouts while predicting or badging.
 
 Required repository secrets:
 

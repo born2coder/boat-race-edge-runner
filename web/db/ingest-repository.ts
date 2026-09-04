@@ -49,7 +49,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   const existing = await supabaseRequest<ExistingPrediction[]>(
     `predictions?${queryString({
       select: "race_id,publication_mode,race:races!inner(race_date)",
-      publication_mode: "in.(forward_observation_poc,frozen_forward_hit_v1)",
+      publication_mode: "in.(forward_observation_poc,frozen_forward_hit_v1,morning_fixed_hit_v1)",
       "race.race_date": `eq.${payload.service_date}`,
     })}`,
     {},
@@ -61,7 +61,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   const acceptedPredictions = payload.predictions.filter((prediction) => {
     const key = `${prediction.publication_mode}:${prediction.race_id}`;
     if (existingKeys.has(key)) return false;
-    const cap = prediction.publication_mode === "frozen_forward_hit_v1" ? 10 : 3;
+    const cap = ["frozen_forward_hit_v1", "morning_fixed_hit_v1"].includes(prediction.publication_mode) ? 10 : 3;
     const count = modeCounts.get(prediction.publication_mode) ?? 0;
     if (count >= cap) return false;
     existingKeys.add(key);
@@ -99,6 +99,19 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     publication_hash: prediction.publication_hash,
   })), "prediction_id", "ignore");
 
+  await writeRows("prediction_reassessments", payload.reassessments.map((reassessment) => ({
+    prediction_id: reassessment.prediction_id,
+    race_id: reassessment.race_id,
+    status: reassessment.status,
+    top3_overlap: reassessment.top3_overlap,
+    morning_percentile: reassessment.morning_percentile,
+    exhibition_percentile: reassessment.exhibition_percentile,
+    percentile_uplift: reassessment.percentile_uplift,
+    rule_version: reassessment.rule_version,
+    observed_at: reassessment.observed_at,
+    reassessment_hash: reassessment.reassessment_hash,
+  })), "prediction_id");
+
   await writeRows("results", payload.results.map((result) => ({
     race_id: result.race_id,
     finishers: result.finishers,
@@ -113,7 +126,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
 
   const analyzed = payload.summary?.scheduled_races ?? payload.races.length;
   const incomplete = payload.summary?.incomplete_races ?? 0;
-  const recommended = modeCounts.get("frozen_forward_hit_v1") ?? 0;
+  const recommended = modeCounts.get("morning_fixed_hit_v1") ?? modeCounts.get("frozen_forward_hit_v1") ?? 0;
   await writeRows("daily_runs", [{
     service_date: payload.service_date,
     status: "complete",
@@ -148,4 +161,3 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     settled: payload.results.length,
   };
 }
-
