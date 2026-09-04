@@ -293,7 +293,14 @@ def main() -> None:
         artifact_dir = extracted / "artifacts" / "frozen_w_morning_badge_v1"
         manifest, models, morning_reference, exhibition_reference = load_frozen(artifact_dir)
         if date < manifest["genuine_forward_not_before"]:
-            raise RuntimeError("Requested date predates the registered forward start")
+            _write_outputs(False, state_path, repository_root)
+            print(json.dumps({
+                "date": date,
+                "pending": False,
+                "reason": "before_genuine_forward_start",
+                "genuine_forward_not_before": manifest["genuine_forward_not_before"],
+            }))
+            return
         now = pd.Timestamp(datetime.now(timezone.utc))
         now_jst = now.tz_convert("Asia/Tokyo")
         schedule = load_service_day(data_root, date)
