@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pandas as pd
 
 from scripts.mark_published import main as mark_main
-from scripts.prepare_forward import _load_service_day_compatible, _safe_extract
+from scripts.prepare_forward import _load_service_day_compatible, _morning_candidates, _safe_extract
 
 
 class PreviewTimezoneTests(unittest.TestCase):
@@ -71,6 +71,14 @@ class PreviewTimezoneTests(unittest.TestCase):
 
 
 class RunnerSafetyTests(unittest.TestCase):
+    def test_morning_candidates_exclude_closed_imminent_and_unknown_deadlines(self):
+        now = pd.Timestamp("2026-09-05T08:48:00+09:00")
+        frame = pd.DataFrame({"race_id": ["closed", "edge", "open", "unknown"], "deadline_at": [
+            "2026-09-05T08:32:00+09:00", "2026-09-05T08:53:00+09:00",
+            "2026-09-05T10:33:00+09:00", None,
+        ]})
+        self.assertEqual(_morning_candidates(frame, now).race_id.tolist(), ["open"])
+
     def test_forward_runner_keeps_top8_and_buys_top3(self) -> None:
         source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")
         self.assertIn('for rank in range(1, 9)', source)
