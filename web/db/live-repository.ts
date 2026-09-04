@@ -1,4 +1,4 @@
-import { fixture, getPrediction as getFixturePrediction, type PocFixture, type Prediction, type Race, type Ticket } from "@/lib/poc";
+import { fixture, type PocFixture, type Prediction, type Race, type Ticket } from "@/lib/poc";
 import { hasSupabaseReadConfiguration, queryString, supabaseRequest } from "@/db/supabase";
 
 type DailyRunRow = {
@@ -68,6 +68,19 @@ export function todayJst() {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
   }).format(new Date());
+}
+
+function shiftDate(date: string, days: number) {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
+function startOfWeek(date: string) {
+  const value = new Date(`${date}T00:00:00Z`);
+  const daysSinceMonday = (value.getUTCDay() + 6) % 7;
+  value.setUTCDate(value.getUTCDate() - daysSinceMonday);
+  return value.toISOString().slice(0, 10);
 }
 
 function hydratePrediction(row: PredictionRow): Prediction | undefined {
@@ -176,7 +189,7 @@ async function readOfficialPredictions(extra: Record<string, string | number | u
 export async function getPageFixture(): Promise<PocFixture> {
   const date = todayJst();
   if (!hasSupabaseReadConfiguration()) {
-    return { ...fixture, current_day: fixture.current_day.date === date ? fixture.current_day : emptyCurrentDay(date) };
+    return { ...fixture, current_day: emptyCurrentDay(date) };
   }
   try {
     const [runs, races, predictions] = await Promise.all([
@@ -222,47 +235,95 @@ export async function getPageFixture(): Promise<PocFixture> {
   }
 }
 
-export type RecentResultDay = { date: string; predictions: Prediction[]; source: "published" | "historical_sample" };
+export type YesterdayResultDay = { date: string; predictions: Prediction[] };
 
-export async function getRecentResultDay(): Promise<RecentResultDay> {
+export async function getYesterdayResultDay(): Promise<YesterdayResultDay> {
+  const date = shiftDate(todayJst(), -1);
   try {
     if (hasSupabaseReadConfiguration()) {
-      const settled = (await readOfficialPredictions())
-        .filter((prediction) => prediction.result && prediction.race.race_date < todayJst());
-      const latestDate = settled.map((prediction) => prediction.race.race_date).sort().at(-1);
-      if (latestDate) return {
-        date: latestDate,
-        predictions: settled.filter((prediction) => prediction.race.race_date === latestDate),
-        source: "published",
-      };
+      const predictions = await readOfficialPredictions({ "race.race_date": `eq.${date}` });
+      return { date, predictions };
     }
   } catch {
-    // A clearly labelled sample remains available until live records accumulate.
+    // Keep the page honest when live reads are temporarily unavailable.
   }
-  return { date: fixture.replay_day.date, predictions: fixture.replay_day.predictions, source: "historical_sample" };
+  return { date, predictions: [] };
 }
 
 export async function getDisplayPredictions() {
   try {
     if (hasSupabaseReadConfiguration()) {
       const live = await readOfficialPredictions();
-      if (live.length > 0) return live;
+      return live;
     }
   } catch {
-    // Fall through to the labelled historical sample.
+    // Return an empty public ledger rather than substituting test data.
   }
-  return fixture.replay_day.predictions;
+  return [];
 }
 
 export async function getDisplayPrediction(predictionId: string) {
-  const fixed = getFixturePrediction(predictionId);
-  if (fixed) return fixed;
   try {
     if (!hasSupabaseReadConfiguration()) return undefined;
     return (await readPredictions({ prediction_id: `eq.${predictionId}`, limit: 1 }))[0];
   } catch {
     return undefined;
   }
+}
+
+export type PerformancePeriod = {
+  key: "week" | "month" | "year";
+  label: string;
+  startDate: string;
+  endDate: string;
+  settled: number;
+  hits: number;
+  hitRate: number | null;
+  stake: number;
+  returned: number;
+  returnRate: number | null;
+};
+
+function summarizePeriod(
+  predictions: Prediction[],
+  period: Pick<PerformancePeriod, "key" | "label" | "startDate" | "endDate">,
+): PerformancePeriod {
+  const settled = predictions.filter((prediction) =>
+    prediction.official_performance_eligible
+    && prediction.race.race_date >= period.startDate
+    && prediction.race.race_date <= period.endDate
+    && prediction.result?.settlement,
+  );
+  const hits = settled.filter((prediction) => prediction.result?.settlement.hit).length;
+  const stake = settled.reduce((sum, prediction) => sum + (prediction.result?.settlement.counted_stake_yen ?? 0), 0);
+  const returned = settled.reduce((sum, prediction) => sum + (prediction.result?.settlement.gross_return_yen ?? 0), 0);
+  return {
+    ...period,
+    settled: settled.length,
+    hits,
+    hitRate: settled.length ? hits / settled.length * 100 : null,
+    stake,
+    returned,
+    returnRate: stake ? returned / stake * 100 : null,
+  };
+}
+
+export async function getPerformancePeriods(): Promise<PerformancePeriod[]> {
+  const endDate = todayJst();
+  const periods: Array<Pick<PerformancePeriod, "key" | "label" | "startDate" | "endDate">> = [
+    { key: "week", label: "今週", startDate: startOfWeek(endDate), endDate },
+    { key: "month", label: "今月", startDate: `${endDate.slice(0, 7)}-01`, endDate },
+    { key: "year", label: "今年", startDate: `${endDate.slice(0, 4)}-01-01`, endDate },
+  ];
+  try {
+    if (hasSupabaseReadConfiguration()) {
+      const predictions = await readOfficialPredictions();
+      return periods.map((period) => summarizePeriod(predictions, period));
+    }
+  } catch {
+    // Keep zero-count periods visible while live reads recover.
+  }
+  return periods.map((period) => summarizePeriod([], period));
 }
 
 export async function getObservationStats() {
