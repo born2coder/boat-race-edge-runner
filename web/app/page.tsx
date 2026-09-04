@@ -1,27 +1,27 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Database, EyeOff, MapPin, ShieldCheck } from "lucide-react";
+import { ArrowRight, CalendarX2, CheckCircle2, Database, EyeOff, MapPin, ShieldCheck, TrendingUp } from "lucide-react";
 import { PredictionCard } from "@/components/prediction-card";
 import { ReassessmentBadge } from "@/components/reassessment-badge";
-import { getPageFixture, getRecentResultDay } from "@/db/live-repository";
+import { getPageFixture, getPerformancePeriods, getYesterdayResultDay } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [pageFixture, recentResultDay] = await Promise.all([getPageFixture(), getRecentResultDay()]);
+  const [pageFixture, yesterdayResultDay, performancePeriods] = await Promise.all([
+    getPageFixture(),
+    getYesterdayResultDay(),
+    getPerformancePeriods(),
+  ]);
   const current = pageFixture.current_day;
   const isPassDay = current.recommended_count === 0;
   const isWaiting = current.status === "waiting";
-  const recentPredictions = recentResultDay.predictions;
-  const settledPredictions = recentPredictions.filter((prediction) => prediction.result?.settlement);
+  const yesterdayPredictions = yesterdayResultDay.predictions;
+  const settledPredictions = yesterdayPredictions.filter((prediction) => prediction.result?.settlement);
   const hitCount = settledPredictions.filter((prediction) => prediction.result?.settlement.hit).length;
   const totalStake = settledPredictions.reduce((sum, prediction) => sum + (prediction.result?.settlement.original_stake_yen ?? 0), 0);
   const totalReturn = settledPredictions.reduce((sum, prediction) => sum + (prediction.result?.settlement.gross_return_yen ?? 0), 0);
-  const previousDate = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(new Date(new Date(`${current.date}T12:00:00+09:00`).getTime() - 86_400_000));
-  const isPreviousDay = recentResultDay.source === "published" && recentResultDay.date === previousDate;
-  const resultDateLabel = recentResultDay.date.replaceAll("-", "/");
+  const resultDateLabel = yesterdayResultDay.date.replaceAll("-", "/");
 
   return (
     <>
@@ -79,32 +79,51 @@ export default async function Home() {
         <div className="processing-note"><CheckCircle2 aria-hidden="true" /><span>{isWaiting ? "朝の10レース予想を準備しています。" : "朝の買い目を固定公開しています。展示後はバッジだけを更新します。"}</span><small>展示後も3連単3点の買い目は変更しません。</small></div>
       </section>
 
-      <section className="replay-section" aria-labelledby="replay-title">
+      <section className="replay-section" aria-labelledby="yesterday-title">
         <div className="section-heading split">
           <div>
-            <p className="section-kicker">PICKS & RESULTS / {resultDateLabel}</p>
-            <h2 id="replay-title">
-              {recentResultDay.source === "historical_sample" ? "予想と結果の見本" : isPreviousDay ? "前日の予想と結果" : "直近の予想と結果"}
-            </h2>
-            <p>
-              {recentResultDay.source === "historical_sample"
-                ? "公開予想の実績がたまるまで、過去データで試した予想を見本として掲載しています。"
-                : `${resultDateLabel}に公開した買い目と、実際のレース結果です。`}
-              選手名、3連単3点、着順、払戻までレースごとに確認できます。
-            </p>
-            {recentResultDay.source === "historical_sample" && <p className="replay-caution">実際に事前公開した予想成績ではありません。</p>}
+            <p className="section-kicker">YESTERDAY&apos;S PICKS / {resultDateLabel}</p>
+            <h2 id="yesterday-title">昨日のおすすめと結果</h2>
+            <p>{resultDateLabel}に実際に公開したおすすめを、的中・不的中ともそのまま掲載します。</p>
           </div>
-          <Link href="/history" className="text-link">予想と結果をすべて見る <ArrowRight aria-hidden="true" /></Link>
+          {yesterdayPredictions.length > 0 && <Link href="/history" className="text-link">昨日の全予想を見る <ArrowRight aria-hidden="true" /></Link>}
         </div>
-        <div className="metric-grid replay-metrics">
-          <article><span>予想したレース</span><strong>{settledPredictions.length}</strong><small>レース</small></article>
-          <article><span>当たったレース</span><strong>{hitCount}</strong><small>レース</small></article>
-          <article><span>使った金額</span><strong>{formatYen(totalStake)}</strong></article>
-          <article><span>戻ってきた金額</span><strong>{formatYen(totalReturn)}</strong></article>
+        {yesterdayPredictions.length === 0 ? (
+          <div className="official-empty yesterday-empty">
+            <CalendarX2 aria-hidden="true" />
+            <div><span>{resultDateLabel}</span><h3>昨日の公開予想はありません</h3><p>予想を公開した日の翌日から、ここに買い目と結果を表示します。</p></div>
+          </div>
+        ) : (
+          <>
+            <div className="metric-grid replay-metrics">
+              <article><span>おすすめしたレース</span><strong>{yesterdayPredictions.length}</strong><small>レース</small></article>
+              <article><span>結果確定・的中</span><strong>{hitCount}</strong><small>／{settledPredictions.length}レース</small></article>
+              <article><span>使った金額</span><strong>{formatYen(totalStake)}</strong></article>
+              <article><span>戻ってきた金額</span><strong>{formatYen(totalReturn)}</strong></article>
+            </div>
+            <div className="prediction-grid">
+              {yesterdayPredictions.slice(0, 3).map((prediction) => <PredictionCard key={prediction.prediction_id} prediction={prediction} />)}
+            </div>
+          </>
+        )}
+      </section>
+
+      <section className="summary-section performance-section" aria-labelledby="performance-title">
+        <div className="section-heading split">
+          <div><p className="section-kicker">HIT RATE</p><h2 id="performance-title">公開予想の的中率</h2><p>実際に公開した3連単3点予想を、結果が確定したレースだけで集計します。</p></div>
+          <Link href="/stats" className="text-link">成績を詳しく見る <ArrowRight aria-hidden="true" /></Link>
         </div>
-        <div className="prediction-grid">
-          {recentPredictions.slice(0, 3).map((prediction) => <PredictionCard key={prediction.prediction_id} prediction={prediction} />)}
+        <div className="metric-grid period-metrics">
+          {performancePeriods.map((period) => (
+            <article key={period.key} className={period.key === "month" ? "accent" : undefined}>
+              <span>{period.label}の的中率</span>
+              <strong>{period.hitRate == null ? "—" : `${period.hitRate.toFixed(1)}%`}</strong>
+              <small>{period.settled ? `${period.hits}／${period.settled}レース的中` : "結果待ち"}</small>
+              <p>{period.returnRate == null ? "回収率も結果確定後に表示" : `回収率 ${period.returnRate.toFixed(1)}%`}</p>
+            </article>
+          ))}
         </div>
+        <div className="performance-note"><TrendingUp aria-hidden="true" /> 的中率は、公開後に結果が確定した予想だけを使い、的中・不的中をすべて含めて計算します。</div>
       </section>
 
       <section className="trust-section" aria-labelledby="trust-title">
