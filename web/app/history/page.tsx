@@ -8,16 +8,18 @@ export const dynamic = "force-dynamic";
 export default async function HistoryPage() {
   const predictions = await getDisplayPredictions();
   const sorted = [...predictions].sort((a, b) => b.published_at.localeCompare(a.published_at));
-  const observationCount = sorted.filter((item) => item.publication_mode === "frozen_forward_hit_v1").length;
   return (
     <section className="page-section">
       <div className="page-intro">
         <p className="section-kicker">ALL RECORDS</p>
         <h1>過去の予想</h1>
-        <p>的中・不的中を同じ基準で掲載します。初期表示は、試算・公開した全件です。</p>
+        <p>サイトで実際に公開したおすすめを、的中・不的中とも同じ基準で掲載します。</p>
       </div>
-      <div className="ledger-warning">{observationCount > 0 ? `実際に公開した予想が${observationCount}件あります。` : "本日の公開予想はまだありません。"} 過去データによる参考表示とは分けて集計しています。</div>
-      <HistoryTable predictions={sorted} />
+      {sorted.length > 0 ? (
+        <HistoryTable predictions={sorted} />
+      ) : (
+        <div className="official-empty"><div><span>公開履歴</span><h2>公開予想はまだありません</h2><p>最初の予想を公開すると、ここに買い目と結果が順番に残ります。</p></div></div>
+      )}
     </section>
   );
 }

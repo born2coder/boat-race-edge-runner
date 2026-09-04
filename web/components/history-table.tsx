@@ -34,9 +34,9 @@ export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
             <tr>
               <th>レース</th>
               <th>記録日時</th>
-              <th>仮買い目</th>
+              <th>予想買い目</th>
               <th>結果</th>
-              <th>仮想収支</th>
+              <th>収支</th>
               <th><span className="sr-only">詳細</span></th>
             </tr>
           </thead>
@@ -50,7 +50,7 @@ export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
                     <small>{prediction.race.race_date}</small>
                   </td>
                   <td data-label="記録日時">{formatDateTime(prediction.published_at)}</td>
-                  <td data-label="仮買い目">{prediction.tickets.map((ticket) => ticket.combination).join(" / ")}</td>
+                  <td data-label="予想買い目">{prediction.tickets.slice(0, 3).map((ticket) => ticket.combination).join(" / ")}</td>
                   <td data-label="結果">
                     {settlement ? (
                       <span className={settlement.hit ? "result-hit" : "result-miss"}>
@@ -58,7 +58,7 @@ export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
                       </span>
                     ) : "結果待ち"}
                   </td>
-                  <td data-label="仮想収支" className={settlement && settlement.profit_yen >= 0 ? "positive" : "negative"}>
+                  <td data-label="収支" className={settlement && settlement.profit_yen >= 0 ? "positive" : "negative"}>
                     {settlement ? formatYen(settlement.profit_yen) : "—"}
                   </td>
                   <td data-label="詳細">

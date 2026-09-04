@@ -66,3 +66,14 @@ test("prediction surface hides internal inputs and model details", async () => {
   assert.match(detail, /3連単3点予想/);
   assert.doesNotMatch(detail, /W_dynamic10_v1|Top5集中度|予想ロジック版|publication hash/);
 });
+
+test("public results use only published predictions and expose period hit rates", async () => {
+  const repository = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  const stats = await readFile(new URL("../app/stats/page.tsx", import.meta.url), "utf8");
+  assert.match(repository, /getYesterdayResultDay/);
+  assert.match(repository, /getPerformancePeriods/);
+  assert.match(repository, /return \[\];/);
+  assert.doesNotMatch(repository, /source: "historical_sample"/);
+  assert.match(stats, /期間別の的中率/);
+  assert.doesNotMatch(stats, /過去データでの検証結果/);
+});
