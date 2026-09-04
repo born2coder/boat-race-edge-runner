@@ -23,13 +23,18 @@ test("public pages hide research and infrastructure details", async () => {
 test("home restores understandable race-by-race picks and results", async () => {
   const home = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const card = await readFile(new URL("../components/prediction-card.tsx", import.meta.url), "utf8");
-  const publicSurface = `${home}\n${card}`;
+  const repository = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  const publicSurface = `${home}\n${card}\n${repository}`;
 
-  assert.match(home, /前日の予想と結果/);
-  assert.match(home, /予想したレース/);
-  assert.match(home, /当たったレース/);
+  assert.match(home, /昨日のおすすめと結果/);
+  assert.match(home, /おすすめしたレース/);
+  assert.match(home, /結果確定・的中/);
   assert.match(home, /使った金額/);
   assert.match(home, /戻ってきた金額/);
+  assert.match(repository, /label: "今週"/);
+  assert.match(repository, /label: "今月"/);
+  assert.match(repository, /label: "今年"/);
+  assert.doesNotMatch(home, /予想と結果の見本|過去データで試した予想/);
   assert.doesNotMatch(home, /これまでの検証成績/);
   assert.match(publicSurface, /出走メンバー/);
   assert.match(publicSurface, /3連単3点予想/);
