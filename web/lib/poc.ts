@@ -157,7 +157,68 @@ export type PocFixture = {
   };
 };
 
-export const fixture = fixtureJson as unknown as PocFixture;
+const rawFixture = fixtureJson as unknown as PocFixture;
+
+function normalizeReplayPrediction(prediction: Prediction): Prediction {
+  const tickets = prediction.tickets.slice(0, 3).map((ticket) => ({
+    ...ticket,
+    stake_yen: 100,
+  }));
+  const stake = tickets.reduce((sum, ticket) => sum + ticket.stake_yen, 0);
+  if (!prediction.result) {
+    return { ...prediction, tickets, virtual_stake_yen: stake };
+  }
+
+  const lines = tickets.map((ticket) => ({
+    ...ticket,
+    return_yen: ticket.combination === prediction.result?.combination
+      ? prediction.result.payout_per_100_yen
+      : 0,
+  }));
+  const grossReturn = lines.reduce((sum, line) => sum + line.return_yen, 0);
+  return {
+    ...prediction,
+    tickets,
+    virtual_stake_yen: stake,
+    result: {
+      ...prediction.result,
+      settlement: {
+        ...prediction.result.settlement,
+        original_stake_yen: stake,
+        counted_stake_yen: stake,
+        gross_return_yen: grossReturn,
+        profit_yen: grossReturn - stake,
+        hit: grossReturn > 0,
+        lines,
+      },
+    },
+  };
+}
+
+const replayPredictions = rawFixture.replay_day.predictions.map(normalizeReplayPrediction);
+const replaySettled = replayPredictions.flatMap((prediction) => prediction.result?.settlement ?? []);
+const replayHits = replaySettled.filter((settlement) => settlement.hit).length;
+const replayStake = replaySettled.reduce((sum, settlement) => sum + settlement.original_stake_yen, 0);
+const replayReturn = replaySettled.reduce((sum, settlement) => sum + settlement.gross_return_yen, 0);
+
+export const fixture: PocFixture = {
+  ...rawFixture,
+  replay_day: {
+    ...rawFixture.replay_day,
+    predictions: replayPredictions,
+    stats: {
+      ...rawFixture.replay_day.stats,
+      published_predictions: replayPredictions.length,
+      settled_predictions: replaySettled.length,
+      hits: replayHits,
+      hit_rate: replaySettled.length ? replayHits / replaySettled.length : null,
+      total_stake_yen: replayStake,
+      total_return_yen: replayReturn,
+      profit_yen: replayReturn - replayStake,
+      return_rate: replayStake ? replayReturn / replayStake : null,
+    },
+  },
+};
 
 export const allPredictions = [
   ...fixture.current_day.predictions,
