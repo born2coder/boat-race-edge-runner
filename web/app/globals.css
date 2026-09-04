@@ -306,7 +306,7 @@ svg { width: 1.1rem; height: 1.1rem; }
 .venue-empty svg { width: 16px; height: 16px; }
 .venue-race-list { margin: 0; padding: 0; list-style: none; }
 .venue-race-list li + li { border-top: 1px dashed #d9d9d4; }
-.venue-race-list a { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; min-height: 58px; padding: 10px 18px; }
+.venue-race-list a { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; align-items: center; gap: 10px; min-height: 58px; padding: 10px 18px; }
 .venue-race-list a:hover { background: #eef6f4; }
 .venue-race-list a > span { color: var(--lab-teal); font: 800 .72rem/1 ui-monospace, monospace; }
 .venue-race-list a > strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
@@ -341,6 +341,10 @@ svg { width: 1.1rem; height: 1.1rem; }
 .badge-blue { border-color: #c4d2da !important; color: #244a64 !important; background: #edf3f4 !important; }
 .badge-green { border-color: #b6d3cf !important; color: #176b62 !important; background: #e9f4f1 !important; }
 .badge-amber { border-color: #dfc38c !important; color: #8b5b08 !important; background: #fff7e7 !important; }
+.badge-waiting { border-color: #d2d5d7 !important; color: #68737b !important; background: #f4f5f5 !important; }
+.reassessment-badge { white-space: nowrap; font-weight: 900; }
+.reassessment-badge.is-compact { padding: 2px 7px; font-size: .54rem; }
+.ticket-lock-note { margin: 8px 0 0; color: #52616a; font-size: .64rem; font-weight: 700; }
 .prediction-card [data-slot="card-content"] { padding: 18px 22px; }
 .score-note { margin: 0 0 16px; color: #6b757c; font-size: .7rem; }
 .prediction-card-body { display: grid; grid-template-columns: 1.12fr .72fr 1fr; gap: 14px; align-items: stretch; }

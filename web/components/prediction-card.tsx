@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ReassessmentBadge } from "@/components/reassessment-badge";
 import { formatYen, type Prediction } from "@/lib/poc";
 
 export function PredictionCard({ prediction }: { prediction: Prediction }) {
@@ -22,6 +23,9 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
             <Badge variant="outline" className={replay ? "badge-purple" : "badge-blue"}>
               {replay ? "過去データで試算" : "公開した予想"}
             </Badge>
+            {!replay && prediction.publication_mode === "morning_fixed_hit_v1" && (
+              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
+            )}
           </div>
           <CardTitle className="race-title">
             {prediction.race.venue} <strong>{prediction.race.race_no}R</strong>
@@ -68,6 +72,9 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
               <div className="ticket-total"><strong>購入額合計</strong><span>{formatYen(prediction.virtual_stake_yen)}</span></div>
             </div>
             <p className="temporary-rule-note">3点を各100円、合計300円で記録しています。</p>
+            {prediction.publication_mode === "morning_fixed_hit_v1" && (
+              <p className="ticket-lock-note">朝に公開した買い目は、展示後も変更しません。</p>
+            )}
           </section>
 
           <section className="card-section result-section" aria-labelledby={`${prediction.prediction_id}-result`}>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ReassessmentBadge } from "@/components/reassessment-badge";
 import { getDisplayPrediction } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 
@@ -24,6 +25,9 @@ export default async function PredictionDetailPage({ params }: { params: Promise
           <div className="eyebrow-row">
             <span>{prediction.race.race_date.replaceAll("-", "/")}</span>
             <Badge variant="outline" className="badge-purple">{isReplay ? "過去データの参考予想" : "公開予想"}</Badge>
+            {!isReplay && prediction.publication_mode === "morning_fixed_hit_v1" && (
+              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
+            )}
             <Badge variant="outline" className={result ? "badge-green" : "badge-amber"}>{result ? "結果確定" : "結果待ち"}</Badge>
           </div>
           <h1>{prediction.race.venue} <strong>{prediction.race.race_no}R</strong></h1>
@@ -58,7 +62,7 @@ export default async function PredictionDetailPage({ params }: { params: Promise
           <p className="section-kicker">TRIFECTA PICKS</p>
           <h2>3連単3点予想</h2>
           <div className="ticket-list">{prediction.tickets.slice(0, 3).map((ticket, index) => <div key={ticket.combination}><span>第{index + 1}予想　{ticket.combination}</span><strong>100円</strong></div>)}<div className="ticket-total"><span>合計</span><strong>{formatYen(prediction.virtual_stake_yen)}</strong></div></div>
-          <aside className="bet-explanation"><strong>買い目について</strong><p>3点を各100円、合計300円で記録しています。</p></aside>
+          <aside className="bet-explanation"><strong>買い目について</strong><p>3点を各100円、合計300円で記録しています。朝に公開した買い目は、展示後も変更しません。</p></aside>
         </section>
       </div>
 
