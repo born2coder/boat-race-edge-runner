@@ -2,6 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+test("prediction reads join results through races rather than a nonexistent direct relationship", async () => {
+  const reader = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  assert.match(reader, /race:races!inner\(\*,result:results\(\*\)\)/);
+  assert.match(reader, /const resultRow = one\(raceRow\.result\)/);
+  assert.doesNotMatch(reader, /race:races!inner\(\*\),result:results/);
+});
+
 test("scheduled runner keeps credentials out of source and syncs two service days", async () => {
   const workflow = await readFile(new URL("../../.github/workflows/results.yml", import.meta.url), "utf8");
   assert.match(workflow, /secrets\.EDGE_SITE_INGEST_ENDPOINT/);

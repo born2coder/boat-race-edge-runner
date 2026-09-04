@@ -22,6 +22,7 @@ type RaceRow = {
   start_at: string;
   start_time_jst: string;
   entries: Race["entries"];
+  result?: ResultRow | ResultRow[] | null;
 };
 
 type ResultRow = {
@@ -50,7 +51,6 @@ type PredictionRow = {
   official_performance_eligible: boolean;
   publication_hash: string;
   race: RaceRow | RaceRow[];
-  result?: ResultRow | ResultRow[] | null;
   reassessment?: Array<{
     status: "supported" | "confirmed" | "cautious";
     observed_at: string;
@@ -98,7 +98,7 @@ function hydratePrediction(row: PredictionRow): Prediction | undefined {
     entries: raceRow.entries,
   };
   const tickets = row.tickets ?? [];
-  const resultRow = one(row.result);
+  const resultRow = one(raceRow.result);
   const reassessment = one(row.reassessment);
   const purchased = tickets.slice(0, 3);
   const stake = purchased.reduce((sum, ticket) => sum + ticket.stake_yen, 0);
@@ -163,7 +163,8 @@ function emptyCurrentDay(date: string): PocFixture["current_day"] {
   };
 }
 
-const joinedSelect = "*,race:races!inner(*),result:results(*),reassessment:prediction_reassessments(status,observed_at)";
+// Results reference races, not predictions. Embed through the actual foreign key.
+const joinedSelect = "*,race:races!inner(*,result:results(*)),reassessment:prediction_reassessments(status,observed_at)";
 
 async function readPredictions(extra: Record<string, string | number | undefined> = {}) {
   const query = queryString({ select: joinedSelect, order: "published_at.desc", limit: 5000, ...extra });
