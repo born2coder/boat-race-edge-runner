@@ -7,9 +7,67 @@ import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+
+import pandas as pd
 
 from scripts.mark_published import main as mark_main
-from scripts.prepare_forward import _safe_extract
+from scripts.prepare_forward import _load_service_day_compatible, _safe_extract
+
+
+class PreviewTimezoneTests(unittest.TestCase):
+    def load(self, previews):
+        module = SimpleNamespace()
+        original = lambda root, source, day: previews.get(source, pd.DataFrame({"race_id": pd.Series(dtype=str)}))
+        module._preview = original
+
+        def load_service_day(root, day):
+            frame = pd.DataFrame({"race_id": ["r1", "r2"]})
+            columns = []
+            for source in ("tkz", "stt", "sui"):
+                frame = frame.merge(module._preview(root, source, day), on="race_id", how="left")
+                column = f"{source}_obtained_at"
+                if column not in frame:
+                    frame[column] = pd.NaT
+                columns.append(column)
+            frame["source_ready_at"] = frame[columns].max(axis=1)
+            frame["source_safe"] = frame[columns].notna().all(axis=1) & frame["source_ready_at"].le(pd.Timestamp("2026-09-05T10:00:00+09:00"))
+            return frame
+
+        module.load_service_day = load_service_day
+        result = _load_service_day_compatible(module, Path("unused"), "2026-09-05")
+        self.assertIs(module._preview, original)
+        return result
+
+    def previews(self, sources, timestamp="2026-09-05T09:50:00+09:00"):
+        return {source: pd.DataFrame({"race_id": ["r1"], f"{source}_obtained_at": [timestamp]}) for source in sources}
+
+    def test_all_previews_absent_still_loads_morning_races(self):
+        frame = self.load({})
+        self.assertEqual(len(frame), 2)
+        self.assertTrue(frame.source_ready_at.isna().all())
+        self.assertEqual(str(frame.source_ready_at.dtype), "datetime64[ns, Asia/Tokyo]")
+        self.assertFalse(frame.source_safe.any())
+
+    def test_partial_previews_do_not_enable_badge(self):
+        self.assertFalse(self.load(self.previews(["tkz", "stt"])).source_safe.any())
+
+    def test_complete_previews_only_enable_matching_race(self):
+        self.assertEqual(self.load(self.previews(["tkz", "stt", "sui"])).source_safe.tolist(), [True, False])
+
+    def test_late_or_invalid_timestamps_do_not_enable_badge(self):
+        for value in ("2026-09-05T10:01:00+09:00", "invalid", None):
+            with self.subTest(value=value):
+                self.assertFalse(self.load(self.previews(["tkz", "stt", "sui"], value)).source_safe.any())
+
+    def test_preview_function_restored_on_failure(self):
+        original = lambda *args: None
+        def fail(*args):
+            raise ValueError("invalid cards")
+        module = SimpleNamespace(_preview=original, load_service_day=fail)
+        with self.assertRaises(ValueError):
+            _load_service_day_compatible(module, Path("unused"), "2026-09-05")
+        self.assertIs(module._preview, original)
 
 
 class RunnerSafetyTests(unittest.TestCase):
