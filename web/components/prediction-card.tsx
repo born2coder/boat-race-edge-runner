@@ -21,9 +21,9 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
           <div className="eyebrow-row">
             <span>{prediction.race.race_date.replaceAll("-", "/")}</span>
             <Badge variant="outline" className={replay ? "badge-purple" : "badge-blue"}>
-              {replay ? "過去データで試算" : "公開した予想"}
+              {replay ? "過去データで試算" : prediction.official_performance_eligible ? "公開した予想" : "成績対象外の記録"}
             </Badge>
-            {!replay && prediction.publication_mode === "morning_fixed_hit_v1" && (
+            {!replay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && (
               <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
             )}
           </div>
@@ -34,6 +34,7 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
         </div>
       </CardHeader>
       <CardContent>
+        {!replay && !prediction.official_performance_eligible && <p role="note">公開が締切に間に合わなかったため、おすすめ・的中率・回収率の対象外です。買い目は変更せず記録として残しています。</p>}
         <div className="prediction-card-body">
           <section className="card-section roster-section" aria-labelledby={`${prediction.prediction_id}-members`}>
             <div className="card-section-title">
