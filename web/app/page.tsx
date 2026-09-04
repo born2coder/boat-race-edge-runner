@@ -17,7 +17,7 @@ export default async function Home() {
   const isPassDay = current.recommended_count === 0;
   const isWaiting = current.status === "waiting";
   const yesterdayPredictions = yesterdayResultDay.predictions;
-  const settledPredictions = yesterdayPredictions.filter((prediction) => prediction.result?.settlement);
+  const settledPredictions = yesterdayPredictions.filter((prediction) => prediction.official_performance_eligible && prediction.result?.settlement);
   const hitCount = settledPredictions.filter((prediction) => prediction.result?.settlement.hit).length;
   const totalStake = settledPredictions.reduce((sum, prediction) => sum + (prediction.result?.settlement.original_stake_yen ?? 0), 0);
   const totalReturn = settledPredictions.reduce((sum, prediction) => sum + (prediction.result?.settlement.gross_return_yen ?? 0), 0);
@@ -52,9 +52,11 @@ export default async function Home() {
 
       <section className="today-section" aria-labelledby="today-picks">
         <div className="section-heading venue-heading">
-          <div><p className="section-kicker">TODAY / {current.date}</p><h2 id="today-picks">本日の予想</h2><p>朝に10レースを公開し、展示後も買い目は変更せず評価バッジだけを更新します。</p></div>
+          <div><p className="section-kicker">TODAY / {current.date}</p><h2 id="today-picks">本日の予想</h2><p>朝に最大10レースを公開し、展示後も買い目は変更せず評価バッジだけを更新します。</p></div>
           <span className="status-label"><CheckCircle2 aria-hidden="true" /> {isWaiting ? "予想を準備中" : `公開中 ${current.recommended_count}R`}</span>
         </div>
+
+        {(current.excluded_prediction_count ?? 0) > 0 && <p role="note">公開が締切に間に合わなかった{current.excluded_prediction_count}件は、おすすめと成績集計から除外しています。記録は<Link href="/history">過去の予想</Link>に残しています。</p>}
 
         {isPassDay && current.venues.length > 0 ? (
           <details className="venue-disclosure">
