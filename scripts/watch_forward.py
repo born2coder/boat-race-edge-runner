@@ -17,7 +17,7 @@ if __package__ in (None, ""):
 from scripts import prepare_forward
 
 ROOT = Path(__file__).resolve().parents[1]
-POLL_SECONDS = 60
+POLL_SECONDS = 180
 MAX_SECONDS = 345 * 60  # Leave time for setup/cleanup below GitHub's six-hour limit.
 
 
@@ -70,6 +70,7 @@ def main() -> None:
         raise RuntimeError("Continuous publication requires a public repository")
     date = datetime.now(prepare_forward.JST).date().isoformat()
     os.environ["EDGE_SERVICE_DATE"] = date
+    print(json.dumps({"watch_service_date": date, "watch_poll_seconds": POLL_SECONDS}), flush=True)
     state_path = ROOT / "state" / prepare_forward.MODEL_VERSION / f"{date}.json"
     run("git", "config", "user.name", "boat-race-edge-bot")
     run("git", "config", "user.email", "actions@users.noreply.github.com")

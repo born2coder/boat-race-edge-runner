@@ -25,7 +25,7 @@ The workflow starts from a schedule, an owner's manual dispatch, or a change to
 the runner on main. Pull requests and forks never run the publication job.
 
 GitHub schedule events may be delayed. Each invocation therefore stays alive
-for up to 345 minutes and checks every 60 seconds during the selected races'
+for up to 345 minutes and checks every 180 seconds during the selected races'
 30-minute pre-deadline windows. Outside those windows it waits without fetching.
 The model is downloaded/decrypted once per invocation; source data is refreshed
 on each check. A shared concurrency group keeps a single watcher active. Queued
