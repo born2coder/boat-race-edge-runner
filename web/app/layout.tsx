@@ -6,6 +6,8 @@ import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, isProductionSite } from "@/lib/s
 
 // Keep the Japanese official source and Japanese users close to the function.
 export const preferredRegion = "hnd1";
+// Allow the bounded official-result request and subsequent database persistence.
+export const maxDuration = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
