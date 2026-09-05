@@ -786,5 +786,14 @@ svg { width: 1.1rem; height: 1.1rem; }
 .daily-finishers li { display:flex; align-items:center; gap:10px; margin:9px 0; }
 .daily-finishers li>span { color:#657179; font-size:13px; }
 .daily-return { background:#f3f3ed; padding:12px; font-size:14px; line-height:1.8; border-radius:6px; }
+.upcoming-detail-link { display:block; margin-top:18px; }
+.today-result-total { background:#eef5f3; border:1px solid #b0c6c2; border-radius:12px; padding:20px; margin:16px 0; }
+.today-result-total h4 { font-size:20px; font-weight:700; margin:0; }
+.today-result-total p { font-size:13px; color:#586972; margin:8px 0 16px; }
+.today-total-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:0; }
+.today-total-grid dt { font-size:13px; color:#586972; margin-bottom:6px; }
+.today-total-grid dd { font-size:24px; font-weight:700; margin:0; overflow-wrap:anywhere; }
+.today-total-grid dd small { display:block; font-size:12px; font-weight:400; }
+@media(max-width:640px) { .today-total-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .today-result-total { padding:16px; } .today-total-grid dd { font-size:22px; } }
 .daily-race-card footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:14px; margin-top:18px; color:#2d655c; font-size:14px; }
 @media(max-width:640px) { .daily-race-grid { grid-template-columns:1fr; } .daily-race-card { padding:18px; } .daily-tickets b { font-size:18px; padding:8px 10px; } .live-refresh { justify-content:flex-start; } }

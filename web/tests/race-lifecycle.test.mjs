@@ -110,6 +110,7 @@ test("rendered daily board keeps Biwako's miss out of upcoming and preserves the
   const html = renderToStaticMarkup(React.createElement(exports.TodayRaces, { predictions: [p, later, pending], now: Date.parse(observed) }));
   const [upcoming, closed] = html.split('id="today-results"');
   assert.match(upcoming, /蒲郡/);
+  assert.doesNotMatch(upcoming, /1-3-2|1-2-3|3-1-2/);
   assert.doesNotMatch(upcoming, /びわこ|確認場/);
   assert.match(closed, /びわこ/);
   assert.match(closed, /不的中/);
@@ -118,4 +119,19 @@ test("rendered daily board keeps Biwako's miss out of upcoming and preserves the
   assert.doesNotMatch(closed, /展示評価待ち/);
   for (const ticket of tickets) assert.ok(closed.includes(ticket.combination));
   assert.match(closed, /-300円/);
+  const eligible = { ...p, official_performance_eligible: true };
+  const hit = { ...eligible, prediction_id: "hit", result: { ...p.result, settlement: { hit: true, original_stake_yen: 300, gross_return_yen: 1200, profit_yen: 900 } } };
+  const totalHtml = renderToStaticMarkup(React.createElement(exports.TodayRaces, { predictions: [eligible, hit, later, pending, { ...hit, prediction_id: "excluded", official_performance_eligible: false }], now: Date.parse(observed) }));
+  const total = totalHtml.split('aria-label="本日の結果トータル"')[1].split('</section>')[0];
+  assert.match(total, /結果確定 2レース分/);
+  assert.match(total, /結果確認中 1レース/);
+  assert.match(total, /50\.0%/);
+  assert.match(total, /600円/);
+  assert.match(total, /1,200円/);
+  assert.match(total, /200\.0%/);
+  const emptyHtml = renderToStaticMarkup(React.createElement(exports.TodayRaces, { predictions: [later, pending], now: Date.parse(observed) }));
+  const emptyTotal = emptyHtml.split('aria-label="本日の結果トータル"')[1].split('</section>')[0];
+  assert.match(emptyTotal, /結果確定 0レース分/);
+  assert.doesNotMatch(emptyTotal, /NaN|Infinity|0\.0%/);
+  assert.doesNotMatch(emptyHtml, /1-3-2|1-2-3|3-1-2/);
 });
