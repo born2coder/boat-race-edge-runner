@@ -4,6 +4,7 @@ import { recoverPublishedResults } from "@/db/live-repository";
 import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "hnd1";
 
 const MAX_BODY_BYTES = 2_500_000;
 const MAX_CLOCK_SKEW_SECONDS = 300;
