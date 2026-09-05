@@ -18,6 +18,7 @@ export default async function PredictionDetailPage({ params }: { params: Promise
   const isReplay = prediction.publication_mode === "historical_replay";
   const phase = racePhase(prediction);
   const source = officialResultUrl(prediction.race_id);
+  const assessmentCutoffReached = phase !== "upcoming" || Date.parse(prediction.race.start_at) - Date.now() <= 300_000;
 
   return (
     <article className="page-section detail-page">
@@ -29,7 +30,7 @@ export default async function PredictionDetailPage({ params }: { params: Promise
             <span>{prediction.race.race_date.replaceAll("-", "/")}</span>
             <Badge variant="outline" className="badge-purple">{isReplay ? "過去データの参考予想" : prediction.official_performance_eligible ? "公開予想" : "成績対象外の記録"}</Badge>
             {!isReplay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && (
-              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} cutoffReached={phase !== "upcoming" || Date.parse(prediction.race.start_at) - Date.now() <= 300_000} />
+              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} cutoffReached={assessmentCutoffReached} />
             )}
             <Badge variant="outline" className={settlement?.hit ? "badge-green" : "badge-amber"}>{settlement ? settlement.hit ? "的中" : "不的中" : phase === "pending" ? "締切済み・結果確認中" : "締切前"}</Badge>
           </div>
@@ -37,6 +38,12 @@ export default async function PredictionDetailPage({ params }: { params: Promise
           <p>{prediction.race.race_name || "一般"}・締切予定 {prediction.race.start_time_jst} JST</p>
         </div>
       </header>
+
+      {!isReplay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && !prediction.reassessment && (
+        <p className="score-note" role="note">{assessmentCutoffReached
+          ? "展示による追加評価は、締切5分前までに反映できませんでした。「評価が低い」という意味ではありません。以下は朝に公開した3点予想です。"
+          : "朝の3点予想は公開済みです。展示データを確認できた場合は、締切5分前までに追加評価を表示します。"}</p>
+      )}
 
       {!isReplay && !prediction.official_performance_eligible && <p role="note">公開が締切に間に合わなかったため、おすすめ・的中率・回収率の対象外です。買い目は変更せず記録として残しています。</p>}
 
