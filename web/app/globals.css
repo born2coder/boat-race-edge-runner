@@ -207,6 +207,9 @@ svg { width: 1.1rem; height: 1.1rem; }
 .desktop-nav a:hover { color: var(--lab-blue); }
 .age-chip { border: 1px solid #d7b579; border-radius: 999px; padding: 6px 10px; color: #825411; background: #fff8e9; font-size: .7rem; font-weight: 700; white-space: nowrap; }
 .main-content { padding-block: 46px 100px; }
+/* Keep the homepage hero flush with the header; show refresh controls below it. */
+.main-content:has(> .hero-section) { display: flex; flex-direction: column; padding-top: 0; }
+.main-content > .hero-section { order: -1; margin-top: 0; }
 
 .section-kicker { margin: 0 0 10px; color: var(--lab-blue); font-size: .69rem; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
