@@ -10,6 +10,8 @@ import sys
 import tarfile
 import tempfile
 import urllib.request
+from contextlib import nullcontext
+from functools import lru_cache
 from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -117,9 +119,13 @@ def _decrypt_model(encrypted: Path, plaintext: Path) -> None:
 
 def _clone_data(destination: Path, date: str) -> Path:
     day = datetime.strptime(date, "%Y-%m-%d")
+    if (destination / ".git").exists():
+        subprocess.run(["git", "-C", str(destination), "fetch", "--quiet", "--depth", "1", "origin", "main"], check=True, timeout=60)
+        subprocess.run(["git", "-C", str(destination), "reset", "--quiet", "--hard", "FETCH_HEAD"], check=True, timeout=30)
+        return destination / "data"
     subprocess.run([
         "git", "clone", "--depth", "1", "--filter=blob:none", "--sparse", UPSTREAM, str(destination)
-    ], check=True)
+    ], check=True, timeout=60)
     paths = [
         f"data/programs/race_cards/{day:%Y}/{day:%m}",
         f"data/programs/title/{day:%Y}/{day:%m}",
@@ -129,6 +135,26 @@ def _clone_data(destination: Path, date: str) -> Path:
     ]
     subprocess.run(["git", "-C", str(destination), "sparse-checkout", "set", *paths], check=True)
     return destination / "data"
+
+
+@lru_cache(maxsize=1)
+def _load_frozen_cached(artifact_dir: Path):
+    from edge_research.hybrid_forward import load_frozen
+    return load_frozen(artifact_dir)
+
+
+def _expire_pending_reassessments(state: dict, now) -> None:
+    """A retry after the safety cutoff must never add a retroactive badge."""
+    import pandas as pd
+
+    pending = set(state.get("pending_reassessment_ids", []))
+    for item in state["selected"]:
+        identity = item["prediction"]["prediction_id"]
+        cutoff = pd.Timestamp(item["race"]["start_at"]) - pd.Timedelta(minutes=5)
+        if identity in pending and now >= cutoff:
+            pending.remove(identity)
+            item["reassessment_expired_at"] = now.isoformat()
+    state["pending_reassessment_ids"] = sorted(pending)
 
 
 def _day_path(data_root: Path, family: str, date: str) -> Path:
@@ -290,7 +316,7 @@ def _write_outputs(pending: bool, state_file: Path, repository_root: Path) -> No
         handle.write(f"state_file={state_file.relative_to(repository_root).as_posix()}\n")
 
 
-def main() -> None:
+def main(session_root: Path | None = None) -> None:
     import pandas as pd
 
     date = os.environ.get("EDGE_SERVICE_DATE") or datetime.now(JST).date().isoformat()
@@ -301,7 +327,7 @@ def main() -> None:
     payload_path.unlink(missing_ok=True)
     state_path = repository_root / "state" / MODEL_VERSION / f"{date}.json"
 
-    with tempfile.TemporaryDirectory(prefix="edge-forward-") as temporary:
+    with (nullcontext(session_root) if session_root else tempfile.TemporaryDirectory(prefix="edge-forward-")) as temporary:
         temporary_root = Path(temporary)
         data_root = _clone_data(temporary_root / "boatracecsv", date)
         card_path = _day_path(data_root, "programs/race_cards", date)
@@ -314,20 +340,20 @@ def main() -> None:
         encrypted = temporary_root / MODEL_FILENAME
         plaintext = temporary_root / "W_morning_badge_v1.tar.gz"
         extracted = temporary_root / "model"
-        _download_model(encrypted)
-        _decrypt_model(encrypted, plaintext)
-        _safe_extract(plaintext, extracted)
-        sys.path.insert(0, str(extracted))
+        if not extracted.exists():
+            _download_model(encrypted)
+            _decrypt_model(encrypted, plaintext)
+            _safe_extract(plaintext, extracted)
+            sys.path.insert(0, str(extracted))
         from edge_research import hybrid_forward
         from edge_research.hybrid_forward import (
             classify_reassessment,
-            load_frozen,
             predict_exhibition,
             predict_morning,
         )
 
         artifact_dir = extracted / "artifacts" / "frozen_w_morning_badge_v1"
-        manifest, models, morning_reference, exhibition_reference = load_frozen(artifact_dir)
+        manifest, models, morning_reference, exhibition_reference = _load_frozen_cached(artifact_dir)
         if date < manifest["genuine_forward_not_before"]:
             _write_outputs(False, state_path, repository_root)
             print(json.dumps({
@@ -389,6 +415,7 @@ def main() -> None:
                 "morning_locked_at": now.isoformat(),
             }
 
+        _expire_pending_reassessments(state, now)
         exhibition = predict_exhibition(schedule, models["exhibition"])
         exhibition_by_id = {str(row.race_id): pd.Series(row._asdict()) for row in exhibition.itertuples(index=False)}
         pending_reassessment_ids = set(state.get("pending_reassessment_ids", []))
@@ -401,7 +428,7 @@ def main() -> None:
             full = exhibition_by_id[raw_id]
             cutoff = pd.Timestamp(full["safe_cutoff_at"]).tz_convert("UTC")
             ready = pd.Timestamp(full["source_ready_at"]).tz_convert("UTC")
-            if not bool(full["source_safe"]) or ready > now or now > cutoff:
+            if not bool(full["source_safe"]) or ready > now or now >= cutoff:
                 continue
             morning_series = pd.Series({
                 "morning_score": item["morning"]["score"],
@@ -475,6 +502,11 @@ def main() -> None:
             "new_predictions": len(pending_items),
             "new_reassessments": len(pending_reassessments),
             "pending": pending,
+            "checked_at": now.isoformat(),
+            "exhibition_checks": [{
+                "race_id": item["race_id_raw"],
+                "status": "published" if item.get("reassessment_published_at") else "expired" if item.get("reassessment_expired_at") else "ready" if item.get("reassessment") else "waiting_for_safe_data" if now < pd.Timestamp(item["race"]["start_at"]) - pd.Timedelta(minutes=5) else "cutoff_passed",
+            } for item in state["selected"]],
         }, ensure_ascii=False))
 
 

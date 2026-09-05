@@ -5,10 +5,14 @@ on:
     branches: [main]
     paths:
       - scripts/prepare_forward.py
+      - scripts/watch_forward.py
+      - scripts/send_payload.py
+      - scripts/mark_published.py
       - requirements.txt
       - .github/workflows/forward.yml
   schedule:
-    - cron: "*/5 6-22 * * *"
+    # Starts/wakes a watcher. Once running, it polls itself every minute.
+    - cron: "7,37 5-21 * * *"
       timezone: "Asia/Tokyo"
   workflow_dispatch:
 
@@ -21,11 +25,14 @@ concurrency:
 
 jobs:
   publish:
+    if: github.event.repository.visibility == 'public'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 355
     steps:
       - name: Check out runner
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38
@@ -39,40 +46,13 @@ jobs:
       - name: Test runner safety and missing preview handling
         run: python -m unittest discover -s tests -v
 
-      - name: Prepare morning predictions and exhibition badges
-        id: prepare
+      - name: Watch selected races and publish timely exhibition badges
         env:
+          PYTHONUNBUFFERED: "1"
+          EDGE_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
           EDGE_MODEL_REPOSITORY: ${{ secrets.EDGE_MODEL_REPOSITORY }}
           EDGE_MODEL_TOKEN: ${{ secrets.EDGE_MODEL_TOKEN }}
           EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
-        run: python scripts/prepare_forward.py
-
-      - name: Lock prediction state before publication
-        if: steps.prepare.outputs.pending == 'true'
-        env:
-          STATE_FILE: ${{ steps.prepare.outputs.state_file }}
-        run: |
-          git config user.name "boat-race-edge-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add -- "$STATE_FILE"
-          git commit -m "Lock forward predictions"
-          git pull --rebase
-          git push
-
-      - name: Publish signed payload
-        if: steps.prepare.outputs.pending == 'true'
-        env:
           EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
-        run: python scripts/send_payload.py .runtime/payload.json
-
-      - name: Record successful publication
-        if: steps.prepare.outputs.pending == 'true'
-        env:
-          STATE_FILE: ${{ steps.prepare.outputs.state_file }}
-        run: |
-          python scripts/mark_published.py "$STATE_FILE"
-          git add -- "$STATE_FILE"
-          git commit -m "Record forward publication"
-          git pull --rebase
-          git push
+        run: python scripts/watch_forward.py

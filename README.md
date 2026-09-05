@@ -21,8 +21,27 @@ Required repository secrets:
 - `EDGE_SITE_INGEST_ENDPOINT`: BOAT RACE EDGE signed ingestion endpoint
 - `EDGE_SITE_INGEST_SECRET`: dedicated ingestion signing secret
 
-The workflow runs only on a schedule or by an owner's manual dispatch. Pull
-requests and forks never run the publication job.
+The workflow starts from a schedule, an owner's manual dispatch, or a change to
+the runner on main. Pull requests and forks never run the publication job.
+
+GitHub schedule events may be delayed. Each invocation therefore stays alive
+for up to 345 minutes and checks every 60 seconds during the selected races'
+30-minute pre-deadline windows. Outside those windows it waits without fetching.
+The model is downloaded/decrypted once per invocation; source data is refreshed
+on each check. A shared concurrency group keeps a single watcher active. Queued
+invocations check out current main, including the latest immutable state.
+
+The watcher stops once all selected races have been assessed or passed the
+five-minute safety cutoff, and always stops by 22:00 JST. Failed source/publication
+requests retry, with five consecutive failures failing the job visibly. Pending
+badges expire at the cutoff; the site's receiver independently blocks late badges.
+Logs report each check and which races are still waiting. This mitigates cron
+delays but does not guarantee the initial job starts on time or the upstream CSV
+is published in time. Missed assessments are never filled in after the cutoff.
+
+Continuous operation is restricted to public repositories using the standard
+Ubuntu runner. The job is skipped if visibility changes to private; no larger
+runner or paid scheduling service is enabled.
 
 ## Public website
 

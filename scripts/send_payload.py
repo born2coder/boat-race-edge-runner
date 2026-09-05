@@ -47,6 +47,8 @@ def main() -> None:
         if response.status < 200 or response.status >= 300:
             raise RuntimeError(f"Ingestion failed: {response.status} {text}")
         print(text)
+        if json.loads(text).get("rejected_reassessments", 0):
+            raise RuntimeError("Some exhibition assessments were rejected; do not mark them published")
 
 
 if __name__ == "__main__":

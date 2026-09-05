@@ -1,5 +1,6 @@
 import type { IngestPayload } from "@/lib/ingest-schema";
 import { queryString, SupabaseError, supabaseRequest } from "@/db/supabase";
+import { canPublishReassessment } from "@/lib/reassessment-safety";
 
 async function writeRows(
   table: string,
@@ -35,7 +36,7 @@ export async function claimIngestionNonce(nonce: string, usedAt: string) {
   return true;
 }
 
-type ExistingPrediction = { race_id: string; publication_mode: string; race: { race_date: string } | Array<{ race_date: string }> };
+type ExistingPrediction = { prediction_id: string; race_id: string; publication_mode: string; published_at: string; official_performance_eligible: boolean; race: { race_date: string; start_at: string } | Array<{ race_date: string; start_at: string }> };
 
 export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: string) {
   const ingestionId = `ingest_${rawBodySha256.slice(0, 24)}`;
@@ -48,7 +49,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
 
   const existing = await supabaseRequest<ExistingPrediction[]>(
     `predictions?${queryString({
-      select: "race_id,publication_mode,race:races!inner(race_date)",
+      select: "prediction_id,race_id,publication_mode,published_at,official_performance_eligible,race:races!inner(race_date,start_at)",
       publication_mode: "in.(forward_observation_poc,frozen_forward_hit_v1,morning_fixed_hit_v1)",
       "race.race_date": `eq.${payload.service_date}`,
     })}`,
@@ -99,7 +100,15 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     publication_hash: prediction.publication_hash,
   })), "prediction_id", "ignore");
 
-  await writeRows("prediction_reassessments", payload.reassessments.map((reassessment) => ({
+  const assessmentPredictions = new Map(existing.map((row) => [row.prediction_id, row]));
+  for (const prediction of acceptedPredictions) {
+    const race = payload.races.find((row) => row.race_id === prediction.race_id);
+    if (race) assessmentPredictions.set(prediction.prediction_id, { ...prediction, race });
+  }
+  const receivedAt = Date.now();
+  const acceptedReassessments = payload.reassessments.filter((assessment) =>
+    canPublishReassessment(assessment, assessmentPredictions.get(assessment.prediction_id), receivedAt));
+  await writeRows("prediction_reassessments", acceptedReassessments.map((reassessment) => ({
     prediction_id: reassessment.prediction_id,
     race_id: reassessment.race_id,
     status: reassessment.status,
@@ -110,7 +119,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     rule_version: reassessment.rule_version,
     observed_at: reassessment.observed_at,
     reassessment_hash: reassessment.reassessment_hash,
-  })), "prediction_id");
+  })), "prediction_id", "ignore");
 
   await writeRows("results", payload.results.map((result) => ({
     race_id: result.race_id,
@@ -157,6 +166,8 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     service_date: payload.service_date,
     races: payload.races.length,
     predictions: acceptedPredictions.length,
+    reassessments: acceptedReassessments.length,
+    rejected_reassessments: payload.reassessments.length - acceptedReassessments.length,
     results: payload.results.length,
     settled: payload.results.length,
   };
