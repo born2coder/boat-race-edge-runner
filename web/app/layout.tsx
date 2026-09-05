@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SiteShell } from "@/components/site-shell";
+import { LiveRefresh } from "@/components/live-refresh";
 
 export const metadata: Metadata = {
   title: "BOAT RACE EDGE｜本日の厳選3連単予想",
@@ -19,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className="antialiased"><SiteShell>{children}</SiteShell></body>
+      <body className="antialiased"><SiteShell><LiveRefresh />{children}</SiteShell></body>
     </html>
   );
 }

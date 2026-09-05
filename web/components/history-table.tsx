@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDateTime, formatYen, type Prediction } from "@/lib/poc";
+import { racePhase } from "@/lib/race-lifecycle";
 
 export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
   const [filter, setFilter] = useState("all");
@@ -56,7 +57,7 @@ export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
                       <span className={settlement.hit ? "result-hit" : "result-miss"}>
                         {settlement.hit ? "的中" : "不的中"}・{settlement.result_combination}
                       </span>
-                    ) : "結果待ち"}
+                    ) : racePhase(prediction) === "upcoming" ? "締切前" : "締切済み・結果確認中"}
                   </td>
                   <td data-label="収支" className={settlement && settlement.profit_yen >= 0 ? "positive" : "negative"}>
                     {settlement ? formatYen(settlement.profit_yen) : "—"}

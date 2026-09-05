@@ -13,7 +13,8 @@ test("keeps the established BOAT RACE EDGE visual language", async () => {
 test("shows morning lock and exhibition badge states without changing tickets", async () => {
   const badge = await readFile(new URL("../components/reassessment-badge.tsx", import.meta.url), "utf8");
   const card = await readFile(new URL("../components/prediction-card.tsx", import.meta.url), "utf8");
-  assert.match(badge, /展示待ち/);
+  assert.match(badge, /展示評価待ち/);
+  assert.match(badge, /展示判定なし/);
   assert.match(badge, /展示後も有力/);
   assert.match(badge, /展示確認済み/);
   assert.match(badge, /展示後は慎重/);

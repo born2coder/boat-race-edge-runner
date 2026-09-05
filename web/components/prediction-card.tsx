@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReassessmentBadge } from "@/components/reassessment-badge";
 import { formatYen, type Prediction } from "@/lib/poc";
+import { racePhase } from "@/lib/race-lifecycle";
 
 export function PredictionCard({ prediction }: { prediction: Prediction }) {
   const replay = prediction.publication_mode === "historical_replay";
   const settlement = prediction.result?.settlement;
+  const phase = racePhase(prediction);
   const entries = [...prediction.race.entries].sort((a, b) => a.lane_no - b.lane_no);
   const predictionRanks = new Map(prediction.ranking.map((item) => [item.lane_no, item.rank]));
   const entryByLane = new Map(entries.map((entry) => [entry.lane_no, entry]));
@@ -24,13 +26,13 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
               {replay ? "過去データで試算" : prediction.official_performance_eligible ? "公開した予想" : "成績対象外の記録"}
             </Badge>
             {!replay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && (
-              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
+              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} cutoffReached={phase !== "upcoming" || Date.parse(prediction.race.start_at) - Date.now() <= 300_000} />
             )}
           </div>
           <CardTitle className="race-title">
             {prediction.race.venue} <strong>{prediction.race.race_no}R</strong>
           </CardTitle>
-          <p className="race-subtitle">{prediction.race.race_name || "一般"}・発走 {prediction.race.start_time_jst} JST</p>
+          <p className="race-subtitle">{prediction.race.race_name || "一般"}・締切 {prediction.race.start_time_jst} JST</p>
         </div>
       </CardHeader>
       <CardContent>
@@ -115,7 +117,7 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
                 </div>
               </>
             ) : (
-              <div className="result-pending">レース終了後に、結果と収支をここへ表示します。</div>
+              <div className="result-pending">{phase === "pending" ? "締切済み・結果確認中です。確認でき次第、事前予想の的中・不的中と収支を表示します。" : "レース終了後に、結果と収支をここへ表示します。"}</div>
             )}
           </section>
         </div>

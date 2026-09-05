@@ -19,10 +19,12 @@ export function ReassessmentBadge({
   status,
   waiting = false,
   compact = false,
+  cutoffReached = false,
 }: {
   status?: Status | null;
   waiting?: boolean;
   compact?: boolean;
+  cutoffReached?: boolean;
 }) {
   if (!status && !waiting) return null;
   return (
@@ -31,7 +33,7 @@ export function ReassessmentBadge({
       className={`${status ? classes[status] : "badge-waiting reassessment-badge"}${compact ? " is-compact" : ""}`}
       title="朝に公開した買い目は変更していません"
     >
-      {status ? labels[status] : "展示待ち"}
+      {status ? labels[status] : cutoffReached ? "展示判定なし" : "展示評価待ち"}
     </Badge>
   );
 }
