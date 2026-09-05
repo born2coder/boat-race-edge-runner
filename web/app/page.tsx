@@ -108,7 +108,7 @@ export default async function Home() {
       <section className="summary-section performance-section" aria-labelledby="performance-title">
         <div className="section-heading split">
           <div><p className="section-kicker">HIT RATE</p><h2 id="performance-title">公開予想の的中率</h2><p>実際に公開した3連単3点予想を、結果が確定したレースだけで集計します。</p></div>
-          <Link href="/stats" className="text-link">成績を詳しく見る <ArrowRight aria-hidden="true" /></Link>
+          <Link href="/stats" className="text-link">日別の成績・収支を見る <ArrowRight aria-hidden="true" /></Link>
         </div>
         <div className="metric-grid period-metrics">
           {performancePeriods.map((period) => (

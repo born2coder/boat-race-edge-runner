@@ -110,6 +110,7 @@ test("public results use only published predictions and expose period hit rates"
   assert.match(repository, /getPerformancePeriods/);
   assert.match(repository, /return \[\];/);
   assert.doesNotMatch(repository, /source: "historical_sample"/);
-  assert.match(stats, /期間別の的中率/);
+  assert.match(stats, /日別の内訳/);
+  assert.match(stats, /集計期間を選ぶ/);
   assert.doesNotMatch(stats, /過去データでの検証結果/);
 });

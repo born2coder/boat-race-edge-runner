@@ -366,6 +366,27 @@ export async function getObservationStats() {
   }
 }
 
+export function buildPerformanceDetail(predictions: Prediction[], date: string, key: PerformancePeriod["key"]) {
+  const labels = { week: "今週", month: "今月", year: "今年" };
+  const startDate = key === "week" ? startOfWeek(date) : key === "month" ? `${date.slice(0, 7)}-01` : `${date.slice(0, 4)}-01-01`;
+  const period = { key, label: labels[key], startDate, endDate: date };
+  const eligible = predictions.filter((p) => p.official_performance_eligible && p.race.race_date >= startDate && p.race.race_date <= date);
+  const grouped = new Map<string, Prediction[]>();
+  for (const p of eligible) grouped.set(p.race.race_date, [...(grouped.get(p.race.race_date) ?? []), p]);
+  let cumulativeProfit = 0;
+  const days = [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, items]) => {
+    const summary = summarizePeriod(items, { ...period, startDate: day, endDate: day });
+    cumulativeProfit += summary.returned - summary.stake;
+    return { date: day, ...summary, published: items.length, pending: items.length - summary.settled, cumulativeProfit,
+      predictions: [...items].sort((a, b) => a.race.start_at.localeCompare(b.race.start_at)) };
+  }).reverse();
+  return { ...summarizePeriod(eligible, period), published: eligible.length, pending: eligible.filter((p) => !p.result?.settlement).length, days };
+}
+
+export async function getPerformanceDetail(key: PerformancePeriod["key"]) {
+  return buildPerformanceDetail(await getDisplayPredictions(), todayJst(), key);
+}
+
 export type TopKStat = { k: 1 | 3 | 5 | 8; settled: number; hits: number; hitRate: number | null; stake: number; returned: number; returnRate: number | null };
 
 export async function getForwardTopKStats(): Promise<TopKStat[]> {

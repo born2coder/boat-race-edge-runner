@@ -787,6 +787,35 @@ svg { width: 1.1rem; height: 1.1rem; }
 .daily-finishers li>span { color:#657179; font-size:13px; }
 .daily-return { background:#f3f3ed; padding:12px; font-size:14px; line-height:1.8; border-radius:6px; }
 .upcoming-detail-link { display:block; margin-top:18px; }
+.performance-period-nav { display:flex; gap:8px; margin:0 0 24px; }
+.performance-period-nav a { border:1px solid #a3bdb7; border-radius:8px; padding:10px 24px; color:#285e55; font-weight:700; }
+.performance-period-nav a[aria-current=page] { background:#294c5e; color:#fff; border-color:#294c5e; }
+.performance-ledger { margin:40px 0; }
+.ledger-columns,.ledger-day summary { display:grid; grid-template-columns:1.3fr 1fr 1fr 1fr 1.3fr .5fr; gap:14px; align-items:center; padding:18px; }
+.ledger-columns { color:#687782; font-size:13px; }
+.ledger-day { background:#fffdfa; border:1px solid #b0c6c2; border-radius:8px; margin-bottom:10px; }
+.ledger-day summary { cursor:pointer; list-style:none; }
+.ledger-day summary::-webkit-details-marker { display:none; }
+.ledger-day summary small { display:none; }
+.ledger-day summary:focus-visible { outline:3px solid #2d756a; outline-offset:3px; }
+.ledger-day[open] summary { border-bottom:1px solid #d7e1de; }
+.ledger-toggle { color:#285e55; font-size:13px; text-align:right; }
+.ledger-toggle::after { content:' ＋'; }
+.ledger-day[open] .ledger-toggle::after { content:' −'; }
+.ledger-day-body { padding:18px; }
+.ledger-day-body>p,.ledger-footnote { color:#62717b; font-size:13px; margin-bottom:10px; }
+.ledger-races>a { display:grid; grid-template-columns:1.2fr 1fr 1fr 1.2fr; gap:12px; align-items:center; padding:15px 0; border-top:1px solid #e2e7e4; }
+.ledger-races small { display:block; color:#657580; font-size:12px; margin-top:4px; }
+.ledger-race-link { text-align:right; color:#285e55; font-size:13px; }
+@media(max-width:720px) {
+  .ledger-columns { display:none; }
+  .ledger-day summary { grid-template-columns:repeat(2,minmax(0,1fr)); padding:16px; }
+  .ledger-day summary>strong { grid-column:1/-1; }
+  .ledger-day summary small { display:block; color:#687782; font-size:12px; margin-bottom:4px; }
+  .ledger-day summary .ledger-toggle { grid-column:1/-1; }
+  .ledger-races>a { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .performance-period-nav a { flex:1; padding:10px; text-align:center; }
+}
 .today-result-total { background:#eef5f3; border:1px solid #b0c6c2; border-radius:12px; padding:20px; margin:16px 0; }
 .today-result-total h4 { font-size:20px; font-weight:700; margin:0; }
 .today-result-total p { font-size:13px; color:#586972; margin:8px 0 16px; }
