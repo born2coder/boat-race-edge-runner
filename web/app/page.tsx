@@ -31,7 +31,7 @@ export default async function Home() {
       <section className="hero-section">
         <div className="hero-ledger" aria-label="本日の判断">
           <span>本日の判断</span>
-          <strong>{isWaiting ? "本日のデータを確認中です。" : isPassDay ? "今日は見送りです。" : upcomingCount ? `これからの予想は${upcomingCount}Rです。` : "本日の予想はすべて締切済みです。"}</strong>
+          <strong>{isWaiting ? "本日のデータを確認中です。" : isPassDay ? "今日は見送りです。" : upcomingCount ? `本日の予想はあと${upcomingCount}レースあります。` : "本日の予想はすべて締切済みです。"}</strong>
           <p>{isWaiting ? "公式配布データの到着を待っています。取得後、自動で全レースを分析します。" : <>本日開催の{current.analyzed_count}レースを分析しましたが、{isPassDay ? "現在の公開条件を満たしたレースはありませんでした。" : `現在の公開条件を満たした${current.recommended_count}レースを掲載しています。`}</>}</p>
           {isPassDay && !isWaiting && <b className="pass-message">無理に予想は出しません。</b>}
           <dl className="decision-metrics">
