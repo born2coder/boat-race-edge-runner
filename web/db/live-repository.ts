@@ -145,7 +145,8 @@ function hydratePrediction(row: PredictionRow): Prediction | undefined {
     virtual_stake_yen: stake || row.virtual_stake_yen,
     published_at: row.published_at,
     publication_mode: row.publication_mode,
-    official_performance_eligible: row.official_performance_eligible,
+    official_performance_eligible: row.official_performance_eligible
+      && Date.parse(row.published_at) < Date.parse(raceRow.start_at),
     publication_hash: row.publication_hash,
     reassessment: reassessment ? {
       status: reassessment.status,
@@ -193,11 +194,12 @@ export async function getPageFixture(): Promise<PocFixture> {
     return { ...fixture, current_day: emptyCurrentDay(date) };
   }
   try {
-    const [runs, races, predictions] = await Promise.all([
+    const [runs, races, allPredictions] = await Promise.all([
       supabaseRequest<DailyRunRow[]>(`daily_runs?${queryString({ select: "*", service_date: `eq.${date}`, limit: 1 })}`),
       supabaseRequest<RaceRow[]>(`races?${queryString({ select: "*", race_date: `eq.${date}`, order: "venue_code.asc,race_no.asc" })}`),
       readOfficialPredictions({ "race.race_date": `eq.${date}` }),
     ]);
+    const predictions = allPredictions.filter((prediction) => prediction.official_performance_eligible);
     const run = runs[0];
     if (!run) return { ...fixture, current_day: emptyCurrentDay(date) };
     const grouped = new Map<string, RaceRow[]>();
@@ -223,6 +225,7 @@ export async function getPageFixture(): Promise<PocFixture> {
         venue_count: venues.length,
         analyzed_count: run.analyzed_count,
         recommended_count: predictions.length,
+        excluded_prediction_count: allPredictions.length - predictions.length,
         skipped_count: Math.max(0, run.analyzed_count - predictions.length),
         incomplete_count: run.incomplete_count,
         coverage_percent: run.coverage_percent,
@@ -331,7 +334,7 @@ export async function getObservationStats() {
   const empty = { predictions: 0, settled: 0, hits: 0, stake: 0, returned: 0, profit: 0, returnRate: null as number | null };
   try {
     if (!hasSupabaseReadConfiguration()) return empty;
-    const predictions = await readOfficialPredictions();
+    const predictions = (await readOfficialPredictions()).filter((prediction) => prediction.official_performance_eligible);
     const settled = predictions.filter((prediction) => prediction.result?.settlement);
     const hits = settled.filter((prediction) => prediction.result?.settlement.hit).length;
     const stake = settled.reduce((sum, prediction) => sum + (prediction.result?.settlement.counted_stake_yen ?? 0), 0);
@@ -348,7 +351,7 @@ export async function getForwardTopKStats(): Promise<TopKStat[]> {
   const empty = ([1, 3, 5, 8] as const).map((k) => ({ k, settled: 0, hits: 0, hitRate: null, stake: 0, returned: 0, returnRate: null }));
   try {
     if (!hasSupabaseReadConfiguration()) return empty;
-    const predictions = (await readOfficialPredictions()).filter((prediction) => prediction.result);
+    const predictions = (await readOfficialPredictions()).filter((prediction) => prediction.official_performance_eligible && prediction.result);
     return ([1, 3, 5, 8] as const).map((k) => {
       const hits = predictions.filter((prediction) => prediction.tickets.slice(0, k).some((ticket) => ticket.combination === prediction.result?.combination));
       const returned = hits.reduce((sum, prediction) => sum + (prediction.result?.payout_per_100_yen ?? 0), 0);

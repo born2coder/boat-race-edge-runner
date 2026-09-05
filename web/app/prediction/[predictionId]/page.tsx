@@ -24,8 +24,8 @@ export default async function PredictionDetailPage({ params }: { params: Promise
         <div>
           <div className="eyebrow-row">
             <span>{prediction.race.race_date.replaceAll("-", "/")}</span>
-            <Badge variant="outline" className="badge-purple">{isReplay ? "過去データの参考予想" : "公開予想"}</Badge>
-            {!isReplay && prediction.publication_mode === "morning_fixed_hit_v1" && (
+            <Badge variant="outline" className="badge-purple">{isReplay ? "過去データの参考予想" : prediction.official_performance_eligible ? "公開予想" : "成績対象外の記録"}</Badge>
+            {!isReplay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && (
               <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
             )}
             <Badge variant="outline" className={result ? "badge-green" : "badge-amber"}>{result ? "結果確定" : "結果待ち"}</Badge>
@@ -34,6 +34,8 @@ export default async function PredictionDetailPage({ params }: { params: Promise
           <p>{prediction.race.race_name || "一般"}・発走予定 {prediction.race.start_time_jst} JST</p>
         </div>
       </header>
+
+      {!isReplay && !prediction.official_performance_eligible && <p role="note">公開が締切に間に合わなかったため、おすすめ・的中率・回収率の対象外です。買い目は変更せず記録として残しています。</p>}
 
       <section className="detail-card boat-section">
         <div className="section-heading"><div><p className="section-kicker">START LIST</p><h2>出走6艇</h2></div></div>

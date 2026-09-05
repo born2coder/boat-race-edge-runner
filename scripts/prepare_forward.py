@@ -176,6 +176,14 @@ def _load_service_day_compatible(model_module, data_root: Path, date: str):
         model_module._preview = original_preview
 
 
+def _morning_candidates(schedule, now):
+    """Do not issue new recommendations for closed or imminently closing races."""
+    import pandas as pd
+
+    deadlines = pd.to_datetime(schedule["deadline_at"], errors="coerce", utc=True)
+    return schedule.loc[deadlines.gt(now + pd.Timedelta(minutes=5))].copy()
+
+
 def _entry(card, frame, lane: int) -> dict[str, Any]:
     get = lambda label, default=0: card.get(f"艇{lane}_{label}", default)
     return {
@@ -343,7 +351,12 @@ def main() -> None:
                 _write_outputs(False, state_path, repository_root)
                 print(json.dumps({"date": date, "pending": False, "reason": "morning_lock_deadline_passed"}))
                 return
-            morning = predict_morning(schedule, models["morning"])
+            candidates = _morning_candidates(schedule, now)
+            if len(candidates) < DAILY_CAP:
+                _write_outputs(False, state_path, repository_root)
+                print(json.dumps({"date": date, "pending": False, "reason": "fewer_than_ten_open_races"}))
+                return
+            morning = predict_morning(candidates, models["morning"])
             selected = morning.sort_values(["morning_score", "race_id"], ascending=[False, True]).head(DAILY_CAP)
             if len(selected) < DAILY_CAP:
                 _write_outputs(False, state_path, repository_root)

@@ -112,6 +112,7 @@ export type PocFixture = {
     venue_count: number;
     analyzed_count: number;
     recommended_count: number;
+    excluded_prediction_count?: number;
     skipped_count: number;
     incomplete_count: number;
     coverage_percent: number;

@@ -2,6 +2,35 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+test("late publication is preserved but excluded from official performance", async () => {
+  const ts = (await import("typescript")).default;
+  let source = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  source = source.replace(/^import .*;$/gm, "");
+  source += "\nexport { hydratePrediction, summarizePeriod };";
+  const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const { hydratePrediction, summarizePeriod } = await import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
+  const row = {
+    race_id: "test", published_at: "2026-09-05T08:48:00+09:00", official_performance_eligible: true,
+    race: { race_id: "test", race_date: "2026-09-05", start_at: "2026-09-05T08:32:00+09:00", entries: [],
+      result: { combination: "1-2-3", payout_per_100_yen: 1200, finishers: [] } },
+    tickets: ["1-2-3", "1-3-2", "1-2-4"].map((combination) => ({ combination, stake_yen: 100 })),
+  };
+  const late = hydratePrediction(row);
+  assert.equal(late.official_performance_eligible, false);
+  assert.equal(late.result.settlement.gross_return_yen, 1200);
+  assert.equal(late.published_at, row.published_at);
+  assert.deepEqual(late.tickets, row.tickets);
+  const onTime = hydratePrediction({ ...row, published_at: "2026-09-05T08:00:00+09:00" });
+  assert.equal(onTime.official_performance_eligible, true);
+  for (const published_at of [row.race.start_at, "invalid"]) {
+    assert.equal(hydratePrediction({ ...row, published_at }).official_performance_eligible, false);
+  }
+  const summary = summarizePeriod([late, onTime], { key: "week", label: "今週", startDate: "2026-09-01", endDate: "2026-09-05" });
+  assert.equal(summary.settled, 1);
+  assert.equal(summary.hits, 1);
+  assert.equal(summary.stake, 300);
+});
+
 test("prediction reads join results through races rather than a nonexistent direct relationship", async () => {
   const reader = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
   assert.match(reader, /race:races!inner\(\*,result:results\(\*\)\)/);
