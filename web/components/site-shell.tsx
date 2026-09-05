@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { BarChart3, CalendarDays, CircleHelp, History } from "lucide-react";
 
 const navigation = [
@@ -13,12 +14,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <div className="site-shell">
       <header className="site-header">
         <div className="shell-width header-inner">
-          <Link href="/" className="brand" aria-label="BOAT RACE EDGE ホーム">
-            <span className="brand-mark">BE</span>
-            <span>
-              <strong>BOAT RACE EDGE</strong>
-              <small>DAILY BOAT RACE PICKS</small>
-            </span>
+          <Link href="/" className="brand" aria-label="舟の理（ふねのことわり）ホーム">
+            <Image src="/brand/fune-no-kotowari-logo.png" alt="舟の理 — 競艇の理をデータで紐解き、予想を導く。" width={2172} height={724} sizes="(max-width: 640px) 260px, 350px" className="brand-logo" priority />
           </Link>
           <nav className="desktop-nav" aria-label="メインナビゲーション">
             {navigation.map((item) => (
@@ -32,7 +29,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <footer className="site-footer">
         <div className="shell-width footer-grid">
           <div>
-            <strong>厳選した予想を、結果まで公開。</strong>
+            <strong>舟の理 — 競艇の理をデータで紐解き、予想を導く。</strong>
             <p>出した買い目は後から変えず、的中・不的中をすべて残します。</p>
           </div>
           <p>

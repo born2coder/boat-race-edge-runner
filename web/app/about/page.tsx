@@ -1,13 +1,18 @@
-export const metadata = { title: "このサイトについて｜BOAT RACE EDGE" };
+export const metadata = { title: "舟の理について・予想と成績の公開方針", description: "競艇の理をデータで紐解き、予想を導く。舟の理の無料競艇予想と、公開した買い目・結果を記録する方針について。", alternates: { canonical: "/about" } };
 
 export default function AboutPage() {
   return (
     <section className="page-section">
       <div className="page-intro">
         <p className="section-kicker">ABOUT</p>
-        <h1>このサイトについて</h1>
-        <p>全国のボートレースから狙い目を選び、3連単3点予想を無料で公開するサイトです。</p>
+        <h1>舟の理について</h1>
+        <p>舟の理（ふねのことわり）は、データ分析による無料競艇予想サイトです。全国のボートレースから狙い目を選び、3連単3点予想を公開します。</p>
       </div>
+
+      <section className="about-block">
+        <h2>競艇の理をデータで紐解き、予想を導く。</h2>
+        <p>選手の成績や機力、同じレースを走る6艇の力関係。その記録から、着順につながる傾向を読み解く。「舟の理」という名前には、データを丁寧に分析し、予想につなげる姿勢を込めています。</p>
+      </section>
 
       <section className="about-lead-grid">
         <article>

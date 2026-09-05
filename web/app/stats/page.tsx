@@ -4,7 +4,7 @@ import { getPerformanceDetail } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 import { racePhase } from "@/lib/race-lifecycle";
 
-export const metadata = { title: "日別の成績・収支｜BOAT RACE EDGE" };
+export const metadata = { title: "競艇予想の的中率・回収率と日別収支", description: "舟の理の公開予想の成績。今週・今月・今年の的中率と回収率、日別の結果・仮想収支を確認できます。", alternates: { canonical: "/stats" } };
 export const dynamic = "force-dynamic";
 
 const percent = (value: number | null) => value === null ? "—" : `${value.toFixed(1)}%`;

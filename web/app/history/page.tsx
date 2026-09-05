@@ -1,7 +1,7 @@
 import { HistoryTable } from "@/components/history-table";
 import { getDisplayPredictions } from "@/db/live-repository";
 
-export const metadata = { title: "全予想履歴｜BOAT RACE EDGE" };
+export const metadata = { title: "競艇予想の履歴と結果", description: "舟の理で事前に公開した競艇予想と、その結果を確認できます。的中・不的中とも同じ基準で記録しています。", alternates: { canonical: "/history" } };
 
 export const dynamic = "force-dynamic";
 
