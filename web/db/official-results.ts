@@ -11,7 +11,9 @@ const fetchResult = unstable_cache(async (raceId: string, rosterJson: string) =>
   const url = officialResultUrl(raceId);
   if (!url) return null;
   try {
-    const response = await fetch(url, { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(10_000) });
+    // Official pages can take over ten seconds even after results are final.
+    // Keep one bounded request per cache interval, allowing slower valid responses.
+    const response = await fetch(url, { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(30_000) });
     if (!response.ok) {
       console.warn("Official result HTTP status", raceId, response.status);
       return null;
@@ -23,7 +25,7 @@ const fetchResult = unstable_cache(async (raceId: string, rosterJson: string) =>
     console.warn("Official result temporarily unavailable", raceId, error instanceof Error ? error.name : "UnknownError");
     return null;
   }
-}, ["official-race-results-v2"], { revalidate: 60 });
+}, ["official-race-results-v3"], { revalidate: 60 });
 
 export const getOfficialResult = cache(async (raceId: string, rosterJson: string) => {
   const result = await fetchResult(raceId, rosterJson);
