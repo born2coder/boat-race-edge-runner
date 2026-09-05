@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +9,23 @@ import { formatYen } from "@/lib/poc";
 import { racePhase, officialResultUrl } from "@/lib/race-lifecycle";
 
 export const dynamic = "force-dynamic";
+const readPrediction = cache(getDisplayPrediction);
+
+export async function generateMetadata({ params }: { params: Promise<{ predictionId: string }> }) {
+  const { predictionId } = await params;
+  const prediction = await readPrediction(predictionId);
+  if (!prediction) return { title: "予想が見つかりません", robots: { index: false } };
+  const race = prediction.race;
+  return {
+    title: `${race.race_date} ${race.venue}${race.race_no}Rの競艇予想と結果`,
+    description: `舟の理が公開した${race.race_date} ${race.venue}${race.race_no}Rの3連単3点予想。出走選手と展示評価、結果確定後の的中・不的中を確認できます。`,
+    alternates: { canonical: `/prediction/${predictionId}` },
+  };
+}
 
 export default async function PredictionDetailPage({ params }: { params: Promise<{ predictionId: string }> }) {
   const { predictionId } = await params;
-  const prediction = await getDisplayPrediction(predictionId);
+  const prediction = await readPrediction(predictionId);
   if (!prediction) notFound();
   const result = prediction.result;
   const settlement = result?.settlement;

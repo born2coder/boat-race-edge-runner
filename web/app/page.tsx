@@ -5,6 +5,9 @@ import { TodayRaces } from "@/components/today-races";
 import { racePhase } from "@/lib/race-lifecycle";
 import { getPageFixture, getPerformancePeriods, getYesterdayResultDay } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
+
+export const metadata = { alternates: { canonical: "/" } };
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +31,7 @@ export default async function Home() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, alternateName: "ふねのことわり", url: SITE_URL, description: SITE_DESCRIPTION, inLanguage: "ja" }).replace(/</g, "\\u003c") }} />
       <section className="hero-section">
         <div className="hero-ledger" aria-label="本日の判断">
           <span>本日の判断</span>
@@ -42,13 +46,13 @@ export default async function Home() {
         </div>
 
         <div className="hero-copy">
-          <p className="section-kicker">DATA-DRIVEN BOAT RACE PICKS</p>
+          <p className="section-kicker">舟の理 / ふねのことわり</p>
           <h1>
-            <span>データで徹底分析。</span>
-            <span className="hero-highlight">回収率アップを狙う</span>
-            <span>厳選予想を提供中！</span>
+            <span>競艇の理を</span>
+            <span>データで紐解き、</span>
+            <span>予想を導く。</span>
           </h1>
-          <p className="hero-lead">全レースをむやみに予想しません。狙い目と判断したレースだけをお届けし、買い目も結果もすべて公開。<strong>嘘なし・ごまかしなし</strong>で、回収率を追い続けます。</p>
+          <p className="hero-lead">選手の成績、機力、レース内の力関係をデータで分析。全国のボートレースから厳選した競艇予想を、朝に最大10レース・各3点で無料公開します。買い目は後から変えず、的中・不的中まで記録します。</p>
           <div className="hero-promises" aria-label="このサイトの3つの特徴"><span>狙い目だけ厳選</span><span>買い目を記録</span><span>結果まで全公開</span></div>
         </div>
       </section>
