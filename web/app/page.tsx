@@ -135,6 +135,7 @@ export default async function Home() {
           <article><EyeOff aria-hidden="true" /><strong>見送る日も明確にします</strong><p>条件に合わなければ、無理に買い目を作らず見送りとして記録します。</p></article>
         </div>
       </section>
+      <section className="edge-banner" aria-labelledby="edge-banner-title"><div><p className="section-kicker">EDGE VERIFICATION / ODDS × DATA</p><h2 id="edge-banner-title">オッズと予測を照らし合わせる、EDGE検証</h2><p>通常の朝予想とは別に、締切20分前前後のオッズから「割安かもしれない買い目」を検証しています。</p></div><Link href="/edge" className="edge-banner-link">EDGE検証ページを見る <ArrowRight aria-hidden="true" /></Link></section>
     </>
   );
 }

@@ -37,6 +37,14 @@ type ResultRow = {
   wave_height_cm?: number | null;
 };
 
+export type EdgeCandidate = {
+  edge_id: string; race_id: string; race_date: string; venue_name: string; venue_code: string;
+  race_no: number; start_at: string; combination: string; predicted_probability: number;
+  odds_decimal: number; expected_value_percent: number; threshold_percent: number;
+  observed_at: string; status: "open" | "settled" | "excluded";
+  result_combination?: string | null; payout_per_100_yen?: number | null; hit?: boolean | null;
+};
+
 type PredictionRow = {
   prediction_id: string;
   race_id: string;
@@ -257,6 +265,17 @@ export async function getPageFixture(): Promise<PocFixture> {
     };
   } catch {
     return { ...fixture, current_day: emptyCurrentDay(date) };
+  }
+}
+
+/** EDGE shadow data is isolated from morning predictions and stats. */
+export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidate[]> {
+  if (!hasSupabaseReadConfiguration()) return [];
+  try {
+    return await supabaseRequest<EdgeCandidate[]>(`edge_candidates?${queryString({ select: "*", race_date: `eq.${date}`, order: "expected_value_percent.desc,observed_at.desc", limit: 100 })}`);
+  } catch (error) {
+    console.warn("EDGE candidate data unavailable", error instanceof Error ? error.message : "UnknownError");
+    return [];
   }
 }
 
