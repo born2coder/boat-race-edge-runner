@@ -75,6 +75,7 @@ def main() -> None:
     run("git", "config", "user.email", "actions@users.noreply.github.com")
     started = time.monotonic()
     failures = 0
+    first_check = True
     with tempfile.TemporaryDirectory(prefix="edge-watch-") as session:
         while time.monotonic() - started < MAX_SECONDS:
             now = datetime.now(prepare_forward.JST)
@@ -82,6 +83,8 @@ def main() -> None:
                 break
             state = json.loads(state_path.read_text()) if state_path.exists() else None
             mode = check_mode(state, now)
+            if first_check and state is not None and mode == "idle":
+                mode = "check"  # Validate source/model access immediately on startup.
             print(json.dumps({"watch_checked_at": now.isoformat(), "mode": mode}), flush=True)
             if mode == "finished":
                 break
@@ -90,6 +93,7 @@ def main() -> None:
                     prepare_forward.main(Path(session))
                     publish_pending(state_path)
                     failures = 0
+                    first_check = False
                 except Exception as error:
                     failures += 1
                     print(json.dumps({"watch_error": type(error).__name__, "consecutive_failures": failures}), flush=True)
