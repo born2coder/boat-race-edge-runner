@@ -11,16 +11,19 @@ const fetchResult = unstable_cache(async (raceId: string, rosterJson: string) =>
   const url = officialResultUrl(raceId);
   if (!url) return null;
   try {
-    const response = await fetch(url, { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(5000) });
-    if (!response.ok) return null;
+    const response = await fetch(url, { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(10_000) });
+    if (!response.ok) {
+      console.warn("Official result HTTP status", raceId, response.status);
+      return null;
+    }
     const html = await response.text();
     if (html.length > 1_000_000) return null;
     return parseOfficialResult(html, raceId, JSON.parse(rosterJson), new Date().toISOString());
-  } catch {
-    console.warn("Official result temporarily unavailable", raceId);
+  } catch (error) {
+    console.warn("Official result temporarily unavailable", raceId, error instanceof Error ? error.name : "UnknownError");
     return null;
   }
-}, ["official-race-results-v1"], { revalidate: 60 });
+}, ["official-race-results-v2"], { revalidate: 60 });
 
 export const getOfficialResult = cache(async (raceId: string, rosterJson: string) => {
   const result = await fetchResult(raceId, rosterJson);
