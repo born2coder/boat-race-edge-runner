@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ReassessmentBadge } from "@/components/reassessment-badge";
 import { getDisplayPrediction } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
+import { racePhase, officialResultUrl } from "@/lib/race-lifecycle";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,8 @@ export default async function PredictionDetailPage({ params }: { params: Promise
   const result = prediction.result;
   const settlement = result?.settlement;
   const isReplay = prediction.publication_mode === "historical_replay";
+  const phase = racePhase(prediction);
+  const source = officialResultUrl(prediction.race_id);
 
   return (
     <article className="page-section detail-page">
@@ -26,16 +29,23 @@ export default async function PredictionDetailPage({ params }: { params: Promise
             <span>{prediction.race.race_date.replaceAll("-", "/")}</span>
             <Badge variant="outline" className="badge-purple">{isReplay ? "過去データの参考予想" : prediction.official_performance_eligible ? "公開予想" : "成績対象外の記録"}</Badge>
             {!isReplay && prediction.official_performance_eligible && prediction.publication_mode === "morning_fixed_hit_v1" && (
-              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} />
+              <ReassessmentBadge status={prediction.reassessment?.status} waiting={!prediction.reassessment} cutoffReached={phase !== "upcoming" || Date.parse(prediction.race.start_at) - Date.now() <= 300_000} />
             )}
-            <Badge variant="outline" className={result ? "badge-green" : "badge-amber"}>{result ? "結果確定" : "結果待ち"}</Badge>
+            <Badge variant="outline" className={settlement?.hit ? "badge-green" : "badge-amber"}>{settlement ? settlement.hit ? "的中" : "不的中" : phase === "pending" ? "締切済み・結果確認中" : "締切前"}</Badge>
           </div>
           <h1>{prediction.race.venue} <strong>{prediction.race.race_no}R</strong></h1>
-          <p>{prediction.race.race_name || "一般"}・発走予定 {prediction.race.start_time_jst} JST</p>
+          <p>{prediction.race.race_name || "一般"}・締切予定 {prediction.race.start_time_jst} JST</p>
         </div>
       </header>
 
       {!isReplay && !prediction.official_performance_eligible && <p role="note">公開が締切に間に合わなかったため、おすすめ・的中率・回収率の対象外です。買い目は変更せず記録として残しています。</p>}
+
+      {phase !== "upcoming" && <section className="detail-card">
+        <h2>{settlement ? `事前予想は${settlement.hit ? "的中" : "不的中"}でした` : "締切済み・結果確認中"}</h2>
+        <p>公開した3点：{prediction.tickets.slice(0, 3).map((t) => t.combination).join(" ／ ")}</p>
+        {result ? <><p>実際の結果：<strong>{result.combination}</strong></p><p>{[...result.finishers].filter((f) => f.finish_position !== null && f.finish_position <= 3).sort((a, b) => a.finish_position! - b.finish_position!).map((f) => `${f.finish_position}着 ${f.lane_no}号艇 ${prediction.race.entries.find((e) => e.lane_no === f.lane_no)?.racer_name ?? f.racer_id}`).join(" ／ ")}</p><p>仮想購入 {formatYen(settlement!.original_stake_yen)} → 払戻 {formatYen(settlement!.gross_return_yen)}</p></> : <p>確認でき次第、的中・不的中を表示します。結果未取得や返還などの確認中は、成績に含めません。</p>}
+        {source && <a href={source} target="_blank" rel="noopener noreferrer">公式結果を確認 ↗</a>}
+      </section>}
 
       <section className="detail-card boat-section">
         <div className="section-heading"><div><p className="section-kicker">START LIST</p><h2>出走6艇</h2></div></div>

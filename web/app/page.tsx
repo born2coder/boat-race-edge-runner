@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, CalendarX2, CheckCircle2, Database, EyeOff, MapPin, ShieldCheck, TrendingUp } from "lucide-react";
 import { PredictionCard } from "@/components/prediction-card";
-import { ReassessmentBadge } from "@/components/reassessment-badge";
+import { TodayRaces } from "@/components/today-races";
+import { racePhase } from "@/lib/race-lifecycle";
 import { getPageFixture, getPerformancePeriods, getYesterdayResultDay } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 
@@ -14,6 +15,8 @@ export default async function Home() {
     getPerformancePeriods(),
   ]);
   const current = pageFixture.current_day;
+  const now = Date.now();
+  const upcomingCount = current.predictions.filter((p) => racePhase(p, now) === "upcoming").length;
   const isPassDay = current.recommended_count === 0;
   const isWaiting = current.status === "waiting";
   const yesterdayPredictions = yesterdayResultDay.predictions;
@@ -28,7 +31,7 @@ export default async function Home() {
       <section className="hero-section">
         <div className="hero-ledger" aria-label="本日の判断">
           <span>本日の判断</span>
-          <strong>{isWaiting ? "本日のデータを確認中です。" : isPassDay ? "今日は見送りです。" : `${current.recommended_count}Rを公開します。`}</strong>
+          <strong>{isWaiting ? "本日のデータを確認中です。" : isPassDay ? "今日は見送りです。" : upcomingCount ? `これからの予想は${upcomingCount}Rです。` : "本日の予想はすべて締切済みです。"}</strong>
           <p>{isWaiting ? "公式配布データの到着を待っています。取得後、自動で全レースを分析します。" : <>本日開催の{current.analyzed_count}レースを分析しましたが、{isPassDay ? "現在の公開条件を満たしたレースはありませんでした。" : `現在の公開条件を満たした${current.recommended_count}レースを掲載しています。`}</>}</p>
           {isPassDay && !isWaiting && <b className="pass-message">無理に予想は出しません。</b>}
           <dl className="decision-metrics">
@@ -53,7 +56,7 @@ export default async function Home() {
       <section className="today-section" aria-labelledby="today-picks">
         <div className="section-heading venue-heading">
           <div><p className="section-kicker">TODAY / {current.date}</p><h2 id="today-picks">本日の予想</h2><p>朝に最大10レースを公開し、展示後も買い目は変更せず評価バッジだけを更新します。</p></div>
-          <span className="status-label"><CheckCircle2 aria-hidden="true" /> {isWaiting ? "予想を準備中" : `公開中 ${current.recommended_count}R`}</span>
+          <span className="status-label"><CheckCircle2 aria-hidden="true" /> {isWaiting ? "予想を準備中" : `締切前 ${upcomingCount}R`}</span>
         </div>
 
         {(current.excluded_prediction_count ?? 0) > 0 && <p role="note">公開が締切に間に合わなかった{current.excluded_prediction_count}件は、おすすめと成績集計から除外しています。記録は<Link href="/history">過去の予想</Link>に残しています。</p>}
@@ -67,18 +70,10 @@ export default async function Home() {
             </table></div>
           </details>
         ) : !isPassDay ? (
-          <div className="venue-target-grid">
-            {current.venues.filter((venue) => venue.target_races.length > 0).map((venue) => (
-              <article className="venue-target-card has-targets" key={venue.venue_code}>
-                <header><div className="venue-name"><span className="venue-code">{venue.venue_code}</span><div><MapPin aria-hidden="true" /><strong>{venue.venue}</strong></div></div><span className="venue-count is-active">公開 {venue.target_races.length}</span></header>
-                <ul className="venue-race-list">{venue.target_races.map((race) => <li key={race.race_id}><Link href={`/prediction/${race.prediction_id}`}><span>{race.race_no}R</span><strong>{race.race_name}</strong><small>{race.start_time_jst}</small><ReassessmentBadge status={race.reassessment_status} waiting={!race.reassessment_status} compact /><ArrowRight aria-hidden="true" /></Link></li>)}</ul>
-                <footer>{venue.race_count}レース開催</footer>
-              </article>
-            ))}
-          </div>
+          <TodayRaces predictions={current.predictions} now={now} />
         ) : null}
 
-        <div className="processing-note"><CheckCircle2 aria-hidden="true" /><span>{isWaiting ? "朝の10レース予想を準備しています。" : "朝の買い目を固定公開しています。展示後はバッジだけを更新します。"}</span><small>展示後も3連単3点の買い目は変更しません。</small></div>
+        <div className="processing-note"><CheckCircle2 aria-hidden="true" /><span>{isWaiting ? "朝の最大10レース予想を準備しています。" : "朝の3点は固定です。終了後は予想と結果をそのまま掲載します。"}</span><small>展示評価を締切前に取得できなかった場合は「展示判定なし」と表示します。</small></div>
       </section>
 
       <section className="replay-section" aria-labelledby="yesterday-title">

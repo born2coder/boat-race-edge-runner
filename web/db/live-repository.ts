@@ -1,5 +1,6 @@
 import { fixture, type PocFixture, type Prediction, type Race, type Ticket } from "@/lib/poc";
 import { hasSupabaseReadConfiguration, queryString, supabaseRequest } from "@/db/supabase";
+import { getOfficialResult } from "@/db/official-results";
 
 type DailyRunRow = {
   service_date: string;
@@ -102,7 +103,7 @@ function hydratePrediction(row: PredictionRow): Prediction | undefined {
   const reassessment = one(row.reassessment);
   const purchased = tickets.slice(0, 3);
   const stake = purchased.reduce((sum, ticket) => sum + ticket.stake_yen, 0);
-  const result = resultRow ? (() => {
+  const result = resultRow && !resultRow.finishers.some((f) => f.finish_position === null || Boolean(f.result_code)) ? (() => {
     const lines = purchased.map((ticket) => ({
       ...ticket,
       return_yen: ticket.combination === resultRow.combination
@@ -170,6 +171,21 @@ const joinedSelect = "*,race:races!inner(*,result:results(*)),reassessment:predi
 async function readPredictions(extra: Record<string, string | number | undefined> = {}) {
   const query = queryString({ select: joinedSelect, order: "published_at.desc", limit: 5000, ...extra });
   const rows = await supabaseRequest<PredictionRow[]>(`predictions?${query}`);
+  // Only existing published records, only missing recent results, at most 20 races.
+  // The archive importer remains the long-term reconciliation source.
+  const now = Date.now();
+  const pending = rows.filter((row) => {
+    const race = one(row.race);
+    if (!race || one(race.result)) return false;
+    const age = now - Date.parse(race.start_at);
+    return age >= 0 && age < 48 * 60 * 60 * 1000;
+  }).slice(0, 20);
+  await Promise.all(pending.map(async (row) => {
+    const race = one(row.race)!;
+    const roster = race.entries.map(({ lane_no, racer_id }) => ({ lane_no, racer_id }));
+    const result = await getOfficialResult(race.race_id, JSON.stringify(roster));
+    if (result) race.result = result;
+  }));
   return rows.map(hydratePrediction).filter((item): item is Prediction => Boolean(item));
 }
 
@@ -186,6 +202,11 @@ async function readOfficialPredictions(extra: Record<string, string | number | u
     }
   }
   return Array.from(preferred.values());
+}
+
+// Called after authenticated ingestion too, so results can recover without visitors.
+export async function recoverPublishedResults(serviceDate: string) {
+  await readOfficialPredictions({ "race.race_date": `eq.${serviceDate}` });
 }
 
 export async function getPageFixture(): Promise<PocFixture> {

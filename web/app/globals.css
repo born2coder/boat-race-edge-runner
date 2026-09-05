@@ -762,3 +762,29 @@ svg { width: 1.1rem; height: 1.1rem; }
   .history-table td:last-child { border-bottom: 0; }
   .history-table td:last-child a { justify-self: start; }
 }
+/* Daily lifecycle: upcoming picks never share a list with closed races. */
+.live-refresh { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; padding:10px 0; color:#59646d; font-size:12px; }
+.live-refresh button { border:1px solid #abbab9; background:#fff; padding:7px 12px; border-radius:6px; cursor:pointer; color:#254e49; }
+.live-refresh button:disabled { opacity:.6; }
+.race-section-tabs { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0 24px; }
+.race-section-tabs a { padding:10px 16px; border:1px solid #9bb7b2; background:#eef5f3; border-radius:8px; color:#24594f; font-weight:700; }
+.race-list-heading { display:flex; flex-wrap:wrap; gap:12px; align-items:baseline; margin:30px 0 14px; font-size:23px; scroll-margin-top:100px; }
+.race-list-heading small { font-size:14px; color:#626f77; font-weight:400; }
+.daily-race-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:16px 0 24px; }
+.daily-race-card { background:#fffdfa; border:1px solid #b0c6c2; border-radius:12px; padding:22px; min-width:0; }
+.daily-race-card header { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.daily-race-card h4 { font-size:23px; margin:0; font-weight:700; }
+.daily-race-card p { color:#5e6c75; margin:10px 0; font-size:14px; }
+.daily-caption { font-size:13px; color:#5e6c75; }
+.daily-tickets { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+.daily-tickets b { font-size:20px; padding:8px 12px; border-radius:6px; background:#edf1f2; font-variant-numeric:tabular-nums; }
+.daily-tickets .winning-ticket { background:#d7eee3; color:#16513c; outline:2px solid #528c71; }
+.daily-result { display:flex; align-items:baseline; gap:16px; padding-top:14px; border-top:1px solid #d9dfdc; }
+.daily-result strong { font-size:27px; }
+.daily-result span { font-size:14px; color:#5e6c75; }
+.daily-finishers { list-style:none; margin:12px 0; padding:0; }
+.daily-finishers li { display:flex; align-items:center; gap:10px; margin:9px 0; }
+.daily-finishers li>span { color:#657179; font-size:13px; }
+.daily-return { background:#f3f3ed; padding:12px; font-size:14px; line-height:1.8; border-radius:6px; }
+.daily-race-card footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:14px; margin-top:18px; color:#2d655c; font-size:14px; }
+@media(max-width:640px) { .daily-race-grid { grid-template-columns:1fr; } .daily-race-card { padding:18px; } .daily-tickets b { font-size:18px; padding:8px 10px; } .live-refresh { justify-content:flex-start; } }
