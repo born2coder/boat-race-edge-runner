@@ -121,7 +121,16 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     reassessment_hash: reassessment.reassessment_hash,
   })), "prediction_id", "ignore");
 
-  await writeRows("edge_candidates", payload.edge_candidates, "edge_id", "ignore");
+  // The Git audit ledger is the durable fallback during verification. A missing
+  // or temporarily unavailable EDGE table must not stop all-race observation.
+  let storedEdgeCandidates = 0;
+  try {
+    await writeRows("edge_candidates", payload.edge_candidates, "edge_id", "ignore");
+    storedEdgeCandidates = payload.edge_candidates.length;
+  } catch (error) {
+    if (!(error instanceof SupabaseError)) throw error;
+    console.error("EDGE candidate database write unavailable", error.status, error.responseText);
+  }
 
   await writeRows("results", payload.results.map((result) => ({
     race_id: result.race_id,
@@ -194,6 +203,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     predictions: acceptedPredictions.length,
     reassessments: acceptedReassessments.length,
     edge_candidates: payload.edge_candidates.length,
+    edge_candidates_stored: storedEdgeCandidates,
     rejected_reassessments: payload.reassessments.length - acceptedReassessments.length,
     results: payload.results.length,
     settled: payload.results.length,

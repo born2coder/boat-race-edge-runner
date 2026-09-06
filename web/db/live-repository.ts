@@ -45,6 +45,24 @@ export type EdgeCandidate = {
   result_combination?: string | null; payout_per_100_yen?: number | null; hit?: boolean | null;
 };
 
+export type EdgeProgress = {
+  scheduled: number;
+  observed: number;
+  remaining: number;
+  lastObservedAt: string | null;
+};
+
+type EdgeLedger = {
+  schema_version: string;
+  updated_at?: string;
+  days: Array<{
+    date: string;
+    observed_count: number;
+    last_observed_at: string | null;
+    candidates: EdgeCandidate[];
+  }>;
+};
+
 type PredictionRow = {
   prediction_id: string;
   race_id: string;
@@ -268,15 +286,89 @@ export async function getPageFixture(): Promise<PocFixture> {
   }
 }
 
-/** EDGE shadow data is isolated from morning predictions and stats. */
-export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidate[]> {
+const EDGE_LEDGER_URL = "https://raw.githubusercontent.com/born2coder/boat-race-edge-runner/main/state/edge_shadow/index.json";
+
+async function getEdgeLedger(): Promise<EdgeLedger> {
+  try {
+    const response = await fetch(EDGE_LEDGER_URL, { next: { revalidate: 180 }, signal: AbortSignal.timeout(10_000) });
+    if (!response.ok) return { schema_version: "unavailable", days: [] };
+    const ledger = await response.json() as EdgeLedger;
+    return Array.isArray(ledger.days) ? ledger : { schema_version: "invalid", days: [] };
+  } catch {
+    return { schema_version: "unavailable", days: [] };
+  }
+}
+
+async function readEdgeDatabase(): Promise<EdgeCandidate[]> {
   if (!hasSupabaseReadConfiguration()) return [];
   try {
-    return await supabaseRequest<EdgeCandidate[]>(`edge_candidates?${queryString({ select: "*", race_date: `eq.${date}`, expected_value_percent: "gte.200", order: "expected_value_percent.desc,observed_at.desc", limit: 100 })}`);
+    return await supabaseRequest<EdgeCandidate[]>(`edge_candidates?${queryString({ select: "*", expected_value_percent: "gte.150", order: "race_date.desc,observed_at.desc", limit: 2000 })}`);
   } catch (error) {
-    console.warn("EDGE candidate data unavailable", error instanceof Error ? error.message : "UnknownError");
+    console.warn("EDGE candidate database unavailable; using audit ledger", error instanceof Error ? error.message : "UnknownError");
     return [];
   }
+}
+
+async function attachEdgeResults(candidates: EdgeCandidate[]): Promise<EdgeCandidate[]> {
+  if (!hasSupabaseReadConfiguration() || candidates.length === 0) return candidates;
+  const raceIds = Array.from(new Set(candidates.map((candidate) => candidate.race_id)));
+  try {
+    const results = await supabaseRequest<ResultRow[]>(`results?${queryString({ select: "race_id,combination,payout_per_100_yen", race_id: `in.(${raceIds.join(",")})`, limit: 2000 })}`);
+    const byRace = new Map(results.map((result) => [result.race_id, result]));
+    return candidates.map((candidate) => {
+      const result = byRace.get(candidate.race_id);
+      if (!result) return candidate.status === "excluded" ? { ...candidate, status: "open" } : candidate;
+      return {
+        ...candidate,
+        status: "settled" as const,
+        result_combination: result.combination,
+        payout_per_100_yen: result.payout_per_100_yen,
+        hit: candidate.combination === result.combination,
+      };
+    });
+  } catch {
+    return candidates;
+  }
+}
+
+/** EDGE verification is isolated from morning predictions and official HIT stats. */
+export async function getEdgeDashboard() {
+  const date = todayJst();
+  const [ledger, databaseRows, runs] = await Promise.all([
+    getEdgeLedger(),
+    readEdgeDatabase(),
+    hasSupabaseReadConfiguration()
+      ? supabaseRequest<DailyRunRow[]>(`daily_runs?${queryString({ select: "*", service_date: `eq.${date}`, limit: 1 })}`).catch(() => [])
+      : Promise.resolve([]),
+  ]);
+  const ledgerRows = ledger.days.flatMap((day) => day.candidates ?? []);
+  const unique = new Map<string, EdgeCandidate>();
+  for (const candidate of [...ledgerRows, ...databaseRows]) {
+    if (candidate.expected_value_percent >= 150) unique.set(candidate.edge_id, candidate);
+  }
+  const candidates = await attachEdgeResults(Array.from(unique.values()));
+  candidates.sort((left, right) => right.race_date.localeCompare(left.race_date)
+    || Date.parse(right.start_at) - Date.parse(left.start_at)
+    || right.expected_value_percent - left.expected_value_percent);
+  const todayState = ledger.days.find((day) => day.date === date);
+  const scheduled = runs[0]?.analyzed_count ?? 0;
+  const observed = todayState?.observed_count ?? 0;
+  return {
+    date,
+    today: candidates.filter((candidate) => candidate.race_date === date),
+    history: candidates.filter((candidate) => candidate.race_date < date),
+    progress: {
+      scheduled,
+      observed,
+      remaining: Math.max(0, scheduled - observed),
+      lastObservedAt: todayState?.last_observed_at ?? null,
+    } satisfies EdgeProgress,
+  };
+}
+
+export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidate[]> {
+  const dashboard = await getEdgeDashboard();
+  return [...dashboard.today, ...dashboard.history].filter((candidate) => candidate.race_date === date);
 }
 
 export type YesterdayResultDay = { date: string; predictions: Prediction[] };
