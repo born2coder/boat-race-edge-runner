@@ -3,7 +3,9 @@
   "last_published_at": "2026-09-06T06:41:00.469912+00:00",
   "model_version": "W_morning_badge_v1",
   "morning_locked_at": "2026-09-05T22:33:04.081460+00:00",
-  "pending_reassessment_ids": [],
+  "pending_reassessment_ids": [
+    "pred_d1e5581c8419ff03dfb4"
+  ],
   "published_count": 10,
   "schema_version": "boat-race-edge-forward-state/v2",
   "selected": [
@@ -696,7 +698,18 @@
         "venue_code": "12"
       },
       "race_id_raw": "202609061207",
-      "reassessment": null,
+      "reassessment": {
+        "exhibition_percentile": 0.99634015,
+        "morning_percentile": 0.99504844,
+        "observed_at": "2026-09-06T08:54:23.627725+00:00",
+        "percentile_uplift": 0.00129171,
+        "prediction_id": "pred_d1e5581c8419ff03dfb4",
+        "race_id": "BR:20260906:12:07",
+        "reassessment_hash": "034ada328d5b018bc161aa9caa10a874a40c5a28c5dcceeaeea4db6f1778b0cc",
+        "rule_version": "exhibition-support-v1",
+        "status": "supported",
+        "top3_overlap": 3
+      },
       "reassessment_published_at": null
     },
     {
@@ -2355,5 +2368,5 @@
       "reassessment_published_at": "2026-09-06T06:41:00.469912+00:00"
     }
   ],
-  "updated_at": "2026-09-06T06:40:56.967711+00:00"
+  "updated_at": "2026-09-06T08:56:09.400715+00:00"
 }
