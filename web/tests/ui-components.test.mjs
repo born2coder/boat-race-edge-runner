@@ -15,9 +15,9 @@ test("shows morning lock and exhibition badge states without changing tickets", 
   const card = await readFile(new URL("../components/prediction-card.tsx", import.meta.url), "utf8");
   assert.match(badge, /展示評価待ち/);
   assert.match(badge, /展示判定なし/);
-  assert.match(badge, /展示後も有力/);
-  assert.match(badge, /展示確認済み/);
-  assert.match(badge, /展示後は慎重/);
+  assert.match(badge, /展示後信頼度上昇/);
+  assert.match(badge, /展示後信頼度維持/);
+  assert.match(badge, /展示後信頼度低下/);
   assert.match(card, /展示後も変更しません/);
 });
 
