@@ -28,17 +28,30 @@ class EdgeShadowTests(unittest.TestCase):
         })
         self.assertEqual(_eligible(schedule, {"done"}, now).race_id.tolist(), ["open", "edge"])
 
-    def test_records_150_but_publicly_opens_only_200(self):
+    def test_records_and_opens_150_during_verification(self):
         prediction = {f"top{i}_combo": f"1-2-{3 + (i % 4)}" for i in range(1, 9)}
         prediction.update({f"top{i}_score": 0.10 if i == 1 else 0.01 for i in range(1, 9)})
         prediction["top1_combo"] = "1-2-3"
         race = {"race_id": "BR:20260906:11:01", "race_date": "2026-09-06", "venue": "びわこ", "venue_code": "11", "race_no": 1, "start_at": "2026-09-06T10:35:00+09:00"}
-        odds = {prediction[f"top{i}_combo"]: 16.0 for i in range(1, 9)}
-        odds["1-2-3"] = 20.0
+        odds = {prediction[f"top{i}_combo"]: 14.0 for i in range(1, 9)}
+        odds["1-2-3"] = 15.0
         rows = _candidate_rows(prediction, race, odds, "2026-09-06T01:15:00+00:00")
         self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]["expected_value_percent"], 200.0)
+        self.assertEqual(rows[0]["expected_value_percent"], 150.0)
+        self.assertEqual(rows[0]["threshold_percent"], 150.0)
         self.assertEqual(rows[0]["status"], "open")
+
+    def test_retry_keeps_the_same_candidate_id(self):
+        prediction = {f"top{i}_combo": f"1-2-{3 + (i % 4)}" for i in range(1, 9)}
+        prediction.update({f"top{i}_score": 0.01 for i in range(1, 9)})
+        prediction["top1_combo"] = "1-2-3"
+        prediction["top1_score"] = 0.10
+        race = {"race_id": "BR:20260906:11:01", "race_date": "2026-09-06", "venue": "びわこ", "venue_code": "11", "race_no": 1, "start_at": "2026-09-06T10:35:00+09:00"}
+        odds = {prediction[f"top{i}_combo"]: 10.0 for i in range(1, 9)}
+        odds["1-2-3"] = 20.0
+        first = _candidate_rows(prediction, race, odds, "2026-09-06T01:15:00+00:00")
+        retry = _candidate_rows(prediction, race, odds, "2026-09-06T01:18:00+00:00")
+        self.assertEqual(first[0]["edge_id"], retry[0]["edge_id"])
 
 
 if __name__ == "__main__":

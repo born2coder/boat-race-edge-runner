@@ -10,8 +10,12 @@ on:
       - requirements.txt
       - .github/workflows/edge.yml
   schedule:
-    # Starts/wakes a watcher; the running process checks every three minutes.
-    - cron: "12,42 5-21 * * *"
+    # Three non-overlapping watchers cover the service day and check every 3 minutes.
+    - cron: "0 8 * * *"
+      timezone: "Asia/Tokyo"
+    - cron: "30 13 * * *"
+      timezone: "Asia/Tokyo"
+    - cron: "0 19 * * *"
       timezone: "Asia/Tokyo"
   workflow_dispatch:
 

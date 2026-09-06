@@ -27,3 +27,14 @@ test("normalizes historical examples to the displayed flat 100-yen Top3 rule", a
   assert.match(data, /stake_yen: 100/);
   assert.match(data, /virtual_stake_yen: stake/);
 });
+
+test("shows EDGE verification progress, 150 percent candidates, and history", async () => {
+  const page = await readFile(new URL("../app/edge/page.tsx", import.meta.url), "utf8");
+  const repository = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  assert.match(page, /確認・保存済み/);
+  assert.match(page, /未確認数もそのまま公開/);
+  assert.match(page, /期待値150%以上/);
+  assert.match(page, /これまでのEDGE検証履歴/);
+  assert.match(repository, /expected_value_percent: "gte\.150"/);
+  assert.match(repository, /edge_shadow\/index\.json/);
+});

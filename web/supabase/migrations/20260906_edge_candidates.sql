@@ -6,7 +6,7 @@ create table if not exists public.edge_candidates (
   combination text not null check (combination ~ '^[1-6]-[1-6]-[1-6]$'),
   predicted_probability numeric not null check (predicted_probability between 0 and 1),
   odds_decimal numeric not null check (odds_decimal > 0), expected_value_percent numeric not null check (expected_value_percent >= 0),
-  threshold_percent numeric not null default 200 check (threshold_percent >= 0), observed_at timestamptz not null,
+  threshold_percent numeric not null default 150 check (threshold_percent >= 0), observed_at timestamptz not null,
   status text not null default 'open' check (status in ('open','settled','excluded')),
   result_combination text, payout_per_100_yen integer, hit boolean
 );

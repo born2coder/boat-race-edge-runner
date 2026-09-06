@@ -25,12 +25,37 @@ def run(*args: str) -> None:
     subprocess.run(args, cwd=ROOT, check=True, timeout=180)
 
 
-def persist(path: Path) -> None:
-    run("git", "add", "--", str(path.relative_to(ROOT)))
+def persist(*paths: Path) -> None:
+    run("git", "add", "--", *(str(path.relative_to(ROOT)) for path in paths))
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 1:
         run("git", "commit", "-m", "Record EDGE odds observation")
     run("git", "pull", "--rebase", "origin", "main")
     run("git", "push", "origin", "HEAD:main")
+
+
+def write_index(state_path: Path) -> Path:
+    """Publish one small audit ledger used by the EDGE page and its history."""
+    days = []
+    for path in sorted(state_path.parent.glob("????-??-??.json"), reverse=True):
+        try:
+            state = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        observations = state.get("observations", {})
+        observed_at = [row.get("observed_at") for row in observations.values() if row.get("observed_at")]
+        days.append({
+            "date": state.get("date", path.stem),
+            "observed_count": len(observations),
+            "last_observed_at": max(observed_at) if observed_at else None,
+            "candidates": state.get("candidates", []),
+        })
+    index_path = state_path.parent / "index.json"
+    prepare_forward._atomic_json(index_path, {
+        "schema_version": "boat-race-edge-shadow-index/v1",
+        "updated_at": datetime.now(prepare_forward.JST).isoformat(),
+        "days": days,
+    })
+    return index_path
 
 
 def main() -> None:
@@ -56,9 +81,9 @@ def main() -> None:
                     payload_path = runtime / "edge-payload.json"
                     prepare_forward._atomic_json(payload_path, payload)
                     run(sys.executable, "scripts/send_payload.py", str(payload_path))
-                    persist_state = dict(state)
-                    prepare_forward._atomic_json(state_path, persist_state)
-                    persist(state_path)
+                    prepare_forward._atomic_json(state_path, state)
+                    index_path = write_index(state_path)
+                    persist(state_path, index_path)
                     payload_path.unlink(missing_ok=True)
                 failures = 0
             except Exception as error:

@@ -25,7 +25,7 @@ from scripts import prepare_forward
 ROOT = Path(__file__).resolve().parents[1]
 STATE_SCHEMA = "boat-race-edge-shadow-state/v1"
 RECORD_THRESHOLD = 150.0
-PUBLIC_THRESHOLD = 200.0
+PUBLIC_THRESHOLD = 150.0
 WINDOW_OPEN_MINUTES = 25
 WINDOW_CLOSE_MINUTES = 17
 ODDS_URL = "https://www.boatrace.jp/owpc/pc/race/odds3t?hd={date}&jcd={venue:02d}&rno={race_no}"
@@ -136,8 +136,9 @@ def fetch_odds(date: str, venue: int, race_no: int) -> tuple[dict[str, float], s
         return parse_odds_html(response.read().decode("utf-8"))
 
 
-def _edge_id(race_id: str, combination: str, observed_at: str) -> str:
-    raw = f"{race_id}|{combination}|{observed_at}".encode()
+def _edge_id(race_id: str, combination: str) -> str:
+    """Keep retries idempotent: one recorded candidate per race and combination."""
+    raw = f"{race_id}|{combination}".encode()
     return "edge_" + hashlib.sha256(raw).hexdigest()[:24]
 
 
@@ -164,7 +165,7 @@ def _candidate_rows(prediction, race: dict[str, Any], odds: dict[str, float], ob
         if expected < RECORD_THRESHOLD:
             continue
         candidates.append({
-            "edge_id": _edge_id(race["race_id"], combination, observed_at),
+            "edge_id": _edge_id(race["race_id"], combination),
             "race_id": race["race_id"],
             "race_date": race["race_date"],
             "venue_name": race["venue"],
@@ -188,7 +189,7 @@ def prepare(session_root: Path | None = None) -> tuple[dict[str, Any] | None, di
     date = os.environ.get("EDGE_SERVICE_DATE") or datetime.now(prepare_forward.JST).date().isoformat()
     state_path = ROOT / "state" / "edge_shadow" / f"{date}.json"
     state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {
-        "schema_version": STATE_SCHEMA, "date": date, "observations": {},
+        "schema_version": STATE_SCHEMA, "date": date, "observations": {}, "candidates": [],
     }
     if state.get("schema_version") != STATE_SCHEMA or state.get("date") != date:
         raise RuntimeError("EDGE shadow state mismatch")
@@ -262,6 +263,13 @@ def prepare(session_root: Path | None = None) -> tuple[dict[str, Any] | None, di
                 "recorded_candidates": len(rows),
                 "public_candidates": sum(row["status"] == "open" for row in rows),
             }
+
+        existing_candidates = {row["edge_id"]: row for row in state.get("candidates", [])}
+        existing_candidates.update({row["edge_id"]: row for row in candidates})
+        state["candidates"] = sorted(
+            existing_candidates.values(),
+            key=lambda row: (row["race_id"], -row["expected_value_percent"]),
+        )
 
         if not successful_ids:
             return None, state, state_path
