@@ -4,9 +4,9 @@ import type { Prediction } from "@/lib/poc";
 type Status = NonNullable<Prediction["reassessment"]>["status"];
 
 const labels: Record<Status, string> = {
-  supported: "展示後も有力",
-  confirmed: "展示確認済み",
-  cautious: "展示後は慎重",
+  supported: "展示後信頼度上昇",
+  confirmed: "展示後信頼度維持",
+  cautious: "展示後信頼度低下",
 };
 
 const classes: Record<Status, string> = {
