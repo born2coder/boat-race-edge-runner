@@ -120,6 +120,23 @@ const resultSchema = z.object({
   wave_height_cm: z.number().int().nonnegative().optional(),
 });
 
+const edgeCandidateSchema = z.object({
+  edge_id: z.string().regex(/^edge_[a-f0-9]{24}$/),
+  race_id: z.string().regex(/^BR:\d{8}:\d{2}:\d{2}$/),
+  race_date: isoDate,
+  venue_name: z.string().min(1).max(20),
+  venue_code: z.string().regex(/^\d{2}$/),
+  race_no: z.number().int().min(1).max(12),
+  start_at: z.string().datetime({ offset: true }),
+  combination: z.string().regex(/^[1-6]-[1-6]-[1-6]$/),
+  predicted_probability: z.number().positive().max(1),
+  odds_decimal: z.number().positive().max(100000),
+  expected_value_percent: z.number().nonnegative().max(100000),
+  threshold_percent: z.number().min(100).max(1000),
+  observed_at: z.string().datetime({ offset: true }),
+  status: z.enum(["open", "settled", "excluded"]).default("open"),
+});
+
 const artifactSchema = z.object({
   kind: z.enum(["B", "K", "race_cards", "title", "tkz", "stt", "sui", "results", "payouts"]),
   date: isoDate,
@@ -149,6 +166,7 @@ export const ingestPayloadSchema = z.object({
   })).max(288),
   predictions: z.array(predictionSchema).max(10),
   reassessments: z.array(reassessmentSchema).max(10).default([]),
+  edge_candidates: z.array(edgeCandidateSchema).max(2304).default([]),
   results: z.array(resultSchema).max(288),
 });
 

@@ -121,6 +121,8 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     reassessment_hash: reassessment.reassessment_hash,
   })), "prediction_id", "ignore");
 
+  await writeRows("edge_candidates", payload.edge_candidates, "edge_id", "ignore");
+
   await writeRows("results", payload.results.map((result) => ({
     race_id: result.race_id,
     finishers: result.finishers,
@@ -132,6 +134,30 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     wave_height_cm: result.wave_height_cm ?? null,
     observed_at: payload.generated_at,
   })), "race_id");
+
+  for (const result of payload.results) {
+    const edgeRows = await supabaseRequest<Array<{ edge_id: string; combination: string }>>(
+      `edge_candidates?${queryString({ select: "edge_id,combination", race_id: `eq.${result.race_id}` })}`,
+      {},
+      "service",
+    );
+    for (const row of edgeRows) {
+      await supabaseRequest(
+        `edge_candidates?${queryString({ edge_id: `eq.${row.edge_id}` })}`,
+        {
+          method: "PATCH",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({
+            status: "settled",
+            result_combination: result.combination,
+            payout_per_100_yen: result.payout_per_100_yen,
+            hit: row.combination === result.combination,
+          }),
+        },
+        "service",
+      );
+    }
+  }
 
   const analyzed = payload.summary?.scheduled_races ?? payload.races.length;
   const incomplete = payload.summary?.incomplete_races ?? 0;
@@ -167,6 +193,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     races: payload.races.length,
     predictions: acceptedPredictions.length,
     reassessments: acceptedReassessments.length,
+    edge_candidates: payload.edge_candidates.length,
     rejected_reassessments: payload.reassessments.length - acceptedReassessments.length,
     results: payload.results.length,
     settled: payload.results.length,

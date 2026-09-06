@@ -272,7 +272,7 @@ export async function getPageFixture(): Promise<PocFixture> {
 export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidate[]> {
   if (!hasSupabaseReadConfiguration()) return [];
   try {
-    return await supabaseRequest<EdgeCandidate[]>(`edge_candidates?${queryString({ select: "*", race_date: `eq.${date}`, order: "expected_value_percent.desc,observed_at.desc", limit: 100 })}`);
+    return await supabaseRequest<EdgeCandidate[]>(`edge_candidates?${queryString({ select: "*", race_date: `eq.${date}`, expected_value_percent: "gte.200", order: "expected_value_percent.desc,observed_at.desc", limit: 100 })}`);
   } catch (error) {
     console.warn("EDGE candidate data unavailable", error instanceof Error ? error.message : "UnknownError");
     return [];
