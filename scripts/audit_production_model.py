@@ -64,7 +64,7 @@ def main() -> None:
         prepare_forward._safe_extract(plaintext, extracted)
         sys.path.insert(0, str(extracted))
 
-        from edge_research import hybrid_forward
+        from edge_research import build_dataset, features, hybrid_forward, models
 
         artifact_dir = extracted / "artifacts" / "frozen_w_morning_badge_v1"
         manifest, models, morning_reference, exhibition_reference = hybrid_forward.load_frozen(artifact_dir)
@@ -80,14 +80,25 @@ def main() -> None:
                 "mentions_japanese_women": "女子" in source,
             }
 
-        callables = {}
-        for name in sorted(dir(hybrid_forward)):
-            value = getattr(hybrid_forward, name)
+        module_callables = {}
+        for module in (build_dataset, features, hybrid_forward, models):
+            callables = {}
+            for name in sorted(dir(module)):
+                value = getattr(module, name)
+                if callable(value) and not name.startswith("_"):
+                    try:
+                        callables[name] = str(inspect.signature(value))
+                    except (TypeError, ValueError):
+                        callables[name] = "<unknown>"
+            module_callables[module.__name__] = callables
+        conditional_methods = {}
+        for name in sorted(dir(models.ConditionalModel)):
+            value = getattr(models.ConditionalModel, name)
             if callable(value) and not name.startswith("_"):
                 try:
-                    callables[name] = str(inspect.signature(value))
+                    conditional_methods[name] = str(inspect.signature(value))
                 except (TypeError, ValueError):
-                    callables[name] = "<unknown>"
+                    conditional_methods[name] = "<unknown>"
 
         model_summary = {}
         for key, model in models.items():
@@ -115,7 +126,14 @@ def main() -> None:
             "exhibition_reference": describe_reference(exhibition_reference),
             "module_files": python_files,
             "source_gender_flags": source_flags,
-            "hybrid_forward_callables": callables,
+            "module_callables": module_callables,
+            "conditional_model_methods": conditional_methods,
+            "feature_constants": {
+                "boat_fields": safe(getattr(features, "BOAT_FIELDS", None)),
+                "relative_fields": safe(getattr(features, "RELATIVE_FIELDS", None)),
+                "morning_boat_fields": safe(getattr(hybrid_forward, "MORNING_BOAT_FIELDS", None)),
+                "morning_relative_fields": safe(getattr(hybrid_forward, "MORNING_RELATIVE_FIELDS", None)),
+            },
             "audit_prediction": {
                 "date": audit_date,
                 "schedule_shape": list(schedule.shape),
