@@ -17,7 +17,7 @@ class EdgeAuditIndexTests(unittest.TestCase):
                 "date": "2026-09-07",
                 "observations": {
                     "race1": {"observed_at": "2026-09-07T01:00:00+00:00"},
-                    "race2": {"observed_at": "2026-09-07T01:03:00+00:00"},
+                    "race2": {"observed_at": "2026-09-07T01:03:00+00:00", "last_followup_at": "2026-09-07T01:13:00+00:00"},
                 },
                 "candidates": [{"edge_id": "edge_example", "expected_value_percent": 155.0}],
             }), encoding="utf-8")
@@ -25,7 +25,7 @@ class EdgeAuditIndexTests(unittest.TestCase):
             index = json.loads(write_index(state_path).read_text(encoding="utf-8"))
 
             self.assertEqual(index["days"][0]["observed_count"], 2)
-            self.assertEqual(index["days"][0]["last_observed_at"], "2026-09-07T01:03:00+00:00")
+            self.assertEqual(index["days"][0]["last_observed_at"], "2026-09-07T01:13:00+00:00")
             self.assertEqual(index["days"][0]["candidates"][0]["expected_value_percent"], 155.0)
 
 

@@ -28,6 +28,10 @@ RECORD_THRESHOLD = 150.0
 PUBLIC_THRESHOLD = 150.0
 WINDOW_OPEN_MINUTES = 25
 WINDOW_CLOSE_MINUTES = 17
+FOLLOWUP_WINDOWS = {
+    "t15": (17, 13),
+    "t10": (12, 8),
+}
 ODDS_URL = "https://www.boatrace.jp/owpc/pc/race/odds3t?hd={date}&jcd={venue:02d}&rno={race_no}"
 
 
@@ -153,7 +157,53 @@ def _eligible(schedule, observed: set[str], now):
     ].copy()
 
 
-def _candidate_rows(prediction, race: dict[str, Any], odds: dict[str, float], observed_at: str) -> list[dict[str, Any]]:
+def _snapshot(label: str, target_minutes: int, minutes_before: float, odds: float, probability: float, observed_at: str) -> dict[str, Any]:
+    return {
+        "label": label,
+        "target_minutes": target_minutes,
+        "minutes_before": round(minutes_before, 1),
+        "odds_decimal": odds,
+        "expected_value_percent": round(probability * odds * 100, 2),
+        "observed_at": observed_at,
+    }
+
+
+def _followup_phase(minutes_before: float, candidate: dict[str, Any]) -> tuple[str, int] | None:
+    recorded = {str(row.get("label")) for row in candidate.get("odds_snapshots", [])}
+    for label, (window_open, window_close) in FOLLOWUP_WINDOWS.items():
+        if window_close <= minutes_before <= window_open and label not in recorded:
+            return label, int(label[1:])
+    return None
+
+
+def _ensure_initial_snapshot(candidate: dict[str, Any]) -> None:
+    """Upgrade today's pre-feature records without losing their original odds."""
+    if candidate.get("odds_snapshots"):
+        return
+    try:
+        minutes_before = (
+            datetime.fromisoformat(str(candidate["start_at"]))
+            - datetime.fromisoformat(str(candidate["observed_at"]))
+        ).total_seconds() / 60
+    except (KeyError, TypeError, ValueError):
+        minutes_before = 20.0
+    candidate["odds_snapshots"] = [_snapshot(
+        "t20",
+        20,
+        minutes_before,
+        float(candidate["odds_decimal"]),
+        float(candidate["predicted_probability"]),
+        str(candidate["observed_at"]),
+    )]
+
+
+def _candidate_rows(
+    prediction,
+    race: dict[str, Any],
+    odds: dict[str, float],
+    observed_at: str,
+    minutes_before: float = 20.0,
+) -> list[dict[str, Any]]:
     candidates = []
     for rank in range(1, 9):
         combination = str(prediction[f"top{rank}_combo"])
@@ -179,6 +229,7 @@ def _candidate_rows(prediction, race: dict[str, Any], odds: dict[str, float], ob
             "threshold_percent": PUBLIC_THRESHOLD,
             "observed_at": observed_at,
             "status": "open" if expected >= PUBLIC_THRESHOLD else "excluded",
+            "odds_snapshots": [_snapshot("t20", 20, minutes_before, decimal, probability, observed_at)],
         })
     return candidates
 
@@ -219,7 +270,17 @@ def prepare(session_root: Path | None = None) -> tuple[dict[str, Any] | None, di
             return None, state, state_path
         schedule = prepare_forward._load_service_day_compatible(hybrid_forward, data_root, date)
         now = pd.Timestamp(datetime.now(timezone.utc))
-        eligible = _eligible(schedule, set(state["observations"]), now)
+        initial_eligible = _eligible(schedule, set(state["observations"]), now)
+        deadlines = pd.to_datetime(schedule["deadline_at"], errors="coerce", utc=True)
+        minutes_by_race = dict(zip(schedule["race_id"].astype(str), (deadlines - now).dt.total_seconds() / 60))
+        followup_ids = {
+            str(candidate["race_id"])
+            for candidate in state.get("candidates", [])
+            if _followup_phase(float(minutes_by_race.get(str(candidate["race_id"]), -1)), candidate)
+        }
+        eligible = schedule.loc[
+            schedule["race_id"].astype(str).isin(set(initial_eligible["race_id"].astype(str)) | followup_ids)
+        ].copy()
         if eligible.empty:
             return None, state, state_path
 
@@ -243,6 +304,7 @@ def prepare(session_root: Path | None = None) -> tuple[dict[str, Any] | None, di
         candidates: list[dict[str, Any]] = []
         races: dict[str, dict[str, Any]] = {}
         successful_ids: list[str] = []
+        initial_ids = set(initial_eligible["race_id"].astype(str))
         for _, frame in eligible.iterrows():
             raw_id = str(frame["race_id"])
             result = fetched[raw_id]
@@ -252,17 +314,35 @@ def prepare(session_root: Path | None = None) -> tuple[dict[str, Any] | None, di
             odds, official_update = result
             race = prepare_forward._race_record(frame, cards, titles)
             observed_at = now.isoformat()
-            rows = _candidate_rows(by_id[raw_id], race, odds, observed_at)
+            minutes_before = float(minutes_by_race[raw_id])
+            rows = _candidate_rows(by_id[raw_id], race, odds, observed_at, minutes_before) if raw_id in initial_ids else []
             candidates.extend(rows)
+            for candidate in state.get("candidates", []):
+                if str(candidate["race_id"]) != raw_id:
+                    continue
+                _ensure_initial_snapshot(candidate)
+                phase = _followup_phase(minutes_before, candidate)
+                if not phase:
+                    continue
+                label, target_minutes = phase
+                candidate.setdefault("odds_snapshots", []).append(_snapshot(
+                    label,
+                    target_minutes,
+                    minutes_before,
+                    odds[str(candidate["combination"])],
+                    float(candidate["predicted_probability"]),
+                    observed_at,
+                ))
             races[race["race_id"]] = race
             successful_ids.append(raw_id)
-            state["observations"][raw_id] = {
+            observation = state["observations"].setdefault(raw_id, {
                 "observed_at": observed_at,
                 "official_update_time": official_update,
                 "odds_count": len(odds),
                 "recorded_candidates": len(rows),
                 "public_candidates": sum(row["status"] == "open" for row in rows),
-            }
+            })
+            observation["last_followup_at"] = observed_at if raw_id not in initial_ids else observation.get("last_followup_at")
 
         existing_candidates = {row["edge_id"]: row for row in state.get("candidates", [])}
         existing_candidates.update({row["edge_id"]: row for row in candidates})

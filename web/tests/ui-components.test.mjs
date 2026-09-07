@@ -36,6 +36,8 @@ test("shows EDGE verification progress, 150 percent candidates, and history", as
   assert.match(page, /期待値150%以上/);
   assert.match(page, /いま買えるEDGE/);
   assert.match(page, /終了したレース・検証結果/);
+  assert.match(page, /15分前・10分前/);
+  assert.match(page, /基準割れ/);
   assert.match(page, /groupByRace/);
   assert.match(page, /結果確認中/);
   assert.match(page, /レース・.*点/);

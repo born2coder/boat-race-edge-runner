@@ -42,7 +42,12 @@ def write_index(state_path: Path) -> Path:
         except (OSError, json.JSONDecodeError):
             continue
         observations = state.get("observations", {})
-        observed_at = [row.get("observed_at") for row in observations.values() if row.get("observed_at")]
+        observed_at = [
+            value
+            for row in observations.values()
+            for value in (row.get("observed_at"), row.get("last_followup_at"))
+            if value
+        ]
         days.append({
             "date": state.get("date", path.stem),
             "observed_count": len(observations),

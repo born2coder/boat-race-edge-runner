@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from scripts.edge_shadow import _candidate_rows, _eligible, parse_odds_html
+from scripts.edge_shadow import _candidate_rows, _eligible, _ensure_initial_snapshot, _followup_phase, parse_odds_html
 
 
 class EdgeShadowTests(unittest.TestCase):
@@ -40,6 +40,27 @@ class EdgeShadowTests(unittest.TestCase):
         self.assertEqual(rows[0]["expected_value_percent"], 150.0)
         self.assertEqual(rows[0]["threshold_percent"], 150.0)
         self.assertEqual(rows[0]["status"], "open")
+        self.assertEqual(rows[0]["odds_snapshots"][0]["label"], "t20")
+
+    def test_followup_phases_are_recorded_once(self):
+        candidate = {"odds_snapshots": [{"label": "t20"}]}
+        self.assertEqual(_followup_phase(15.2, candidate), ("t15", 15))
+        candidate["odds_snapshots"].append({"label": "t15"})
+        self.assertIsNone(_followup_phase(15.2, candidate))
+        self.assertEqual(_followup_phase(10.1, candidate), ("t10", 10))
+        candidate["odds_snapshots"].append({"label": "t10"})
+        self.assertIsNone(_followup_phase(10.1, candidate))
+
+    def test_existing_candidate_gets_an_initial_snapshot_before_followup(self):
+        candidate = {
+            "start_at": "2026-09-07T10:30:00+09:00",
+            "observed_at": "2026-09-07T01:09:00+00:00",
+            "odds_decimal": 20.0,
+            "predicted_probability": 0.1,
+        }
+        _ensure_initial_snapshot(candidate)
+        self.assertEqual(candidate["odds_snapshots"][0]["minutes_before"], 21.0)
+        self.assertEqual(candidate["odds_snapshots"][0]["expected_value_percent"], 200.0)
 
     def test_retry_keeps_the_same_candidate_id(self):
         prediction = {f"top{i}_combo": f"1-2-{3 + (i % 4)}" for i in range(1, 9)}

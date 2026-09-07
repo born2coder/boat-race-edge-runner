@@ -43,6 +43,14 @@ export type EdgeCandidate = {
   odds_decimal: number; expected_value_percent: number; threshold_percent: number;
   observed_at: string; status: "open" | "settled" | "excluded";
   result_combination?: string | null; payout_per_100_yen?: number | null; hit?: boolean | null;
+  odds_snapshots?: Array<{
+    label: "t20" | "t15" | "t10";
+    target_minutes: number;
+    minutes_before: number;
+    odds_decimal: number;
+    expected_value_percent: number;
+    observed_at: string;
+  }>;
 };
 
 export type EdgeProgress = {
@@ -372,7 +380,9 @@ export async function getEdgeDashboard() {
   ]);
   const ledgerRows = ledger.days.flatMap((day) => day.candidates ?? []);
   const unique = new Map<string, EdgeCandidate>();
-  for (const candidate of [...ledgerRows, ...databaseRows]) {
+  // The Git ledger contains the later T-15/T-10 snapshots; let it enrich the
+  // durable database row when both sources contain the same candidate.
+  for (const candidate of [...databaseRows, ...ledgerRows]) {
     if (candidate.expected_value_percent >= 150) unique.set(candidate.edge_id, candidate);
   }
   const candidates = await attachEdgeResults(Array.from(unique.values()));

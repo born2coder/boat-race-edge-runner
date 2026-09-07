@@ -3,6 +3,7 @@ import { ArrowLeft, CircleHelp, Clock3, FlaskConical, ShieldCheck } from "lucide
 import { getEdgeDashboard, type EdgeCandidate } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
 import { HistoryLedger, type EdgeRaceGroup } from "./history-ledger";
+import { OddsTimeline } from "./odds-timeline";
 
 export const metadata = { title: "EDGE検証｜オッズと予測の比較", description: "舟の理のHIT予測と締切前オッズを比較し、期待値を検証するページです。", alternates: { canonical: "/edge" } };
 export const dynamic = "force-dynamic";
@@ -44,6 +45,7 @@ function PickList({ candidates }: { candidates: EdgeCandidate[] }) {
       <div><dt>オッズ</dt><dd>{candidate.odds_decimal.toFixed(1)}倍</dd></div>
       <div><dt>期待値</dt><dd>{candidate.expected_value_percent.toFixed(0)}%</dd></div>
     </dl>
+    <OddsTimeline candidate={candidate} />
   </section>)}</div>;
 }
 
@@ -88,7 +90,7 @@ export default async function EdgePage() {
       <Link href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
       <p className="section-kicker">LIVE EDGE / {dateLabel(now)}</p>
       <h1>いま買えるEDGE</h1>
-      <p className="edge-lead">締切が近い順に表示しています。終了したレースは下の検証履歴へ移動します。</p>
+      <p className="edge-lead">約20分前に候補を公開し、15分前・10分前のオッズ変化も追跡します。終了したレースは下の検証履歴へ移動します。</p>
     </div>
 
     <section className="edge-live" aria-labelledby="edge-live-title">
@@ -125,8 +127,8 @@ export default async function EdgePage() {
     <details className="edge-method">
       <summary>EDGEの判定方法について</summary>
       <section className="edge-explain" aria-labelledby="edge-about-title">
-        <div className="edge-explain-main"><p className="section-kicker">HOW IT WORKS</p><h2 id="edge-about-title">「当たりそうなのに、オッズが高い」買い目を探します</h2><p>締切20分前前後にオッズを一度だけ確認し、予測確率と掛け合わせて期待値を計算します。朝の3点予想を変更したり、通常の成績に混ぜたりはしません。</p></div>
-        <div className="edge-rule-list"><div><Clock3 aria-hidden="true" /><strong>締切20分前前後</strong><span>オッズ取得時刻を記録</span></div><div><FlaskConical aria-hidden="true" /><strong>150%以上を検証</strong><span>期待値と実結果を比較</span></div><div><ShieldCheck aria-hidden="true" /><strong>通常予想と分離</strong><span>HIT成績には影響なし</span></div></div>
+        <div className="edge-explain-main"><p className="section-kicker">HOW IT WORKS</p><h2 id="edge-about-title">「当たりそうなのに、オッズが高い」買い目を探します</h2><p>締切20分前前後に候補を公開し、15分前・10分前にも同じ買い目のオッズを確認します。買い目を後から消さず、基準を維持したかまで検証します。</p></div>
+        <div className="edge-rule-list"><div><Clock3 aria-hidden="true" /><strong>20分前に初回公開</strong><span>購入判断の時間を確保</span></div><div><FlaskConical aria-hidden="true" /><strong>15分前・10分前に再確認</strong><span>維持・低下・基準割れを表示</span></div><div><ShieldCheck aria-hidden="true" /><strong>通常予想と分離</strong><span>HIT成績には影響なし</span></div></div>
       </section>
     </details>
 

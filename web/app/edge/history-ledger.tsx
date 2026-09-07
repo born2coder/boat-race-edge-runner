@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { EdgeCandidate } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
+import { OddsTimeline } from "./odds-timeline";
 
 export type EdgeRaceGroup = {
   race_id: string;
@@ -23,6 +24,7 @@ function PickList({ candidates }: { candidates: EdgeCandidate[] }) {
       <div><dt>オッズ</dt><dd>{candidate.odds_decimal.toFixed(1)}倍</dd></div>
       <div><dt>期待値</dt><dd>{candidate.expected_value_percent.toFixed(0)}%</dd></div>
     </dl>
+    <OddsTimeline candidate={candidate} includeFinal />
   </section>)}</div>;
 }
 
