@@ -24,6 +24,15 @@ def at(value):
 
 
 class WatchTests(unittest.TestCase):
+    def setUp(self):
+        # Unit tests must never download models, fetch data, or publish type-G.
+        prepare = patch.object(watch.prepare_type_g, "main")
+        publish = patch.object(watch, "publish_type_g_pending")
+        self.type_g_prepare = prepare.start()
+        self.type_g_publish = publish.start()
+        self.addCleanup(prepare.stop)
+        self.addCleanup(publish.stop)
+
     def test_wait_then_check_before_exhibition_without_waiting_for_another_cron(self):
         self.assertEqual(watch.check_mode(sample(), at("13:20:00")), "idle")
         self.assertEqual(watch.check_mode(sample(), at("13:28:00")), "check")
@@ -103,6 +112,25 @@ class WatchTests(unittest.TestCase):
                 self.assertEqual(publish.call_count, 1)
                 self.assertEqual(sleep.call_count, 2)
                 self.assertEqual(prepare.call_args_list[0], prepare.call_args_list[1])
+                self.type_g_prepare.assert_called_once()
+                self.type_g_publish.assert_called_once()
+
+    def test_type_g_failure_does_not_stop_official_hit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "state" / watch.prepare_forward.MODEL_VERSION / "2026-09-05.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(sample()))
+            self.type_g_prepare.side_effect = RuntimeError("type-G unavailable")
+            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), patch.object(watch, "ROOT", root), patch.object(watch, "datetime") as clock, patch.object(watch, "run"), patch.object(watch, "publish_pending") as publish, patch.object(watch.prepare_forward, "main") as prepare, patch.object(watch.time, "monotonic", side_effect=[0, 0, 60, watch.MAX_SECONDS]), patch.object(watch.time, "sleep") as sleep:
+                clock.now.return_value = at("13:48:00")
+                clock.fromisoformat.side_effect = datetime.fromisoformat
+                watch.main()
+                self.assertEqual(prepare.call_count, 2)
+                self.assertEqual(publish.call_count, 2)
+                self.assertEqual(sleep.call_count, 2)
+                self.assertEqual(self.type_g_prepare.call_count, 2)
+                self.type_g_publish.assert_not_called()
 
 
 if __name__ == "__main__":
