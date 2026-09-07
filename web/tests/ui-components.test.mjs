@@ -31,13 +31,17 @@ test("normalizes historical examples to the displayed flat 100-yen Top3 rule", a
 test("shows EDGE verification progress, 150 percent candidates, and history", async () => {
   const page = await readFile(new URL("../app/edge/page.tsx", import.meta.url), "utf8");
   const repository = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
-  assert.match(page, /確認・保存済み/);
+  assert.match(page, /確認済み/);
   assert.match(page, /未確認数もそのまま公開/);
   assert.match(page, /期待値150%以上/);
-  assert.match(page, /これまでのEDGE検証履歴/);
+  assert.match(page, /いま買えるEDGE/);
+  assert.match(page, /終了したレース・検証結果/);
   assert.match(page, /groupByRace/);
   assert.match(page, /結果確認中/);
   assert.match(page, /レース・.*点/);
+  assert.match(page, /sortByStart/);
+  assert.match(page, /liveGroups/);
+  assert.match(page, /edge-history-row/);
   assert.match(repository, /expected_value_percent: "gte\.150"/);
   assert.match(repository, /edge_shadow\/index\.json/);
   assert.match(repository, /getOfficialResult/);
