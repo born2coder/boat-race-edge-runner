@@ -9,6 +9,7 @@ import sys
 import tarfile
 import tempfile
 import urllib.request
+import urllib.parse
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,6 +28,16 @@ ROOT = Path(__file__).resolve().parents[1]
 TYPE_G_VERSION = "HIT_type_G_v1"
 TYPE_G_ARTIFACT = "hit-type-g-v1"
 TYPE_G_STATE_SCHEMA = "boat-race-edge-type-g-state/v1"
+
+
+class ArtifactRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """GitHub credentials must not follow redirects to signed blob storage."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is not None and urllib.parse.urlsplit(req.full_url).netloc != urllib.parse.urlsplit(newurl).netloc:
+            redirected.remove_header("Authorization")
+        return redirected
 
 
 def canonical(value: Any) -> bytes:
@@ -77,11 +88,12 @@ def download_type_g_artifact(destination: Path) -> tuple[Path, dict[str, Any]]:
     artifact = max(available, key=lambda item: item["created_at"])
     request = urllib.request.Request(artifact["archive_download_url"], headers=headers)
     archive_path = destination / "type-g-artifact.zip"
-    with urllib.request.urlopen(request, timeout=60) as response, archive_path.open("wb") as output:
+    opener = urllib.request.build_opener(ArtifactRedirectHandler())
+    with opener.open(request, timeout=60) as response, archive_path.open("wb") as output:
         while chunk := response.read(1024 * 1024):
             output.write(chunk)
     artifact_dir = destination / "type-g-artifact"
-    artifact_dir.mkdir()
+    artifact_dir.mkdir(exist_ok=True)
     with zipfile.ZipFile(archive_path) as archive:
         expected = {f"{TYPE_G_VERSION}.tar.gz.enc", "manifest.json"}
         if not expected.issubset(set(archive.namelist())):
