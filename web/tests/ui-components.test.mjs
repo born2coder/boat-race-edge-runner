@@ -35,6 +35,11 @@ test("shows EDGE verification progress, 150 percent candidates, and history", as
   assert.match(page, /未確認数もそのまま公開/);
   assert.match(page, /期待値150%以上/);
   assert.match(page, /これまでのEDGE検証履歴/);
+  assert.match(page, /groupByRace/);
+  assert.match(page, /結果確認中/);
+  assert.match(page, /レース・.*点/);
   assert.match(repository, /expected_value_percent: "gte\.150"/);
   assert.match(repository, /edge_shadow\/index\.json/);
+  assert.match(repository, /getOfficialResult/);
+  assert.match(repository, /pendingRaceIds/);
 });
