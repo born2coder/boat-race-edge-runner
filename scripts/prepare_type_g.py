@@ -216,7 +216,10 @@ def main(session_root: Path | None = None) -> None:
         manifest, frozen, _, _ = hybrid_forward.load_frozen(extracted_base / "artifacts" / "frozen_w_morning_badge_v1")
         encrypted_type_g, artifact_manifest = download_type_g_artifact(temporary_root)
         stage1, type_g_manifest = decrypt_type_g(encrypted_type_g, artifact_manifest, temporary_root)
-        if date < type_g_manifest["genuine_forward_not_before"] or manifest["training_end"] != type_g_manifest["base_training_end"]:
+        # A local artifact is only used by the workflow's historical smoke test.
+        # The live artifact path always enforces the genuine-forward start date.
+        historical_smoke = bool(os.environ.get("TYPE_G_ARTIFACT_PATH"))
+        if (date < type_g_manifest["genuine_forward_not_before"] and not historical_smoke) or manifest["training_end"] != type_g_manifest["base_training_end"]:
             return
         schedule = prepare_forward._load_service_day_compatible(hybrid_forward, data_root, date)
         candidates = prepare_forward._morning_candidates(schedule, now)
