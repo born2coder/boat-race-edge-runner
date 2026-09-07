@@ -193,6 +193,7 @@ def main(session_root: Path | None = None) -> None:
     date = os.environ.get("EDGE_SERVICE_DATE") or datetime.now(prepare_forward.JST).date().isoformat()
     state_path = ROOT / "state" / TYPE_G_VERSION / f"{date}.json"
     payload_path = ROOT / ".runtime" / "type-g-payload.json"
+    source_data_root: Path | None = None
     payload_path.unlink(missing_ok=True)
     if state_path.exists():
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -202,6 +203,7 @@ def main(session_root: Path | None = None) -> None:
             return
         temporary_root = session_root or Path(tempfile.mkdtemp(prefix="type-g-forward-"))
         data_root = prepare_forward._clone_data(temporary_root / "boatracecsv", date)
+        source_data_root = data_root
         encrypted_base = temporary_root / prepare_forward.MODEL_FILENAME
         plain_base = temporary_root / "W_morning_badge_v1.tar.gz"
         extracted_base = temporary_root / "model"
@@ -272,10 +274,15 @@ def main(session_root: Path | None = None) -> None:
         return
     races = list({item["race"]["race_id"]: item["race"] for item in pending}.values())
     generated_at = datetime.now(timezone.utc).isoformat()
-    data_root = (session_root or Path(".")) / "boatracecsv" / "data"
+    if source_data_root is None:
+        if session_root is not None:
+            source_data_root = session_root / "boatracecsv" / "data"
+        else:
+            fallback_root = Path(tempfile.mkdtemp(prefix="type-g-sources-"))
+            source_data_root = prepare_forward._clone_data(fallback_root / "boatracecsv", date)
     artifacts = [
-        prepare_forward._artifact(data_root, "programs/race_cards", "race_cards", date, generated_at),
-        prepare_forward._artifact(data_root, "programs/title", "title", date, generated_at),
+        prepare_forward._artifact(source_data_root, "programs/race_cards", "race_cards", date, generated_at),
+        prepare_forward._artifact(source_data_root, "programs/title", "title", date, generated_at),
     ]
     payload = {
         "schema_version": prepare_forward.PAYLOAD_SCHEMA,
