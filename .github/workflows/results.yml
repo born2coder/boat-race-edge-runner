@@ -37,5 +37,3 @@ jobs:
           TZ: Asia/Tokyo
         run: |
           python scripts/sync_results.py --no-legacy-predictions --date "$(date +%F)"
-          python scripts/sync_results.py --no-legacy-predictions --date "$(date -d yesterday +%F)"
-
