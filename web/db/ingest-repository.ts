@@ -144,13 +144,23 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     observed_at: payload.generated_at,
   })), "race_id");
 
-  for (const result of payload.results) {
-    const edgeRows = await supabaseRequest<Array<{ edge_id: string; combination: string }>>(
-      `edge_candidates?${queryString({ select: "edge_id,combination", race_id: `eq.${result.race_id}` })}`,
+  // Fetch candidates for the whole result batch once. Querying once per race made
+  // a completed 144-race service day exceed the ingest function's time budget.
+  if (payload.results.length > 0) {
+    const resultsByRace = new Map(payload.results.map((result) => [result.race_id, result]));
+    const raceIds = payload.results.map((result) => result.race_id);
+    const edgeRows = await supabaseRequest<Array<{ edge_id: string; race_id: string; combination: string }>>(
+      `edge_candidates?${queryString({
+        select: "edge_id,race_id,combination",
+        race_id: `in.(${raceIds.join(",")})`,
+        limit: 2304,
+      })}`,
       {},
       "service",
     );
     for (const row of edgeRows) {
+      const result = resultsByRace.get(row.race_id);
+      if (!result) continue;
       await supabaseRequest(
         `edge_candidates?${queryString({ edge_id: `eq.${row.edge_id}` })}`,
         {
