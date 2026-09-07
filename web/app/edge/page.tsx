@@ -2,14 +2,13 @@ import Link from "next/link";
 import { ArrowLeft, CircleHelp, Clock3, FlaskConical, ShieldCheck } from "lucide-react";
 import { getEdgeDashboard, type EdgeCandidate } from "@/db/live-repository";
 import { formatYen } from "@/lib/poc";
+import { HistoryLedger, type EdgeRaceGroup } from "./history-ledger";
 
 export const metadata = { title: "EDGE検証｜オッズと予測の比較", description: "舟の理のHIT予測と締切前オッズを比較し、期待値を検証するページです。", alternates: { canonical: "/edge" } };
 export const dynamic = "force-dynamic";
 
 const dateLabel = (value: string) => new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "short" }).format(new Date(value));
 const timeLabel = (value: string) => new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
-
-type EdgeRaceGroup = { race_id: string; venue_name: string; race_no: number; start_at: string; candidates: EdgeCandidate[] };
 
 function groupByRace(candidates: EdgeCandidate[]): EdgeRaceGroup[] {
   const groups = new Map<string, EdgeRaceGroup>();
@@ -60,28 +59,6 @@ function LiveRaceCard({ group, isNext }: { group: EdgeRaceGroup; isNext: boolean
   </article>;
 }
 
-function HistoryRaceRow({ group, now }: { group: EdgeRaceGroup; now: string }) {
-  const settled = group.candidates.every((candidate) => candidate.status === "settled");
-  const hit = group.candidates.some((candidate) => candidate.hit);
-  const pending = !settled && Date.parse(group.start_at) <= Date.parse(now);
-  const result = group.candidates.find((candidate) => candidate.status === "settled");
-  return <details className={`edge-history-row ${hit ? "hit" : ""}`}>
-    <summary>
-      <span className="edge-history-date">{dateLabel(group.start_at)} {timeLabel(group.start_at)}</span>
-      <strong>{group.venue_name} {group.race_no}R</strong>
-      <b>{settled ? (hit ? "的中" : "不的中") : pending ? "結果確認中" : "記録中"}</b>
-      <span className="edge-history-result">{settled ? `結果 ${result?.result_combination ?? "—"}` : "公式結果待ち"}</span>
-      <span>{group.candidates.length}点</span>
-    </summary>
-    <div className="edge-history-detail">
-      <PickList candidates={group.candidates} />
-      {settled && <p className="edge-settlement">3連単払戻 <strong>{result?.payout_per_100_yen == null ? "—" : formatYen(result.payout_per_100_yen)}</strong></p>}
-      {pending && <p className="edge-settlement pending">公式結果を確認しています。取得でき次第、反映します。</p>}
-      <small>判定 {new Date(group.candidates[0].observed_at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}</small>
-    </div>
-  </details>;
-}
-
 export default async function EdgePage() {
   const { today, history, progress } = await getEdgeDashboard();
   const now = new Date().toISOString();
@@ -96,9 +73,12 @@ export default async function EdgePage() {
   ]), "desc");
   const finishedCandidates = finishedGroups.flatMap((group) => group.candidates);
   const settledHistoryGroups = finishedGroups.filter((group) => group.candidates.every((candidate) => candidate.status === "settled"));
+  const pendingHistoryGroups = finishedGroups.filter((group) => !group.candidates.every((candidate) => candidate.status === "settled"));
   const settledHistory = settledHistoryGroups.flatMap((group) => group.candidates);
   const historyHits = settledHistory.filter((candidate) => candidate.hit);
   const historyReturn = historyHits.reduce((sum, candidate) => sum + (candidate.payout_per_100_yen ?? 0), 0);
+  const purchasePoints = finishedCandidates.length;
+  const purchaseYen = purchasePoints * 100;
   const historyReturnRate = settledHistory.length ? historyReturn / (settledHistory.length * 100) * 100 : null;
   const currentHourJst = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tokyo", hour: "2-digit", hour12: false }).format(new Date()));
   const monitoringEnded = currentHourJst >= 22;
@@ -131,12 +111,15 @@ export default async function EdgePage() {
         <div><p className="section-kicker">VERIFICATION LEDGER</p><h2 id="edge-history-title">終了したレース・検証結果</h2><p>レースを選ぶと、記録した買い目の詳細を確認できます。</p></div>
         <span className="edge-count">記録 {finishedGroups.length}レース・{finishedCandidates.length}点</span>
       </div>
-      <div className="edge-history-summary">
+      <div className="edge-history-summary detailed">
         <div><span>結果確定</span><strong>{settledHistoryGroups.length}R</strong></div>
+        <div><span>結果確認中</span><strong>{pendingHistoryGroups.length}R</strong></div>
+        <div><span>購入点数</span><strong>{purchasePoints}点</strong><small>{formatYen(purchaseYen)}</small></div>
         <div><span>的中</span><strong>{historyHits.length}点</strong></div>
+        <div><span>的中払戻合計</span><strong>{formatYen(historyReturn)}</strong></div>
         <div><span>検証回収率</span><strong>{historyReturnRate == null ? "—" : `${historyReturnRate.toFixed(1)}%`}</strong></div>
       </div>
-      {finishedGroups.length === 0 ? <div className="edge-empty"><CircleHelp aria-hidden="true" /><div><h3>終了したレースはまだありません</h3><p>レース終了後、結果とともにここへ移動します。</p></div></div> : <div className="edge-history-list">{finishedGroups.slice(0, 80).map((group) => <HistoryRaceRow group={group} now={now} key={group.race_id} />)}</div>}
+      {finishedGroups.length === 0 ? <div className="edge-empty"><CircleHelp aria-hidden="true" /><div><h3>終了したレースはまだありません</h3><p>レース終了後、結果とともにここへ移動します。</p></div></div> : <HistoryLedger groups={finishedGroups.slice(0, 80)} now={now} />}
     </section>
 
     <details className="edge-method">
