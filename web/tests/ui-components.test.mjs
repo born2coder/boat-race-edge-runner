@@ -42,4 +42,5 @@ test("shows EDGE verification progress, 150 percent candidates, and history", as
   assert.match(repository, /edge_shadow\/index\.json/);
   assert.match(repository, /getOfficialResult/);
   assert.match(repository, /pendingRaceIds/);
+  assert.match(repository, /candidate\.race_date < date \|\| candidate\.status === "settled"/);
 });

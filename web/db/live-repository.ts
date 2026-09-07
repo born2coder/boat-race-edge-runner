@@ -385,7 +385,9 @@ export async function getEdgeDashboard() {
   return {
     date,
     today: candidates.filter((candidate) => candidate.race_date === date),
-    history: candidates.filter((candidate) => candidate.race_date < date),
+    // Reflect today's completed races in the verification ledger immediately.
+    // Older candidates stay visible even if an official result is still pending.
+    history: candidates.filter((candidate) => candidate.race_date < date || candidate.status === "settled"),
     progress: {
       scheduled,
       observed,
@@ -397,7 +399,8 @@ export async function getEdgeDashboard() {
 
 export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidate[]> {
   const dashboard = await getEdgeDashboard();
-  return [...dashboard.today, ...dashboard.history].filter((candidate) => candidate.race_date === date);
+  const source = date === dashboard.date ? dashboard.today : dashboard.history;
+  return source.filter((candidate) => candidate.race_date === date);
 }
 
 export type YesterdayResultDay = { date: string; predictions: Prediction[] };
