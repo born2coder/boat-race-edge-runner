@@ -1,0 +1,42 @@
+name: Publish HIT type-G shadow
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/type-g.yml
+      - scripts/prepare_type_g.py
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: type-g-recovery
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Prepare type-G without modifying official HIT
+        env:
+          EDGE_MODEL_REPOSITORY: ${{ secrets.EDGE_MODEL_REPOSITORY }}
+          EDGE_MODEL_TOKEN: ${{ secrets.EDGE_MODEL_TOKEN }}
+          EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
+          TYPE_G_ARTIFACT_TOKEN: ${{ github.token }}
+        run: python scripts/prepare_type_g.py
+      - name: Publish prepared type-G only
+        env:
+          EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
+          EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
+        run: |
+          git config user.name boat-race-edge-bot
+          git config user.email actions@users.noreply.github.com
+          python -c 'from datetime import datetime; from scripts import prepare_forward, prepare_type_g, watch_forward; date = datetime.now(prepare_forward.JST).date().isoformat(); watch_forward.publish_type_g_pending(watch_forward.ROOT / "state" / prepare_type_g.TYPE_G_VERSION / (date + ".json"))'
