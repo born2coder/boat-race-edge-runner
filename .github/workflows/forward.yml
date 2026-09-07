@@ -11,9 +11,11 @@ on:
       - requirements.txt
       - .github/workflows/forward.yml
   schedule:
-    # Starts/wakes a watcher. Once running, it polls itself every three minutes.
-    - cron: "7,37 5-21 * * *"
-      timezone: "Asia/Tokyo"
+    # GitHub Actions cron is UTC. These start at 06:00, 11:45, and 17:30 JST.
+    # Each watcher polls every three minutes and runs for at most 5h45m.
+    - cron: "0 21 * * *"
+    - cron: "45 2 * * *"
+    - cron: "30 8 * * *"
   workflow_dispatch:
 
 permissions:
