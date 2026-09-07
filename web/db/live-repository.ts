@@ -315,6 +315,35 @@ async function attachEdgeResults(candidates: EdgeCandidate[]): Promise<EdgeCandi
   try {
     const results = await supabaseRequest<ResultRow[]>(`results?${queryString({ select: "race_id,combination,payout_per_100_yen", race_id: `in.(${raceIds.join(",")})`, limit: 2000 })}`);
     const byRace = new Map(results.map((result) => [result.race_id, result]));
+
+    // The hourly archive sync can be delayed. Recover recently finished EDGE
+    // races directly when this page is opened, using the same strict official
+    // parser and insert-only persistence as the normal prediction pages.
+    const now = Date.now();
+    const pendingRaceIds = raceIds
+      .filter((raceId) => !byRace.has(raceId))
+      .map((raceId) => ({ raceId, startAt: candidates.find((candidate) => candidate.race_id === raceId)?.start_at ?? "" }))
+      .filter(({ startAt }) => {
+        const age = now - Date.parse(startAt);
+        return age >= 0 && age < 48 * 60 * 60 * 1000;
+      })
+      .sort((left, right) => Date.parse(left.startAt) - Date.parse(right.startAt))
+      .slice(0, 20)
+      .map(({ raceId }) => raceId);
+
+    if (pendingRaceIds.length > 0) {
+      const races = await supabaseRequest<Array<Pick<RaceRow, "race_id" | "entries">>>(
+        `races?${queryString({ select: "race_id,entries", race_id: `in.(${pendingRaceIds.join(",")})`, limit: 20 })}`,
+      );
+      const recovered = await Promise.all(races.map(async (race) => {
+        const roster = race.entries.map(({ lane_no, racer_id }) => ({ lane_no, racer_id }));
+        return [race.race_id, await getOfficialResult(race.race_id, JSON.stringify(roster))] as const;
+      }));
+      for (const [raceId, result] of recovered) {
+        if (result) byRace.set(raceId, result);
+      }
+    }
+
     return candidates.map((candidate) => {
       const result = byRace.get(candidate.race_id);
       if (!result) return candidate.status === "excluded" ? { ...candidate, status: "open" } : candidate;
