@@ -13,6 +13,7 @@ import pandas as pd
 
 from scripts.mark_published import main as mark_main
 from scripts.prepare_forward import _load_service_day_compatible, _morning_candidates, _safe_extract
+from scripts.prepare_type_g import augmented_stage1_x
 
 
 class PreviewTimezoneTests(unittest.TestCase):
@@ -71,6 +72,15 @@ class PreviewTimezoneTests(unittest.TestCase):
 
 
 class RunnerSafetyTests(unittest.TestCase):
+    def test_type_g_stage1_only_adds_five_features(self) -> None:
+        import numpy as np
+        boats = np.zeros((2, 6, 7), dtype=np.float32)
+        context = np.zeros((2, 4), dtype=np.float32)
+        type_g = np.asarray([[1, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1]], dtype=np.float32)
+        values = augmented_stage1_x(boats, context, type_g)
+        self.assertEqual(values.shape, (12, 16))
+        self.assertTrue(np.isfinite(values).all())
+
     def test_morning_candidates_exclude_closed_imminent_and_unknown_deadlines(self):
         now = pd.Timestamp("2026-09-05T08:48:00+09:00")
         frame = pd.DataFrame({"race_id": ["closed", "edge", "open", "unknown"], "deadline_at": [
@@ -92,6 +102,12 @@ class RunnerSafetyTests(unittest.TestCase):
         self.assertIn('"publication_mode": "morning_fixed_hit_v1"', source)
         self.assertIn('classify_reassessment', source)
         self.assertIn('"reassessments": pending_reassessments', source)
+
+    def test_type_g_is_never_official_performance(self) -> None:
+        source = (Path(__file__).parents[1] / "scripts" / "prepare_type_g.py").read_text(encoding="utf-8")
+        self.assertIn('"official_performance_eligible": False', source)
+        self.assertIn('"stream": "type_g"', source)
+        self.assertIn('"virtual_stake_yen": 300', source)
 
     def test_forward_runner_skips_dates_before_the_registered_start(self) -> None:
         source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")

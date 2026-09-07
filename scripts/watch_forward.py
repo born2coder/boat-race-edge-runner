@@ -15,6 +15,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import prepare_forward
+from scripts import prepare_type_g
 
 ROOT = Path(__file__).resolve().parents[1]
 POLL_SECONDS = 180
@@ -63,6 +64,17 @@ def publish_pending(state_path: Path) -> None:
     payload.unlink(missing_ok=True)
 
 
+def publish_type_g_pending(state_path: Path) -> None:
+    payload = ROOT / ".runtime" / "type-g-payload.json"
+    if not payload.exists():
+        return
+    persist_state(state_path, "Lock HIT type-G shadow predictions")
+    run(sys.executable, "scripts/send_payload.py", str(payload))
+    run(sys.executable, "scripts/mark_published.py", str(state_path))
+    persist_state(state_path, "Record HIT type-G shadow publication")
+    payload.unlink(missing_ok=True)
+
+
 def main() -> None:
     # Sustained polling is intentionally restricted to the existing free public
     # standard runner. Making this repository private cannot silently incur hours.
@@ -93,6 +105,13 @@ def main() -> None:
                 try:
                     prepare_forward.main(Path(session))
                     publish_pending(state_path)
+                    type_g_state = ROOT / "state" / prepare_type_g.TYPE_G_VERSION / f"{date}.json"
+                    try:
+                        prepare_type_g.main(Path(session))
+                        publish_type_g_pending(type_g_state)
+                    except Exception as type_g_error:
+                        # The experiment must never block the official HIT stream.
+                        print(json.dumps({"type_g_error": type(type_g_error).__name__}), flush=True)
                     failures = 0
                     first_check = False
                 except Exception as error:

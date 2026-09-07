@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - scripts/prepare_forward.py
+      - scripts/prepare_type_g.py
+      - validation/female_racer_ids.json
       - scripts/watch_forward.py
       - scripts/send_payload.py
       - scripts/mark_published.py
@@ -20,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: boat-race-edge-forward
@@ -57,4 +60,5 @@ jobs:
           EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
           EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
+          TYPE_G_ARTIFACT_TOKEN: ${{ github.token }}
         run: python scripts/watch_forward.py

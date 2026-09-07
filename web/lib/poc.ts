@@ -67,7 +67,7 @@ export type Prediction = {
   tickets: Ticket[];
   virtual_stake_yen: number;
   published_at: string;
-  publication_mode: "historical_replay" | "private_forward_poc" | "forward_observation_poc" | "frozen_forward_hit_v1" | "morning_fixed_hit_v1";
+  publication_mode: "historical_replay" | "private_forward_poc" | "forward_observation_poc" | "frozen_forward_hit_v1" | "morning_fixed_hit_v1" | "type_g_shadow_v1" | "type_g_control_v1" | "type_g_on_hit_v1";
   official_performance_eligible: boolean;
   publication_hash: string;
   reassessment?: {
