@@ -219,11 +219,16 @@ def main(session_root: Path | None = None) -> None:
         # A local artifact is only used by the workflow's historical smoke test.
         # The live artifact path always enforces the genuine-forward start date.
         historical_smoke = bool(os.environ.get("TYPE_G_ARTIFACT_PATH"))
-        if (date < type_g_manifest["genuine_forward_not_before"] and not historical_smoke) or manifest["training_end"] != type_g_manifest["base_training_end"]:
+        if date < type_g_manifest["genuine_forward_not_before"] and not historical_smoke:
+            print(json.dumps({"type_g_skip": "before_forward_start", "date": date}), flush=True)
+            return
+        if manifest["training_end"] != type_g_manifest["base_training_end"]:
+            print(json.dumps({"type_g_skip": "base_training_mismatch", "loaded": manifest["training_end"], "expected": type_g_manifest["base_training_end"]}), flush=True)
             return
         schedule = prepare_forward._load_service_day_compatible(hybrid_forward, data_root, date)
         candidates = prepare_forward._morning_candidates(schedule, now)
         if len(candidates) < prepare_forward.DAILY_CAP:
+            print(json.dumps({"type_g_skip": "insufficient_open_races", "candidates": len(candidates)}), flush=True)
             return
         cards, titles = prepare_forward._load_cards(data_root, date)
         control = hybrid_forward.predict_morning(candidates, frozen["morning"])
