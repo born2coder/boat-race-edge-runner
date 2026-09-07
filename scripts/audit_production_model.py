@@ -67,7 +67,7 @@ def main() -> None:
         from edge_research import build_dataset, features, hybrid_forward, models
 
         artifact_dir = extracted / "artifacts" / "frozen_w_morning_badge_v1"
-        manifest, models, morning_reference, exhibition_reference = hybrid_forward.load_frozen(artifact_dir)
+        manifest, frozen_models, morning_reference, exhibition_reference = hybrid_forward.load_frozen(artifact_dir)
         module_dir = Path(hybrid_forward.__file__).resolve().parent
         python_files = sorted(path.name for path in module_dir.glob("*.py"))
         source_flags = {}
@@ -101,7 +101,7 @@ def main() -> None:
                     conditional_methods[name] = "<unknown>"
 
         model_summary = {}
-        for key, model in models.items():
+        for key, model in frozen_models.items():
             details = {"type": f"{type(model).__module__}.{type(model).__name__}"}
             for attr in ("n_features_in_", "classes_", "feature_names_in_"):
                 if hasattr(model, attr):
@@ -113,7 +113,7 @@ def main() -> None:
         audit_date = os.environ.get("EDGE_AUDIT_DATE", datetime.utcnow().date().isoformat())
         data_root = prepare_forward._clone_data(root / "boatracecsv", audit_date)
         schedule = prepare_forward._load_service_day_compatible(hybrid_forward, data_root, audit_date)
-        predictions = hybrid_forward.predict_morning(schedule, models["morning"])
+        predictions = hybrid_forward.predict_morning(schedule, frozen_models["morning"])
 
         result = {
             "audit_schema": "boat-race-edge-production-model-audit/v1",
