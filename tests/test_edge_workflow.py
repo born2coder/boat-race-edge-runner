@@ -13,6 +13,7 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn('cron: "30 4 * * *"', workflow)  # 13:30 JST
         self.assertIn('cron: "0 10 * * *"', workflow)  # 19:00 JST
         self.assertNotIn("timezone:", workflow)
+        self.assertIn("cancel-in-progress: true", workflow)
 
     def test_forward_watchers_are_scheduled_in_utc_for_jst_service_hours(self):
         workflow = (ROOT / ".github" / "workflows" / "forward.yml").read_text(encoding="utf-8")

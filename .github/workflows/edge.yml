@@ -22,7 +22,9 @@ permissions:
 
 concurrency:
   group: boat-race-edge-shadow
-  cancel-in-progress: false
+  # A newly deployed observer must replace the old long-running process so the
+  # latest measurement logic starts before the next race window.
+  cancel-in-progress: true
 
 jobs:
   observe:
