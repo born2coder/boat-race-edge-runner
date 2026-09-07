@@ -38,11 +38,11 @@ test("prediction reads join results through races rather than a nonexistent dire
   assert.doesNotMatch(reader, /race:races!inner\(\*\),result:results/);
 });
 
-test("scheduled runner keeps credentials out of source and syncs two service days", async () => {
+test("scheduled runner keeps credentials out of source and syncs the active service day", async () => {
   const workflow = await readFile(new URL("../../.github/workflows/results.yml", import.meta.url), "utf8");
   assert.match(workflow, /secrets\.EDGE_SITE_INGEST_ENDPOINT/);
   assert.match(workflow, /secrets\.EDGE_SITE_INGEST_SECRET/);
-  assert.match(workflow, /date -d yesterday/);
+  assert.doesNotMatch(workflow, /date -d yesterday/);
   assert.match(workflow, /--no-legacy-predictions/);
   assert.doesNotMatch(workflow, /x-edge-signature:\s*[a-f0-9]{64}/i);
 });
