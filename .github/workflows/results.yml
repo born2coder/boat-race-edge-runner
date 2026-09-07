@@ -1,6 +1,12 @@
 name: Publish official BOAT RACE results
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/sync_results.py
+      - requirements-results.txt
+      - .github/workflows/results.yml
   schedule:
     - cron: "17 21-23,0-13 * * *"
   workflow_dispatch:
