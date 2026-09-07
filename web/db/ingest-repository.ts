@@ -50,7 +50,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   const existing = await supabaseRequest<ExistingPrediction[]>(
     `predictions?${queryString({
       select: "prediction_id,race_id,publication_mode,published_at,official_performance_eligible,race:races!inner(race_date,start_at)",
-      publication_mode: "in.(forward_observation_poc,frozen_forward_hit_v1,morning_fixed_hit_v1)",
+      publication_mode: "in.(forward_observation_poc,frozen_forward_hit_v1,morning_fixed_hit_v1,type_g_shadow_v1,type_g_control_v1,type_g_on_hit_v1)",
       "race.race_date": `eq.${payload.service_date}`,
     })}`,
     {},
@@ -62,7 +62,7 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   const acceptedPredictions = payload.predictions.filter((prediction) => {
     const key = `${prediction.publication_mode}:${prediction.race_id}`;
     if (existingKeys.has(key)) return false;
-    const cap = ["frozen_forward_hit_v1", "morning_fixed_hit_v1"].includes(prediction.publication_mode) ? 10 : 3;
+    const cap = ["frozen_forward_hit_v1", "morning_fixed_hit_v1", "type_g_shadow_v1", "type_g_control_v1", "type_g_on_hit_v1"].includes(prediction.publication_mode) ? 10 : 3;
     const count = modeCounts.get(prediction.publication_mode) ?? 0;
     if (count >= cap) return false;
     existingKeys.add(key);
@@ -178,20 +178,22 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     }
   }
 
-  const analyzed = payload.summary?.scheduled_races ?? payload.races.length;
-  const incomplete = payload.summary?.incomplete_races ?? 0;
-  const recommended = modeCounts.get("morning_fixed_hit_v1") ?? modeCounts.get("frozen_forward_hit_v1") ?? 0;
-  await writeRows("daily_runs", [{
-    service_date: payload.service_date,
-    status: "complete",
-    analyzed_count: analyzed,
-    recommended_count: recommended,
-    skipped_count: Math.max(0, analyzed - recommended),
-    incomplete_count: incomplete,
-    coverage_percent: analyzed ? Math.round((analyzed - incomplete) / analyzed * 100) : 0,
-    finalized_at: payload.generated_at,
-    run_sha256: rawBodySha256,
-  }], "service_date");
+  if (payload.stream === "official") {
+    const analyzed = payload.summary?.scheduled_races ?? payload.races.length;
+    const incomplete = payload.summary?.incomplete_races ?? 0;
+    const recommended = modeCounts.get("morning_fixed_hit_v1") ?? modeCounts.get("frozen_forward_hit_v1") ?? 0;
+    await writeRows("daily_runs", [{
+      service_date: payload.service_date,
+      status: "complete",
+      analyzed_count: analyzed,
+      recommended_count: recommended,
+      skipped_count: Math.max(0, analyzed - recommended),
+      incomplete_count: incomplete,
+      coverage_percent: analyzed ? Math.round((analyzed - incomplete) / analyzed * 100) : 0,
+      finalized_at: payload.generated_at,
+      run_sha256: rawBodySha256,
+    }], "service_date");
+  }
 
   await writeRows("ingestion_runs", [{
     ingestion_id: ingestionId,

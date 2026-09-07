@@ -1,6 +1,12 @@
 name: Freeze HIT type-G model
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/train_type_g.py
+      - validation/female_racer_ids.json
+      - .github/workflows/train-type-g.yml
   pull_request:
     branches: [main]
     paths:
@@ -32,10 +38,21 @@ jobs:
           EDGE_MODEL_TOKEN: ${{ secrets.EDGE_MODEL_TOKEN }}
           EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
         run: python scripts/train_type_g.py
+      - name: Smoke-test production type-G preparation
+        env:
+          EDGE_SERVICE_DATE: "2026-09-07"
+          TYPE_G_NOW: "2026-09-07T00:00:00+00:00"
+          TYPE_G_ARTIFACT_PATH: validation-output/type-g-model
+          EDGE_MODEL_REPOSITORY: ${{ secrets.EDGE_MODEL_REPOSITORY }}
+          EDGE_MODEL_TOKEN: ${{ secrets.EDGE_MODEL_TOKEN }}
+          EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
+        run: |
+          python scripts/prepare_type_g.py
+          test -s .runtime/type-g-payload.json
       - name: Upload encrypted model and safe manifest
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hit-type-g-v1
           path: validation-output/type-g-model
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90

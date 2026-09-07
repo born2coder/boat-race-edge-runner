@@ -60,6 +60,22 @@ export type EdgeProgress = {
   lastObservedAt: string | null;
 };
 
+export type TypeGPair = {
+  raceId: string;
+  typeG: Prediction;
+  control: Prediction | null;
+  changedTop3: boolean;
+};
+
+export type TypeGTopKStat = {
+  k: 1 | 3 | 5 | 8;
+  settled: number;
+  controlHits: number;
+  typeGHits: number;
+  controlHitRate: number | null;
+  typeGHitRate: number | null;
+};
+
 type EdgeLedger = {
   schema_version: string;
   updated_at?: string;
@@ -411,6 +427,80 @@ export async function getEdgeCandidates(date = todayJst()): Promise<EdgeCandidat
   const dashboard = await getEdgeDashboard();
   const source = date === dashboard.date ? dashboard.today : dashboard.history;
   return source.filter((candidate) => candidate.race_date === date);
+}
+
+function topKHit(prediction: Prediction, k: number) {
+  return Boolean(prediction.result && prediction.tickets.slice(0, k).some((ticket) => ticket.combination === prediction.result?.combination));
+}
+
+function pairTypeG(typeG: Prediction[], controls: Prediction[]): TypeGPair[] {
+  const controlByRace = new Map(controls.map((prediction) => [prediction.race_id, prediction]));
+  return typeG.map((prediction) => {
+    const control = controlByRace.get(prediction.race_id) ?? null;
+    const left = prediction.tickets.slice(0, 3).map((ticket) => ticket.combination).join("|");
+    const right = control?.tickets.slice(0, 3).map((ticket) => ticket.combination).join("|") ?? "";
+    return { raceId: prediction.race_id, typeG: prediction, control, changedTop3: left !== right };
+  });
+}
+
+function summarizeTypeG(pairs: TypeGPair[]) {
+  const settled = pairs.filter((pair) => pair.typeG.result && pair.control?.result);
+  const typeGHits = settled.filter((pair) => topKHit(pair.typeG, 3));
+  const controlHits = settled.filter((pair) => pair.control && topKHit(pair.control, 3));
+  const purchaseStake = pairs.length * 300;
+  const stake = settled.length * 300;
+  const typeGReturned = typeGHits.reduce((sum, pair) => sum + (pair.typeG.result?.payout_per_100_yen ?? 0), 0);
+  const controlReturned = controlHits.reduce((sum, pair) => sum + (pair.control?.result?.payout_per_100_yen ?? 0), 0);
+  return {
+    races: pairs.length,
+    settled: settled.length,
+    changed: pairs.filter((pair) => pair.changedTop3).length,
+    typeGHits: typeGHits.length,
+    controlHits: controlHits.length,
+    purchaseStake,
+    stake,
+    typeGReturned,
+    controlReturned,
+    typeGReturnRate: stake ? typeGReturned / stake * 100 : null,
+    controlReturnRate: stake ? controlReturned / stake * 100 : null,
+  };
+}
+
+/** type-G is an isolated verification stream and never enters official HIT stats. */
+export async function getTypeGDashboard() {
+  const date = todayJst();
+  if (!hasSupabaseReadConfiguration()) {
+    return { date, live: [] as TypeGPair[], history: [] as TypeGPair[], summary: summarizeTypeG([]), topK: [] as TypeGTopKStat[] };
+  }
+  try {
+    const rows = await readPredictions({
+      publication_mode: "in.(type_g_shadow_v1,type_g_control_v1,type_g_on_hit_v1)",
+      order: "published_at.desc",
+      limit: 5000,
+    });
+    const pairs = pairTypeG(
+      rows.filter((prediction) => prediction.publication_mode === "type_g_shadow_v1"),
+      rows.filter((prediction) => prediction.publication_mode === "type_g_control_v1"),
+    ).sort((left, right) => Date.parse(right.typeG.race.start_at) - Date.parse(left.typeG.race.start_at));
+    const now = Date.now();
+    const live = pairs
+      .filter((pair) => pair.typeG.race.race_date === date && Date.parse(pair.typeG.race.start_at) > now && !pair.typeG.result)
+      .sort((left, right) => Date.parse(left.typeG.race.start_at) - Date.parse(right.typeG.race.start_at));
+    const history = pairs.filter((pair) => pair.typeG.race.race_date < date || Date.parse(pair.typeG.race.start_at) <= now || pair.typeG.result);
+    const settled = history.filter((pair) => pair.typeG.result && pair.control?.result);
+    const topK = ([1, 3, 5, 8] as const).map((k) => {
+      const typeGHits = settled.filter((pair) => topKHit(pair.typeG, k)).length;
+      const controlHits = settled.filter((pair) => pair.control && topKHit(pair.control, k)).length;
+      return {
+        k, settled: settled.length, controlHits, typeGHits,
+        controlHitRate: settled.length ? controlHits / settled.length * 100 : null,
+        typeGHitRate: settled.length ? typeGHits / settled.length * 100 : null,
+      };
+    });
+    return { date, live, history, summary: summarizeTypeG(history), topK };
+  } catch {
+    return { date, live: [] as TypeGPair[], history: [] as TypeGPair[], summary: summarizeTypeG([]), topK: [] as TypeGTopKStat[] };
+  }
 }
 
 export type YesterdayResultDay = { date: string; predictions: Prediction[] };
