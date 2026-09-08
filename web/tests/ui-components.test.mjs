@@ -45,7 +45,10 @@ test("shows EDGE verification progress, 150 percent candidates, and history", as
   assert.match(page, /liveGroups/);
   assert.match(page, /購入点数/);
   assert.match(page, /的中払戻合計/);
-  assert.match(page, /pendingHistoryGroups/);
+  assert.match(page, /本日の結果/);
+  assert.match(page, /トータル/);
+  assert.match(page, /summarizeResults/);
+  assert.match(page, /todayFinishedGroups/);
   assert.match(page, /HistoryLedger/);
   const ledger = await readFile(new URL("../app/edge/history-ledger.tsx", import.meta.url), "utf8");
   assert.match(ledger, /edge-history-row/);
