@@ -1,6 +1,7 @@
 import { claimIngestionNonce, ingestLivePayload } from "@/db/ingest-repository";
 import { ingestPayloadSchema } from "@/lib/ingest-schema";
 import { recoverPublishedResults } from "@/db/live-repository";
+import { SupabaseError } from "@/db/supabase";
 import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -72,8 +73,11 @@ export async function POST(request: Request) {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
+    const failure = error instanceof SupabaseError
+      ? { message: error.message, resource: error.resource, detail: error.responseText }
+      : { message: error instanceof Error ? error.message : "ingestion failed" };
     return Response.json(
-      { status: "failed", message: error instanceof Error ? error.message : "ingestion failed" },
+      { status: "failed", ...failure },
       { status: 500, headers: { "Cache-Control": "no-store" } },
     );
   }
