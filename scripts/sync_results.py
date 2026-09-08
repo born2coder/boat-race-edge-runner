@@ -100,8 +100,12 @@ def send_payload(endpoint: str, secret: str, payload: dict[str, Any]) -> dict[st
             "X-Edge-Signature": signature,
         },
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        return json.loads(response.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        response_body = error.read().decode("utf-8", errors="replace")[:1000]
+        raise RuntimeError(f"ingest endpoint returned HTTP {error.code}: {response_body}") from error
 
 
 def main() -> None:
