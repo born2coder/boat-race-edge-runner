@@ -45,6 +45,8 @@ test("scheduled runner keeps credentials out of source and syncs the active serv
   assert.match(workflow, /push:/);
   assert.doesNotMatch(workflow, /date -d yesterday/);
   assert.match(workflow, /--no-legacy-predictions/);
+  assert.match(workflow, /inputs:\s*\n\s+service_date:/);
+  assert.match(workflow, /inputs\.service_date/);
   assert.doesNotMatch(workflow, /x-edge-signature:\s*[a-f0-9]{64}/i);
 });
 
