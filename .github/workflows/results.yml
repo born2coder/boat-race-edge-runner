@@ -10,6 +10,11 @@ on:
   schedule:
     - cron: "17 21-23,0-13 * * *"
   workflow_dispatch:
+    inputs:
+      service_date:
+        description: "再取得する開催日（YYYY-MM-DD、空欄は本日）"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -42,4 +47,6 @@ jobs:
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
           TZ: Asia/Tokyo
         run: |
-          python scripts/sync_results.py --no-legacy-predictions --date "$(date +%F)"
+          service_date="${{ inputs.service_date }}"
+          if [ -z "$service_date" ]; then service_date="$(date +%F)"; fi
+          python scripts/sync_results.py --no-legacy-predictions --date "$service_date"
