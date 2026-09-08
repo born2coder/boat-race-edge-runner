@@ -5,6 +5,7 @@ export class SupabaseError extends Error {
     message: string,
     public readonly status: number,
     public readonly responseText: string,
+    public readonly resource: string,
   ) {
     super(message);
   }
@@ -43,7 +44,12 @@ export async function supabaseRequest<T>(
   });
   const text = await response.text();
   if (!response.ok) {
-    throw new SupabaseError(`Supabase request failed (${response.status})`, response.status, text.slice(0, 1000));
+    throw new SupabaseError(
+      `Supabase request failed (${response.status})`,
+      response.status,
+      text.slice(0, 1000),
+      path.split("?", 1)[0],
+    );
   }
   return (text ? JSON.parse(text) : null) as T;
 }
@@ -55,4 +61,3 @@ export function queryString(values: Record<string, string | number | undefined>)
   }
   return params.toString();
 }
-
