@@ -92,9 +92,14 @@ test("completed EDGE candidates are settled with one bulk upsert", async () => {
 
 test("result sync surfaces a bounded ingest error response", async () => {
   const sync = await readFile(new URL("../../scripts/sync_results.py", import.meta.url), "utf8");
+  const route = await readFile(new URL("../app/api/internal/ingest/route.ts", import.meta.url), "utf8");
+  const supabase = await readFile(new URL("../db/supabase.ts", import.meta.url), "utf8");
   assert.match(sync, /except urllib\.error\.HTTPError as error/);
   assert.match(sync, /\[:1000\]/);
   assert.match(sync, /ingest endpoint returned HTTP/);
+  assert.match(route, /error instanceof SupabaseError/);
+  assert.match(route, /resource: error\.resource/);
+  assert.match(supabase, /path\.split\("\?", 1\)\[0\]/);
 });
 
 test("Vercel build is free of the previous Cloudflare runtime", async () => {
