@@ -368,6 +368,32 @@
         },
         {
           "combination": "1-2-5",
+          "edge_id": "edge_8ca34d2b1176aed87ad08eb8",
+          "expected_value_percent": 154.29,
+          "observed_at": "2026-09-08T04:33:05.139331+00:00",
+          "odds_decimal": 22.6,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 154.29,
+              "label": "t20",
+              "minutes_before": 22.9,
+              "observed_at": "2026-09-08T04:33:05.139331+00:00",
+              "odds_decimal": 22.6,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0682694124,
+          "race_date": "2026-09-08",
+          "race_id": "BR:20260908:03:07",
+          "race_no": 7,
+          "start_at": "2026-09-08T13:56:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "03",
+          "venue_name": "江戸川"
+        },
+        {
+          "combination": "1-2-5",
           "edge_id": "edge_d980f9891823f54a161d6b35",
           "expected_value_percent": 307.31,
           "observed_at": "2026-09-08T02:01:16.791929+00:00",
@@ -3176,8 +3202,8 @@
         }
       ],
       "date": "2026-09-08",
-      "last_observed_at": "2026-09-08T04:29:52.876193+00:00",
-      "observed_count": 54
+      "last_observed_at": "2026-09-08T04:33:05.139331+00:00",
+      "observed_count": 55
     },
     {
       "candidates": [
@@ -7106,5 +7132,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-08T13:30:03.401959+09:00"
+  "updated_at": "2026-09-08T13:33:17.322016+09:00"
 }
