@@ -150,33 +150,38 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   // former per-candidate PATCH loop issued hundreds of sequential requests late
   // in the service day and caused the Vercel ingest route to return HTTP 500.
   if (payload.results.length > 0) {
-    const resultsByRace = new Map(payload.results.map((result) => [result.race_id, result]));
-    const raceIds = payload.results.map((result) => result.race_id);
-    const raceIdChunks = Array.from(
-      { length: Math.ceil(raceIds.length / EDGE_RESULT_LOOKUP_CHUNK_SIZE) },
-      (_, index) => raceIds.slice(index * EDGE_RESULT_LOOKUP_CHUNK_SIZE, (index + 1) * EDGE_RESULT_LOOKUP_CHUNK_SIZE),
-    );
-    const edgeRows = (await Promise.all(raceIdChunks.map((chunk) =>
-      supabaseRequest<Array<Record<string, unknown> & { edge_id: string; race_id: string; combination: string }>>(
-        `edge_candidates?${queryString({
-          select: "*",
-          race_id: `in.(${chunk.join(",")})`,
-          limit: 2304,
-        })}`,
-        {},
-        "service",
-      )))).flat();
-    const settledEdgeRows = edgeRows.flatMap((row) => {
-      const result = resultsByRace.get(row.race_id);
-      return result ? [{
-        ...row,
-        status: "settled",
-        result_combination: result.combination,
-        payout_per_100_yen: result.payout_per_100_yen,
-        hit: row.combination === result.combination,
-      }] : [];
-    });
-    await writeRows("edge_candidates", settledEdgeRows, "edge_id");
+    try {
+      const resultsByRace = new Map(payload.results.map((result) => [result.race_id, result]));
+      const raceIds = payload.results.map((result) => result.race_id);
+      const raceIdChunks = Array.from(
+        { length: Math.ceil(raceIds.length / EDGE_RESULT_LOOKUP_CHUNK_SIZE) },
+        (_, index) => raceIds.slice(index * EDGE_RESULT_LOOKUP_CHUNK_SIZE, (index + 1) * EDGE_RESULT_LOOKUP_CHUNK_SIZE),
+      );
+      const edgeRows = (await Promise.all(raceIdChunks.map((chunk) =>
+        supabaseRequest<Array<Record<string, unknown> & { edge_id: string; race_id: string; combination: string }>>(
+          `edge_candidates?${queryString({
+            select: "*",
+            race_id: `in.(${chunk.join(",")})`,
+            limit: 2304,
+          })}`,
+          {},
+          "service",
+        )))).flat();
+      const settledEdgeRows = edgeRows.flatMap((row) => {
+        const result = resultsByRace.get(row.race_id);
+        return result ? [{
+          ...row,
+          status: "settled",
+          result_combination: result.combination,
+          payout_per_100_yen: result.payout_per_100_yen,
+          hit: row.combination === result.combination,
+        }] : [];
+      });
+      await writeRows("edge_candidates", settledEdgeRows, "edge_id");
+    } catch (error) {
+      if (!(error instanceof SupabaseError) || error.resource !== "edge_candidates") throw error;
+      console.error("EDGE candidate settlement unavailable", error.status, error.responseText);
+    }
   }
 
   if (payload.stream === "official") {
