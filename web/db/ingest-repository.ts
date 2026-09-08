@@ -144,38 +144,32 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
     observed_at: payload.generated_at,
   })), "race_id");
 
-  // Fetch candidates for the whole result batch once. Querying once per race made
-  // a completed 144-race service day exceed the ingest function's time budget.
+  // Settle every matching EDGE candidate in one read and one bulk upsert. The
+  // former per-candidate PATCH loop issued hundreds of sequential requests late
+  // in the service day and caused the Vercel ingest route to return HTTP 500.
   if (payload.results.length > 0) {
     const resultsByRace = new Map(payload.results.map((result) => [result.race_id, result]));
     const raceIds = payload.results.map((result) => result.race_id);
-    const edgeRows = await supabaseRequest<Array<{ edge_id: string; race_id: string; combination: string }>>(
+    const edgeRows = await supabaseRequest<Array<Record<string, unknown> & { edge_id: string; race_id: string; combination: string }>>(
       `edge_candidates?${queryString({
-        select: "edge_id,race_id,combination",
+        select: "*",
         race_id: `in.(${raceIds.join(",")})`,
         limit: 2304,
       })}`,
       {},
       "service",
     );
-    for (const row of edgeRows) {
+    const settledEdgeRows = edgeRows.flatMap((row) => {
       const result = resultsByRace.get(row.race_id);
-      if (!result) continue;
-      await supabaseRequest(
-        `edge_candidates?${queryString({ edge_id: `eq.${row.edge_id}` })}`,
-        {
-          method: "PATCH",
-          headers: { Prefer: "return=minimal" },
-          body: JSON.stringify({
-            status: "settled",
-            result_combination: result.combination,
-            payout_per_100_yen: result.payout_per_100_yen,
-            hit: row.combination === result.combination,
-          }),
-        },
-        "service",
-      );
-    }
+      return result ? [{
+        ...row,
+        status: "settled",
+        result_combination: result.combination,
+        payout_per_100_yen: result.payout_per_100_yen,
+        hit: row.combination === result.combination,
+      }] : [];
+    });
+    await writeRows("edge_candidates", settledEdgeRows, "edge_id");
   }
 
   if (payload.stream === "official") {
