@@ -79,6 +79,10 @@ test("morning forward records are capped at ten and settle only the first three"
 test("completed EDGE candidates are settled with one bulk upsert", async () => {
   const repository = await readFile(new URL("../db/ingest-repository.ts", import.meta.url), "utf8");
   const settlement = repository.match(/\/\/ Settle every matching EDGE candidate[\s\S]*?await writeRows\("edge_candidates", settledEdgeRows, "edge_id"\);/)?.[0] ?? "";
+  assert.match(repository, /EDGE_RESULT_LOOKUP_CHUNK_SIZE = 40/);
+  assert.match(settlement, /raceIdChunks/);
+  assert.match(settlement, /Promise\.all/);
+  assert.match(settlement, /chunk\.join/);
   assert.match(settlement, /select: "\*"/);
   assert.match(settlement, /settledEdgeRows/);
   assert.match(settlement, /flatMap/);
