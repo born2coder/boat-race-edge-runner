@@ -76,6 +76,23 @@ test("morning forward records are capped at ten and settle only the first three"
   assert.match(repository, /official_performance_eligible: prediction\.official_performance_eligible/);
 });
 
+test("completed EDGE candidates are settled with one bulk upsert", async () => {
+  const repository = await readFile(new URL("../db/ingest-repository.ts", import.meta.url), "utf8");
+  const settlement = repository.match(/\/\/ Settle every matching EDGE candidate[\s\S]*?await writeRows\("edge_candidates", settledEdgeRows, "edge_id"\);/)?.[0] ?? "";
+  assert.match(settlement, /select: "\*"/);
+  assert.match(settlement, /settledEdgeRows/);
+  assert.match(settlement, /flatMap/);
+  assert.doesNotMatch(settlement, /method: "PATCH"/);
+  assert.doesNotMatch(settlement, /for \(const row of edgeRows\)/);
+});
+
+test("result sync surfaces a bounded ingest error response", async () => {
+  const sync = await readFile(new URL("../../scripts/sync_results.py", import.meta.url), "utf8");
+  assert.match(sync, /except urllib\.error\.HTTPError as error/);
+  assert.match(sync, /\[:1000\]/);
+  assert.match(sync, /ingest endpoint returned HTTP/);
+});
+
 test("Vercel build is free of the previous Cloudflare runtime", async () => {
   const packageJson = await readFile(new URL("../package.json", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/internal/ingest/route.ts", import.meta.url), "utf8");
