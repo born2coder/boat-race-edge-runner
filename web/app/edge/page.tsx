@@ -37,6 +37,41 @@ function uniqueRaces(groups: EdgeRaceGroup[]) {
   return Array.from(new Map(groups.map((group) => [group.race_id, group])).values());
 }
 
+function summarizeResults(groups: EdgeRaceGroup[]) {
+  const settledGroups = groups.filter((group) => group.candidates.every((candidate) => candidate.status === "settled"));
+  const pendingGroups = groups.filter((group) => !group.candidates.every((candidate) => candidate.status === "settled"));
+  const candidates = groups.flatMap((group) => group.candidates);
+  const settledCandidates = settledGroups.flatMap((group) => group.candidates);
+  const hits = settledCandidates.filter((candidate) => candidate.hit);
+  const payoutYen = hits.reduce((sum, candidate) => sum + (candidate.payout_per_100_yen ?? 0), 0);
+  const purchaseYen = candidates.length * 100;
+  const returnRate = settledCandidates.length ? payoutYen / (settledCandidates.length * 100) * 100 : null;
+
+  return {
+    settledRaces: settledGroups.length,
+    pendingRaces: pendingGroups.length,
+    purchasePoints: candidates.length,
+    purchaseYen,
+    hits: hits.length,
+    payoutYen,
+    returnRate,
+  };
+}
+
+function ResultsSummary({ title, summary }: { title: string; summary: ReturnType<typeof summarizeResults> }) {
+  return <section className="edge-summary-block" aria-label={title}>
+    <h3>{title}</h3>
+    <div className="edge-history-summary detailed">
+      <div><span>結果確定</span><strong>{summary.settledRaces}R</strong></div>
+      <div><span>結果確認中</span><strong>{summary.pendingRaces}R</strong></div>
+      <div><span>購入点数</span><strong>{summary.purchasePoints}点</strong><small>{formatYen(summary.purchaseYen)}</small></div>
+      <div><span>的中</span><strong>{summary.hits}点</strong></div>
+      <div><span>的中払戻合計</span><strong>{formatYen(summary.payoutYen)}</strong></div>
+      <div><span>検証回収率</span><strong>{summary.returnRate == null ? "—" : `${summary.returnRate.toFixed(1)}%`}</strong></div>
+    </div>
+  </section>;
+}
+
 function PickList({ candidates }: { candidates: EdgeCandidate[] }) {
   return <div className="edge-pick-list">{candidates.map((candidate) => <section className={`edge-pick ${candidate.hit ? "hit" : ""}`} key={candidate.edge_id}>
     <div className="edge-pick-heading"><strong>{candidate.combination}</strong>{candidate.hit && <span>的中</span>}</div>
@@ -62,7 +97,7 @@ function LiveRaceCard({ group, isNext }: { group: EdgeRaceGroup; isNext: boolean
 }
 
 export default async function EdgePage() {
-  const { today, history, progress } = await getEdgeDashboard();
+  const { date, today, history, progress } = await getEdgeDashboard();
   const now = new Date().toISOString();
   const nowMs = Date.parse(now);
   const todayGroups = groupByRace(today);
@@ -74,14 +109,9 @@ export default async function EdgePage() {
     ...historyGroups,
   ]), "desc");
   const finishedCandidates = finishedGroups.flatMap((group) => group.candidates);
-  const settledHistoryGroups = finishedGroups.filter((group) => group.candidates.every((candidate) => candidate.status === "settled"));
-  const pendingHistoryGroups = finishedGroups.filter((group) => !group.candidates.every((candidate) => candidate.status === "settled"));
-  const settledHistory = settledHistoryGroups.flatMap((group) => group.candidates);
-  const historyHits = settledHistory.filter((candidate) => candidate.hit);
-  const historyReturn = historyHits.reduce((sum, candidate) => sum + (candidate.payout_per_100_yen ?? 0), 0);
-  const purchasePoints = finishedCandidates.length;
-  const purchaseYen = purchasePoints * 100;
-  const historyReturnRate = settledHistory.length ? historyReturn / (settledHistory.length * 100) * 100 : null;
+  const todayFinishedGroups = finishedGroups.filter((group) => group.candidates.some((candidate) => candidate.race_date === date));
+  const todaySummary = summarizeResults(todayFinishedGroups);
+  const totalSummary = summarizeResults(finishedGroups);
   const currentHourJst = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tokyo", hour: "2-digit", hour12: false }).format(new Date()));
   const monitoringEnded = currentHourJst >= 22;
 
@@ -113,13 +143,9 @@ export default async function EdgePage() {
         <div><p className="section-kicker">VERIFICATION LEDGER</p><h2 id="edge-history-title">終了したレース・検証結果</h2><p>レースを選ぶと、記録した買い目の詳細を確認できます。</p></div>
         <span className="edge-count">記録 {finishedGroups.length}レース・{finishedCandidates.length}点</span>
       </div>
-      <div className="edge-history-summary detailed">
-        <div><span>結果確定</span><strong>{settledHistoryGroups.length}R</strong></div>
-        <div><span>結果確認中</span><strong>{pendingHistoryGroups.length}R</strong></div>
-        <div><span>購入点数</span><strong>{purchasePoints}点</strong><small>{formatYen(purchaseYen)}</small></div>
-        <div><span>的中</span><strong>{historyHits.length}点</strong></div>
-        <div><span>的中払戻合計</span><strong>{formatYen(historyReturn)}</strong></div>
-        <div><span>検証回収率</span><strong>{historyReturnRate == null ? "—" : `${historyReturnRate.toFixed(1)}%`}</strong></div>
+      <div className="edge-summary-comparison">
+        <ResultsSummary title="本日の結果" summary={todaySummary} />
+        <ResultsSummary title="トータル" summary={totalSummary} />
       </div>
       {finishedGroups.length === 0 ? <div className="edge-empty"><CircleHelp aria-hidden="true" /><div><h3>終了したレースはまだありません</h3><p>レース終了後、結果とともにここへ移動します。</p></div></div> : <HistoryLedger groups={finishedGroups.slice(0, 80)} now={now} />}
     </section>
