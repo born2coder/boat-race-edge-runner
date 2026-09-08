@@ -2,6 +2,8 @@ import type { IngestPayload } from "@/lib/ingest-schema";
 import { queryString, SupabaseError, supabaseRequest } from "@/db/supabase";
 import { canPublishReassessment } from "@/lib/reassessment-safety";
 
+const EDGE_RESULT_LOOKUP_CHUNK_SIZE = 40;
+
 async function writeRows(
   table: string,
   rows: Record<string, unknown>[],
@@ -150,15 +152,20 @@ export async function ingestLivePayload(payload: IngestPayload, rawBodySha256: s
   if (payload.results.length > 0) {
     const resultsByRace = new Map(payload.results.map((result) => [result.race_id, result]));
     const raceIds = payload.results.map((result) => result.race_id);
-    const edgeRows = await supabaseRequest<Array<Record<string, unknown> & { edge_id: string; race_id: string; combination: string }>>(
-      `edge_candidates?${queryString({
-        select: "*",
-        race_id: `in.(${raceIds.join(",")})`,
-        limit: 2304,
-      })}`,
-      {},
-      "service",
+    const raceIdChunks = Array.from(
+      { length: Math.ceil(raceIds.length / EDGE_RESULT_LOOKUP_CHUNK_SIZE) },
+      (_, index) => raceIds.slice(index * EDGE_RESULT_LOOKUP_CHUNK_SIZE, (index + 1) * EDGE_RESULT_LOOKUP_CHUNK_SIZE),
     );
+    const edgeRows = (await Promise.all(raceIdChunks.map((chunk) =>
+      supabaseRequest<Array<Record<string, unknown> & { edge_id: string; race_id: string; combination: string }>>(
+        `edge_candidates?${queryString({
+          select: "*",
+          race_id: `in.(${chunk.join(",")})`,
+          limit: 2304,
+        })}`,
+        {},
+        "service",
+      )))).flat();
     const settledEdgeRows = edgeRows.flatMap((row) => {
       const result = resultsByRace.get(row.race_id);
       return result ? [{
