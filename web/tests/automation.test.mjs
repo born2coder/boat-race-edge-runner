@@ -80,7 +80,7 @@ test("morning forward records are capped at ten and settle only the first three"
 
 test("completed EDGE candidates are settled with one bulk upsert", async () => {
   const repository = await readFile(new URL("../db/ingest-repository.ts", import.meta.url), "utf8");
-  const settlement = repository.match(/\/\/ Settle every matching EDGE candidate[\s\S]*?await writeRows\("edge_candidates", settledEdgeRows, "edge_id"\);/)?.[0] ?? "";
+  const settlement = repository.match(/\/\/ Settle every matching EDGE candidate[\s\S]*?EDGE candidate settlement unavailable/)?.[0] ?? "";
   assert.match(repository, /EDGE_RESULT_LOOKUP_CHUNK_SIZE = 40/);
   assert.match(settlement, /raceIdChunks/);
   assert.match(settlement, /Promise\.all/);
@@ -90,6 +90,14 @@ test("completed EDGE candidates are settled with one bulk upsert", async () => {
   assert.match(settlement, /flatMap/);
   assert.doesNotMatch(settlement, /method: "PATCH"/);
   assert.doesNotMatch(settlement, /for \(const row of edgeRows\)/);
+  assert.match(settlement, /error\.resource !== "edge_candidates"/);
+});
+
+test("all Supabase migrations are documented for one-time setup", async () => {
+  const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+  assert.match(readme, /20260903_initial\.sql/);
+  assert.match(readme, /20260904_morning_reassessments\.sql/);
+  assert.match(readme, /20260906_edge_candidates\.sql/);
 });
 
 test("result sync surfaces a bounded ingest error response", async () => {
