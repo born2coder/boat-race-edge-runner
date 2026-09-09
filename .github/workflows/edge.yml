@@ -7,6 +7,7 @@ on:
       - scripts/edge_shadow.py
       - scripts/watch_edge.py
       - scripts/send_payload.py
+      - tests/test_edge_workflow.py
       - requirements.txt
       - .github/workflows/edge.yml
   schedule:
