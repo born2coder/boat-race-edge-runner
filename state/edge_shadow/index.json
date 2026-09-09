@@ -3,6 +3,32 @@
     {
       "candidates": [
         {
+          "combination": "2-3-5",
+          "edge_id": "edge_6331937465f3b5b58d4de795",
+          "expected_value_percent": 218.84,
+          "observed_at": "2026-09-09T01:31:44.430923+00:00",
+          "odds_decimal": 99.2,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 218.84,
+              "label": "t20",
+              "minutes_before": 23.3,
+              "observed_at": "2026-09-09T01:31:44.430923+00:00",
+              "odds_decimal": 99.2,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0220606626,
+          "race_date": "2026-09-09",
+          "race_id": "BR:20260909:04:01",
+          "race_no": 1,
+          "start_at": "2026-09-09T10:55:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "04",
+          "venue_name": "平和島"
+        },
+        {
           "combination": "1-2-6",
           "edge_id": "edge_c5d1b7fc0259961ce8a3240e",
           "expected_value_percent": 281.12,
@@ -368,8 +394,8 @@
         }
       ],
       "date": "2026-09-09",
-      "last_observed_at": "2026-09-09T01:28:29.852312+00:00",
-      "observed_count": 11
+      "last_observed_at": "2026-09-09T01:31:44.430923+00:00",
+      "observed_count": 12
     },
     {
       "candidates": [
@@ -10285,5 +10311,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-09T10:28:41.904230+09:00"
+  "updated_at": "2026-09-09T10:31:54.935067+09:00"
 }
