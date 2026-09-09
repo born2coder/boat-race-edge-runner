@@ -10,11 +10,12 @@ on:
       - requirements.txt
       - .github/workflows/edge.yml
   schedule:
-    # GitHub Actions cron is UTC. These start at 08:00, 13:30, and 19:00 JST.
-    # Three non-overlapping watchers cover the service day and check every 3 minutes.
-    - cron: "0 23 * * *"
-    - cron: "30 4 * * *"
-    - cron: "0 10 * * *"
+    # GitHub Actions cron is UTC. Start ahead of the first race window and avoid
+    # the busiest top-of-hour slots. These run at 07:47, 13:37, and 19:07 JST.
+    # Three overlapping watchers cover the service day and check every 3 minutes.
+    - cron: "47 22 * * *"
+    - cron: "37 4 * * *"
+    - cron: "7 10 * * *"
   workflow_dispatch:
 
 permissions:
