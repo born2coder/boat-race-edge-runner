@@ -940,6 +940,32 @@
         },
         {
           "combination": "1-2-3",
+          "edge_id": "edge_156e12616a82034296a76b0a",
+          "expected_value_percent": 192.44,
+          "observed_at": "2026-09-09T02:16:44.663737+00:00",
+          "odds_decimal": 54.1,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 192.44,
+              "label": "t20",
+              "minutes_before": 23.3,
+              "observed_at": "2026-09-09T02:16:44.663737+00:00",
+              "odds_decimal": 54.1,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0355712526,
+          "race_date": "2026-09-09",
+          "race_id": "BR:20260909:17:03",
+          "race_no": 3,
+          "start_at": "2026-09-09T11:40:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "17",
+          "venue_name": "宮島"
+        },
+        {
+          "combination": "1-2-3",
           "edge_id": "edge_d6cd89cf51d5a94f345569ed",
           "expected_value_percent": 265.39,
           "observed_at": "2026-09-09T00:04:54.997998+00:00",
@@ -1148,8 +1174,8 @@
         }
       ],
       "date": "2026-09-09",
-      "last_observed_at": "2026-09-09T02:10:28.541596+00:00",
-      "observed_count": 23
+      "last_observed_at": "2026-09-09T02:16:44.663737+00:00",
+      "observed_count": 24
     },
     {
       "candidates": [
@@ -11065,5 +11091,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-09T11:10:41.200691+09:00"
+  "updated_at": "2026-09-09T11:16:57.701833+09:00"
 }
