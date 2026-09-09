@@ -287,11 +287,37 @@
           "threshold_percent": 150.0,
           "venue_code": "21",
           "venue_name": "芦屋"
+        },
+        {
+          "combination": "1-2-3",
+          "edge_id": "edge_29341b0e9ee13e43df77ed0a",
+          "expected_value_percent": 155.99,
+          "observed_at": "2026-09-09T01:25:16.396376+00:00",
+          "odds_decimal": 30.4,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 155.99,
+              "label": "t20",
+              "minutes_before": 22.7,
+              "observed_at": "2026-09-09T01:25:16.396376+00:00",
+              "odds_decimal": 30.4,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0513133682,
+          "race_date": "2026-09-09",
+          "race_id": "BR:20260909:21:06",
+          "race_no": 6,
+          "start_at": "2026-09-09T10:48:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "21",
+          "venue_name": "芦屋"
         }
       ],
       "date": "2026-09-09",
-      "last_observed_at": "2026-09-09T01:22:03.093655+00:00",
-      "observed_count": 9
+      "last_observed_at": "2026-09-09T01:25:16.396376+00:00",
+      "observed_count": 10
     },
     {
       "candidates": [
@@ -10207,5 +10233,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-09T10:22:13.970924+09:00"
+  "updated_at": "2026-09-09T10:25:27.478624+09:00"
 }
