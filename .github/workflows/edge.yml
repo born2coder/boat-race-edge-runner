@@ -10,6 +10,7 @@ on:
       - tests/test_edge_workflow.py
       - requirements.txt
       - .github/workflows/edge.yml
+      - .github/workflows/results.yml
   schedule:
     # GitHub Actions cron is UTC. Start ahead of the first race window and avoid
     # the busiest top-of-hour slots. These run at 07:47, 13:37, and 19:07 JST.
