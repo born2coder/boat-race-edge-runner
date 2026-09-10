@@ -15,6 +15,15 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertNotIn("timezone:", workflow)
         self.assertIn("cancel-in-progress: true", workflow)
 
+    def test_results_workflow_recovers_a_missing_edge_observer(self):
+        workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")
+
+        self.assertIn("actions: write", workflow)
+        self.assertIn("Ensure EDGE observer is running", workflow)
+        self.assertIn("actions/workflows/edge.yml/runs", workflow)
+        self.assertIn("actions/workflows/edge.yml/dispatches", workflow)
+        self.assertIn('"queued", "in_progress"', workflow)
+
     def test_forward_watchers_are_scheduled_in_utc_for_jst_service_hours(self):
         workflow = (ROOT / ".github" / "workflows" / "forward.yml").read_text(encoding="utf-8")
 
