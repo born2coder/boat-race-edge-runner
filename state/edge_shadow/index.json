@@ -3488,6 +3488,32 @@
         },
         {
           "combination": "1-2-4",
+          "edge_id": "edge_f738311c197698f60735a2e3",
+          "expected_value_percent": 174.06,
+          "observed_at": "2026-09-11T10:00:54.141141+00:00",
+          "odds_decimal": 30.5,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 174.06,
+              "label": "t20",
+              "minutes_before": 24.1,
+              "observed_at": "2026-09-11T10:00:54.141141+00:00",
+              "odds_decimal": 30.5,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.057069506,
+          "race_date": "2026-09-11",
+          "race_id": "BR:20260911:12:10",
+          "race_no": 10,
+          "start_at": "2026-09-11T19:25:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "12",
+          "venue_name": "住之江"
+        },
+        {
+          "combination": "1-2-4",
           "edge_id": "edge_c794d7c7c0088613377b49d0",
           "expected_value_percent": 174.76,
           "observed_at": "2026-09-11T01:13:21.265077+00:00",
@@ -6868,8 +6894,8 @@
         }
       ],
       "date": "2026-09-11",
-      "last_observed_at": "2026-09-11T09:51:38.425899+00:00",
-      "observed_count": 105
+      "last_observed_at": "2026-09-11T10:00:54.141141+00:00",
+      "observed_count": 106
     },
     {
       "candidates": [
@@ -26341,5 +26367,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-11T18:51:50.978210+09:00"
+  "updated_at": "2026-09-11T19:01:07.655704+09:00"
 }
