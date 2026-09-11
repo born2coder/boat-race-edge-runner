@@ -81,6 +81,32 @@
           "venue_name": "戸田"
         },
         {
+          "combination": "1-3-5",
+          "edge_id": "edge_0784b397c1b96d67042a815d",
+          "expected_value_percent": 173.71,
+          "observed_at": "2026-09-11T01:38:45.544030+00:00",
+          "odds_decimal": 37.8,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 173.71,
+              "label": "t20",
+              "minutes_before": 24.2,
+              "observed_at": "2026-09-11T01:38:45.544030+00:00",
+              "odds_decimal": 37.8,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0459538147,
+          "race_date": "2026-09-11",
+          "race_id": "BR:20260911:05:01",
+          "race_no": 1,
+          "start_at": "2026-09-11T11:03:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "05",
+          "venue_name": "多摩川"
+        },
+        {
           "combination": "1-2-4",
           "edge_id": "edge_c794d7c7c0088613377b49d0",
           "expected_value_percent": 174.76,
@@ -654,8 +680,8 @@
         }
       ],
       "date": "2026-09-11",
-      "last_observed_at": "2026-09-11T01:35:30.652372+00:00",
-      "observed_count": 16
+      "last_observed_at": "2026-09-11T01:38:45.544030+00:00",
+      "observed_count": 18
     },
     {
       "candidates": [
@@ -20127,5 +20153,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-11T10:35:43.539957+09:00"
+  "updated_at": "2026-09-11T10:38:57.135847+09:00"
 }
