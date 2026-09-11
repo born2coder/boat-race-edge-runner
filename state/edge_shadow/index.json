@@ -6943,11 +6943,37 @@
           "threshold_percent": 150.0,
           "venue_code": "24",
           "venue_name": "大村"
+        },
+        {
+          "combination": "1-4-3",
+          "edge_id": "edge_7ab72624d67dc9695079d5a2",
+          "expected_value_percent": 169.99,
+          "observed_at": "2026-09-11T10:22:28.106087+00:00",
+          "odds_decimal": 34.0,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 169.99,
+              "label": "t20",
+              "minutes_before": 24.5,
+              "observed_at": "2026-09-11T10:22:28.106087+00:00",
+              "odds_decimal": 34.0,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0499981289,
+          "race_date": "2026-09-11",
+          "race_id": "BR:20260911:24:10",
+          "race_no": 10,
+          "start_at": "2026-09-11T19:47:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "24",
+          "venue_name": "大村"
         }
       ],
       "date": "2026-09-11",
-      "last_observed_at": "2026-09-11T10:13:11.298102+00:00",
-      "observed_count": 107
+      "last_observed_at": "2026-09-11T10:22:28.106087+00:00",
+      "observed_count": 108
     },
     {
       "candidates": [
@@ -26419,5 +26445,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-11T19:13:24.910093+09:00"
+  "updated_at": "2026-09-11T19:22:40.465095+09:00"
 }
