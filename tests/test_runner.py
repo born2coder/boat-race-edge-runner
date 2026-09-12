@@ -112,7 +112,8 @@ class RunnerSafetyTests(unittest.TestCase):
     def test_forward_runner_locks_morning_top_ten_and_only_badges_later(self) -> None:
         source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")
         self.assertIn('MORNING_LOCK_DEADLINE = time(9, 30)', source)
-        self.assertIn('.head(DAILY_CAP)', source)
+        self.assertIn('if len(selected_items) == DAILY_CAP:', source)
+        self.assertIn('if not _race_is_publishable(race):', source)
         self.assertIn('"publication_mode": "morning_fixed_hit_v1"', source)
         self.assertIn('classify_reassessment', source)
         self.assertIn('"reassessments": pending_reassessments', source)
