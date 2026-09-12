@@ -253,6 +253,21 @@ def _race_record(frame, cards, titles) -> dict[str, Any]:
     }
 
 
+def _race_is_publishable(race: dict[str, Any]) -> bool:
+    """Reject scratched or incomplete rosters before publishing a prediction."""
+    entries = race.get("entries", [])
+    if len(entries) != 6:
+        return False
+    for entry in entries:
+        racer_id = str(entry.get("racer_id", "")).strip()
+        racer_name = str(entry.get("racer_name", "")).strip()
+        branch = str(entry.get("branch", "")).strip()
+        age = int(_safe_number(entry.get("age"), 0))
+        if not racer_id.isdigit() or not racer_name or branch in {"", "欠場"} or not 15 <= age <= 100:
+            return False
+    return True
+
+
 def _ranking(prediction, race: dict[str, Any]) -> list[dict[str, Any]]:
     scores = {lane: 0.0 for lane in range(1, 7)}
     for rank in range(1, 9):
@@ -368,11 +383,20 @@ def main(session_root: Path | None = None) -> None:
         schedule = _load_service_day_compatible(hybrid_forward, data_root, date)
         cards, titles = _load_cards(data_root, date)
 
+        state = None
         if state_path.exists():
             state = json.loads(state_path.read_text(encoding="utf-8"))
             if state.get("date") != date or state.get("model_version") != MODEL_VERSION:
                 raise RuntimeError("Forward state date/model mismatch")
-        else:
+            # A failed all-or-nothing ingest can leave an unpublished lock with a
+            # scratched roster. Before the morning deadline, rebuild it from the
+            # same model and promote the next complete race.
+            if int(state.get("published_count", 0)) == 0 and any(
+                not _race_is_publishable(item.get("race", {})) for item in state.get("selected", [])
+            ):
+                state = None
+
+        if state is None:
             if now_jst.time() > MORNING_LOCK_DEADLINE:
                 _write_outputs(False, state_path, repository_root)
                 print(json.dumps({"date": date, "pending": False, "reason": "morning_lock_deadline_passed"}))
@@ -383,16 +407,14 @@ def main(session_root: Path | None = None) -> None:
                 print(json.dumps({"date": date, "pending": False, "reason": "fewer_than_ten_open_races"}))
                 return
             morning = predict_morning(candidates, models["morning"])
-            selected = morning.sort_values(["morning_score", "race_id"], ascending=[False, True]).head(DAILY_CAP)
-            if len(selected) < DAILY_CAP:
-                _write_outputs(False, state_path, repository_root)
-                print(json.dumps({"date": date, "pending": False, "reason": "fewer_than_ten_races"}))
-                return
+            ranked = morning.sort_values(["morning_score", "race_id"], ascending=[False, True])
             selected_items = []
-            for row in selected.itertuples(index=False):
+            for row in ranked.itertuples(index=False):
                 series = pd.Series(row._asdict())
                 source_frame = schedule.loc[schedule["race_id"].eq(str(row.race_id))].iloc[0]
                 race = _race_record(source_frame, cards, titles)
+                if not _race_is_publishable(race):
+                    continue
                 prediction = _prediction_record(series, race, now.isoformat())
                 selected_items.append({
                     "race_id_raw": str(row.race_id),
@@ -405,6 +427,12 @@ def main(session_root: Path | None = None) -> None:
                     "reassessment": None,
                     "reassessment_published_at": None,
                 })
+                if len(selected_items) == DAILY_CAP:
+                    break
+            if len(selected_items) < DAILY_CAP:
+                _write_outputs(False, state_path, repository_root)
+                print(json.dumps({"date": date, "pending": False, "reason": "fewer_than_ten_complete_races"}))
+                return
             state = {
                 "schema_version": STATE_SCHEMA,
                 "date": date,

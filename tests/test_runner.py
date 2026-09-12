@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import io
 import json
 import sys
@@ -12,7 +13,7 @@ from types import SimpleNamespace
 import pandas as pd
 
 from scripts.mark_published import main as mark_main
-from scripts.prepare_forward import _load_service_day_compatible, _morning_candidates, _safe_extract
+from scripts.prepare_forward import _load_service_day_compatible, _morning_candidates, _race_is_publishable, _safe_extract
 from scripts.prepare_type_g import augmented_stage1_x
 
 
@@ -88,6 +89,19 @@ class RunnerSafetyTests(unittest.TestCase):
             "2026-09-05T10:33:00+09:00", None,
         ]})
         self.assertEqual(_morning_candidates(frame, now).race_id.tolist(), ["open"])
+
+    def test_scratched_or_incomplete_roster_is_not_publishable(self) -> None:
+        valid = {"entries": [
+            {"racer_id": str(4000 + lane), "racer_name": f"Racer {lane}", "branch": "東京", "age": 30}
+            for lane in range(1, 7)
+        ]}
+        self.assertTrue(_race_is_publishable(valid))
+        scratched = copy.deepcopy(valid)
+        scratched["entries"][1].update({"branch": "欠場", "age": 0})
+        self.assertFalse(_race_is_publishable(scratched))
+        incomplete = copy.deepcopy(valid)
+        incomplete["entries"].pop()
+        self.assertFalse(_race_is_publishable(incomplete))
 
     def test_forward_runner_keeps_top8_and_buys_top3(self) -> None:
         source = (Path(__file__).parents[1] / "scripts" / "prepare_forward.py").read_text(encoding="utf-8")
