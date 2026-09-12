@@ -82,6 +82,58 @@
         },
         {
           "combination": "1-2-3",
+          "edge_id": "edge_a57e07853f11824e13737fe6",
+          "expected_value_percent": 191.8,
+          "observed_at": "2026-09-12T23:59:18.724823+00:00",
+          "odds_decimal": 17.1,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 191.8,
+              "label": "t20",
+              "minutes_before": 24.7,
+              "observed_at": "2026-09-12T23:59:18.724823+00:00",
+              "odds_decimal": 17.1,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.1121665937,
+          "race_date": "2026-09-13",
+          "race_id": "BR:20260913:10:03",
+          "race_no": 3,
+          "start_at": "2026-09-13T09:24:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "10",
+          "venue_name": "三国"
+        },
+        {
+          "combination": "1-5-3",
+          "edge_id": "edge_ba50f9fc72509c082e390640",
+          "expected_value_percent": 157.44,
+          "observed_at": "2026-09-12T23:59:18.724823+00:00",
+          "odds_decimal": 34.9,
+          "odds_snapshots": [
+            {
+              "expected_value_percent": 157.44,
+              "label": "t20",
+              "minutes_before": 24.7,
+              "observed_at": "2026-09-12T23:59:18.724823+00:00",
+              "odds_decimal": 34.9,
+              "target_minutes": 20
+            }
+          ],
+          "predicted_probability": 0.0451125224,
+          "race_date": "2026-09-13",
+          "race_id": "BR:20260913:10:03",
+          "race_no": 3,
+          "start_at": "2026-09-13T09:24:00+09:00",
+          "status": "open",
+          "threshold_percent": 150.0,
+          "venue_code": "10",
+          "venue_name": "三国"
+        },
+        {
+          "combination": "1-2-3",
           "edge_id": "edge_d86126632e15a91a5d7c71b8",
           "expected_value_percent": 187.18,
           "observed_at": "2026-09-12T23:47:02.633272+00:00",
@@ -134,8 +186,8 @@
         }
       ],
       "date": "2026-09-13",
-      "last_observed_at": "2026-09-12T23:47:02.633272+00:00",
-      "observed_count": 4
+      "last_observed_at": "2026-09-12T23:59:18.724823+00:00",
+      "observed_count": 5
     },
     {
       "candidates": [
@@ -32413,5 +32465,5 @@
     }
   ],
   "schema_version": "boat-race-edge-shadow-index/v1",
-  "updated_at": "2026-09-13T08:47:15.068363+09:00"
+  "updated_at": "2026-09-13T08:59:32.083020+09:00"
 }
