@@ -32,8 +32,8 @@ permissions:
 
 concurrency:
   group: boat-race-edge-shadow
-  # One durable writer. Scheduled jobs must not cancel a running observer.
-  cancel-in-progress: false
+  # Scheduled runs queue; a code deployment replaces the old loaded process.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   observe:

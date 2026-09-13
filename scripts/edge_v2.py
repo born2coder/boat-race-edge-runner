@@ -62,7 +62,8 @@ def capture(race, phase, grid, models, computed_at):
         raise ValueError("Request completed outside its prospective window")
     if not timing["official_update_time"]:
         raise ValueError("Official odds timestamp missing")
-    official = datetime.fromisoformat(race["race_date"] + "T" + timing["official_update_time"] + ":00+09:00")
+    # BOAT RACE emits single-digit morning hours, e.g. "8:18".
+    official = datetime.strptime(race["race_date"] + " " + timing["official_update_time"] + " +0900", "%Y-%m-%d %H:%M %z")
     age = (observed - official).total_seconds()
     if age < -60 or age > 300:
         raise ValueError("Official odds are stale or from the future")
@@ -208,6 +209,7 @@ class Observer:
                 try:
                     capture(state["races"][rid], due[rid], future.result(),
                             {"morning": morning.get(rid), "exhibition": exhibition.get(rid)}, computed_at)
+                    state["races"][rid].get("errors", {}).pop(due[rid], None)
                 except Exception as error:
                     state["races"][rid].setdefault("errors", {})[due[rid]] = {"at": utcnow().isoformat(), "reason": str(error)[:180]}
         state["last_tick_at"] = utcnow().isoformat()

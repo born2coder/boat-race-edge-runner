@@ -94,6 +94,17 @@ class EdgeV2Tests(unittest.TestCase):
         self.assertEqual(race["snapshots"]["t20"]["snapshot_id"],first["snapshot_id"])
         self.assertEqual(race["snapshots"]["t20"]["odds"][8],200.)
 
+    def test_official_single_digit_morning_hour_is_accepted(self):
+        model = {"combinations": COMBOS, "probabilities": [1/120]*120}
+        for hour in (8, 9, 10):
+            for label in (f"{hour}:18", f"{hour:02d}:18"):
+                race = fixture(); race["snapshots"] = {}
+                race["start_at"] = f"2026-09-14T{hour:02d}:38:00+09:00"
+                observed = f"2026-09-14T{hour:02d}:18:20+09:00"
+                snap = capture(race, "t20", ({c:200. for c in COMBOS},
+                    {"observed_at": observed, "official_update_time": label}), {"morning": model}, observed)
+                self.assertEqual(len(snap["odds"]), 120)
+
     def test_late_or_stale_odds_not_backdated_into_window(self):
         race=fixture();model={"combinations":COMBOS,"probabilities":[1/120]*120}
         for observed, official in [("2026-09-14T01:31:00+00:00","10:30"),("2026-09-14T01:10:00+00:00","09:50")]:

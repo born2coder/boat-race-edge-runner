@@ -62,6 +62,8 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
   const heartbeatAge = progress?.last_tick_at ? (Date.now() - Date.parse(progress.last_tick_at)) / 60000 : null;
   const jstHour = Number(new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Tokyo", hour: "2-digit", hourCycle: "h23"}).format(new Date()));
   const stale = date === today && jstHour >= 7 && jstHour < 22 && (heartbeatAge == null || heartbeatAge > 5);
+  const missing = progress ? Object.values(progress.missed).some((count) => count > 0) : false;
+  const hasSelectedObservation = races.some((race) => race.snapshots[phase]?.[model] != null);
   const pages = Math.max(1, Math.ceil(past.length / 20));
   const currentPage = Math.min(page, pages);
   const pageLink = (p: number) => `/edge?${new URLSearchParams({date, phase, model, threshold: String(threshold), page: String(p)})}#edge-history`;
@@ -76,14 +78,14 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
       <label>観測時点<select name="phase" defaultValue={phase}>{Object.entries(phaseLabels).map(([key,label]) => <option key={key} value={key}>{label}</option>)}</select></label>
       <label>期待値基準<select name="threshold" defaultValue={threshold}>{thresholds.map((t) => <option key={t} value={t}>{t}%以上</option>)}</select></label><button type="submit">表示する</button>
     </form>
-    <section className={`edge-v2-health ${stale || progress?.last_error ? "warning" : ""}`}>
-      <strong>{stale ? "監視更新を確認できていません" : progress?.last_error ? "取得処理の異常を検出" : "この日の観測状況"}</strong>
+    <section className={`edge-v2-health ${stale || progress?.last_error || missing ? "warning" : ""}`}>
+      <strong>{stale ? "監視更新を確認できていません" : progress?.last_error ? "取得処理の異常を検出" : missing ? "取得できなかったレースがあります" : "この日の観測状況"}</strong>
       <p>対象 {progress?.scheduled ?? "—"}R ／ 20分前 {progress?.phases.t20 ?? 0}R ／ 15分前 {progress?.phases.t15 ?? 0}R ／ 10分前 {progress?.phases.t10 ?? 0}R ／ 確定オッズ {progress?.final_grids ?? 0}R</p>
       <p>取得窓を過ぎた未取得：20分前 {progress?.missed.t20 ?? "—"}R・15分前 {progress?.missed.t15 ?? "—"}R・10分前 {progress?.missed.t10 ?? "—"}R</p>
       <small>最終監視 {progress?.last_tick_at ? time(progress.last_tick_at) : "未確認"}。候補なしと取得できなかったレースを分けて表示します。</small>
     </section>
     <section><h2>これからのレース <small>{live.length}R</small></h2>
-      {!live.length && <p className="edge-v2-empty">選択した条件の候補はありません。{model === "exhibition" && "展示情報が揃わないレースは、朝の確率で代用しません。"}</p>}
+      {!live.length && <p className="edge-v2-empty">{!hasSelectedObservation ? "選択した時点・確率の記録がまだありません。上の観測状況をご確認ください。「表示する」は保存済みの記録を表示するボタンです。" : "選択した条件に該当する、締切前の候補はありません。"}{model === "exhibition" && "展示情報が揃わないレースは、朝の確率で代用しません。"}</p>}
       {live.map((race) => <RaceCard key={race.race_id} race={race} snapshot={race.snapshots[phase]!} {...{phase,model,threshold}}/>)}</section>
     <section><h2>{date}の成績</h2><p>{phaseLabels[phase]}・{modelLabels[model]}。各点100円の検証成績です。</p><ComparisonTable rows={dailyRows}/></section>
     <section><h2>固定した閾値の比較</h2><p>新方式の全期間・{phaseLabels[phase]}・{modelLabels[model]}。締切前の公開を確認できた記録のみ、各点100円で集計します。</p><ComparisonTable rows={rows}/></section>

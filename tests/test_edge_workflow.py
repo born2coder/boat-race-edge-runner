@@ -13,7 +13,7 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn('cron: "37 4 * * *"', workflow)  # 13:37 JST
         self.assertIn('cron: "7 10 * * *"', workflow)  # 19:07 JST
         self.assertNotIn("timezone:", workflow)
-        self.assertIn("cancel-in-progress: false", workflow)
+        self.assertIn("cancel-in-progress: ${{ github.event_name == 'push' }}", workflow)
         self.assertIn("watch_edge_v2.py", workflow)
         self.assertIn("actions: write", workflow)
 
