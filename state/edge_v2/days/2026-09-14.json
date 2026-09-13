@@ -1,11 +1,8 @@
 {
   "date": "2026-09-14",
-  "last_error": {
-    "at": "2026-09-13T23:19:06.600158+00:00",
-    "kind": "HTTPError"
-  },
+  "last_error": null,
   "last_settlement_at": "2026-09-13T23:18:02.855296+00:00",
-  "last_tick_at": "2026-09-13T23:18:59.702792+00:00",
+  "last_tick_at": "2026-09-13T23:20:01.641485+00:00",
   "races": {
     "202609140201": {
       "eligible_roster": true,
@@ -1747,6 +1744,12 @@
     },
     "202609142101": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-13T23:20:01.641409+00:00",
+          "reason": "Invalid isoformat string: '2026-09-14T8:18:00+09:00'"
+        }
+      },
       "race_date": "2026-09-14",
       "race_id": "BR:20260914:21:01",
       "race_name": "サンライズＶ戦",
