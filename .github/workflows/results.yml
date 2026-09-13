@@ -28,7 +28,7 @@ concurrency:
 jobs:
   publish-results:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out runner
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -49,9 +49,23 @@ jobs:
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
           TZ: Asia/Tokyo
         run: |
-          service_date="${{ inputs.service_date }}"
-          if [ -z "$service_date" ]; then service_date="$(date +%F)"; fi
-          python scripts/sync_results.py --no-legacy-predictions --date "$service_date"
+          requested_date="${{ inputs.service_date }}"
+          if [ -n "$requested_date" ]; then
+            dates=("$requested_date")
+          else
+            today="$(date +%F)"
+            lookback_days=2
+            if [ "${{ github.event_name }}" = "push" ]; then lookback_days=14; fi
+            dates=()
+            for offset in $(seq 0 $((lookback_days - 1))); do
+              dates+=("$(date -d "$today - $offset days" +%F)")
+            done
+          fi
+
+          for service_date in "${dates[@]}"; do
+            echo "Syncing official results for $service_date"
+            python scripts/sync_results.py --no-legacy-predictions --date "$service_date"
+          done
 
       - name: Ensure EDGE observer is running
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.service_date == '' }}

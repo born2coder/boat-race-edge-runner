@@ -24,6 +24,14 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn("actions/workflows/edge.yml/dispatches", workflow)
         self.assertIn('"queued", "in_progress"', workflow)
 
+    def test_results_workflow_backfills_recent_service_days(self):
+        workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")
+
+        self.assertIn("lookback_days=2", workflow)
+        self.assertIn("lookback_days=14", workflow)
+        self.assertIn('date -d "$today - $offset days"', workflow)
+        self.assertIn('for service_date in "${dates[@]}"', workflow)
+
     def test_forward_watchers_are_scheduled_in_utc_for_jst_service_hours(self):
         workflow = (ROOT / ".github" / "workflows" / "forward.yml").read_text(encoding="utf-8")
 
