@@ -6,7 +6,10 @@ export function validDate(date: string) { return /^20\d{2}-\d{2}-\d{2}$/.test(da
 
 async function read<T>(path: string): Promise<T | null> {
   try {
-    const response = await fetch(`${base}/${path}`, { cache: "no-store", signal: AbortSignal.timeout(12_000) });
+    // no-store skips Next's cache but cannot invalidate GitHub's five-minute
+    // CDN cache. Share a fresh key each minute across the page and receipt API.
+    const minute = Math.floor(Date.now() / 60_000);
+    const response = await fetch(`${base}/${path}?minute=${minute}`, { cache: "no-store", signal: AbortSignal.timeout(12_000) });
     if (!response.ok) return null;
     const value = await response.json();
     return value.version === EDGE_VERSION ? value as T : null;
