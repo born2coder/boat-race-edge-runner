@@ -28,13 +28,13 @@ test("normalizes historical examples to the displayed flat 100-yen Top3 rule", a
   assert.match(data, /virtual_stake_yen: stake/);
 });
 
-test("shows EDGE verification progress, 150 percent candidates, and history", async () => {
-  const page = await readFile(new URL("../app/edge/page.tsx", import.meta.url), "utf8");
+test("preserves legacy EDGE verification progress, candidates, and history", async () => {
+  const page = await readFile(new URL("../app/edge/legacy/page.tsx", import.meta.url), "utf8");
   const repository = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
   assert.match(page, /確認済み/);
   assert.match(page, /未確認数もそのまま公開/);
   assert.match(page, /期待値150%以上/);
-  assert.match(page, /いま買えるEDGE/);
+  assert.match(page, /これからのレース/);
   assert.match(page, /終了したレース・検証結果/);
   assert.match(page, /15分前・10分前/);
   assert.match(page, /基準割れ/);

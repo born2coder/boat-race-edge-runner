@@ -1,163 +1,105 @@
 import Link from "next/link";
-import { ArrowLeft, CircleHelp, Clock3, FlaskConical, ShieldCheck } from "lucide-react";
-import { getEdgeDashboard, type EdgeCandidate } from "@/db/live-repository";
-import { formatYen } from "@/lib/poc";
-import { HistoryLedger, type EdgeRaceGroup } from "./history-ledger";
-import { OddsTimeline } from "./odds-timeline";
+import { getEdgeV2Day, getEdgeV2Index, getEdgeV2Summary, validDate } from "@/db/edge-v2-repository";
+import { todayJst } from "@/db/live-repository";
+import { isPublicBeforeDeadline, selectedPicks, thresholds, type EdgeRaceV2, type Snapshot, type Phase, type Model, type Comparison } from "@/lib/edge-v2";
 
-export const metadata = { title: "EDGE検証｜オッズと予測の比較", description: "舟の理のHIT予測と締切前オッズを比較し、期待値を検証するページです。", alternates: { canonical: "/edge" } };
 export const dynamic = "force-dynamic";
+export const metadata = { title: "EDGE｜全120通りの期待値検証", description: "朝と展示後の全120通りを同じオッズで比較。20・15・10分前の観測と確定結果を記録します。", alternates: { canonical: "/edge" } };
+const yen = (n: number) => `¥${n.toLocaleString("ja-JP")}`;
+const percent = (n: number | null | undefined) => n == null ? "—" : `${n.toFixed(1)}%`;
+const time = (value: string) => new Date(value).toLocaleTimeString("ja-JP", {timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+const phaseLabels: Record<Phase, string> = {t20: "20分前", t15: "15分前", t10: "10分前"};
+const modelLabels = {morning: "朝の確率", exhibition: "展示後の確率"};
 
-const dateLabel = (value: string) => new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "short" }).format(new Date(value));
-const timeLabel = (value: string) => new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
-
-function groupByRace(candidates: EdgeCandidate[]): EdgeRaceGroup[] {
-  const groups = new Map<string, EdgeRaceGroup>();
-  for (const candidate of candidates) {
-    const group = groups.get(candidate.race_id) ?? {
-      race_id: candidate.race_id,
-      venue_name: candidate.venue_name,
-      race_no: candidate.race_no,
-      start_at: candidate.start_at,
-      candidates: [],
-    };
-    group.candidates.push(candidate);
-    groups.set(candidate.race_id, group);
-  }
-  return Array.from(groups.values());
+function ComparisonTable({rows, paired = false}: {rows: Comparison[]; paired?: boolean}) {
+  return <div className="edge-v2-table"><table><thead><tr><th>基準</th>{paired && <th>確率</th>}<th>確定点数</th><th>的中</th><th>回収率</th><th>表示期待値</th><th>未確定</th></tr></thead>
+    <tbody>{rows.map((r) => <tr key={`${r.threshold}-${r.model}`}><th>{r.threshold}%以上</th>{paired && <td>{modelLabels[r.model]}</td>}<td>{r.settled_points}</td><td>{r.hits}</td><td>{percent(r.return_rate)}</td><td>{percent(r.mean_expected_value)}</td><td>{r.pending_points}</td></tr>)}</tbody></table>
+    {!rows.length && <p className="edge-v2-empty">新方式の前向き記録を待っています。旧方式の実績は合算しません。</p>}</div>;
 }
 
-function sortByStart(groups: EdgeRaceGroup[], direction: "asc" | "desc" = "asc") {
-  return [...groups].sort((left, right) => direction === "asc"
-    ? Date.parse(left.start_at) - Date.parse(right.start_at)
-    : Date.parse(right.start_at) - Date.parse(left.start_at));
+function RaceCard({race, snapshot, phase, model, threshold}: {race: EdgeRaceV2; snapshot: Snapshot; phase: Phase; model: Model; threshold: number}) {
+  const picks = selectedPicks(snapshot, model, threshold);
+  const published = race.receipts?.[snapshot.snapshot_id];
+  const eligible = isPublicBeforeDeadline(race, snapshot);
+  const result = race.result;
+  const hits = picks.filter((p) => p.combination === result?.combination);
+  const refunded = picks.filter((p) => p.combination.split("-").some((lane) => result?.refunded_lanes?.includes(Number(lane))));
+  const closed = Date.parse(race.start_at) <= Date.now();
+  const status = !eligible ? published ? "締切前公開の条件外" : "公開確認中" : result ? hits.length ? "的中" : "不的中" : closed ? "結果確認中" : "検証候補";
+  return <details className="edge-v2-race">
+    <summary><span>{race.venue} {race.race_no}R <small>締切 {time(race.start_at).slice(0, 5)}</small></span><b>{status}</b><span>{picks.length}点 {eligible && result && <small>払戻 {yen(hits.length ? result.payout_per_100_yen : 0)}</small>}</span></summary>
+    <div className="edge-v2-race-body"><p>{phaseLabels[phase]}の記録・{modelLabels[model]} ／ 各100円、計{yen(picks.length * 100)}{refunded.length > 0 && `（${refunded.length}点返還・回収率の分母から除外）`}</p>
+      <p className="edge-v2-meta">取得 {time(snapshot.observed_at)}（実測{snapshot.minutes_before.toFixed(1)}分前）／ 公式更新 {snapshot.official_update_time} ／ 公開確認 {published ? time(published) : "確認中"}</p>
+      {result && <p>結果 <strong>{result.combination}</strong>・100円あたり{yen(result.payout_per_100_yen)}</p>}
+      <div className="edge-v2-table"><table><thead><tr><th>買い目</th><th>確率順位</th><th>確率</th><th>選択時オッズ</th><th>期待値</th><th>20分前</th><th>15分前</th><th>10分前</th><th>確定</th></tr></thead>
+        <tbody>{picks.map((pick) => <tr key={pick.combination} className={pick.combination === result?.combination ? "edge-v2-hit" : ""}><th>{pick.combination}</th><td>{pick.rank}位</td><td>{percent(pick.probability * 100)}</td><td>{pick.odds.toFixed(1)}倍</td><td>{percent(pick.expected)}</td>
+          {(["t20", "t15", "t10"] as Phase[]).map((p) => {const s = race.snapshots[p]; const i = s?.combinations.indexOf(pick.combination) ?? -1;return <td key={p}>{s && i >= 0 ? `${s.odds[i].toFixed(1)}倍 / ${(pick.probability * s.odds[i] * 100).toFixed(0)}%` : closed ? "未取得" : "待機"}</td>;})}
+          <td>{race.final?.odds[pick.combination] != null ? `${race.final.odds[pick.combination].toFixed(1)}倍 / ${(pick.probability * race.final.odds[pick.combination] * 100).toFixed(0)}%` : pick.combination === result?.combination ? `${(result.payout_per_100_yen / 100).toFixed(1)}倍（払戻）` : "未取得"}</td></tr>)}</tbody></table></div>
+      <p className="edge-v2-meta">各時点は「オッズ / 期待値」。選択時点の確率を固定し、オッズ変動だけで基準を割った時点を確認できます。公開遅延：{published ? `${Math.max(0, (Date.parse(published) - Date.parse(snapshot.observed_at)) / 1000).toFixed(0)}秒` : "未確認"}。</p>
+      {!race.final && closed && <p className="edge-v2-meta">全120通りの確定オッズは未取得です。的中買い目の払戻だけで全体のオッズ低下率を推定しません。</p>}
+      <p><a href={`https://github.com/born2coder/boat-race-edge-runner/blob/main/state/edge_v2/days/${race.race_date}.json`} target="_blank" rel="noreferrer">この日の全120通りの記録</a></p>
+    </div></details>;
 }
 
-function uniqueRaces(groups: EdgeRaceGroup[]) {
-  return Array.from(new Map(groups.map((group) => [group.race_id, group])).values());
-}
-
-function summarizeResults(groups: EdgeRaceGroup[]) {
-  const settledGroups = groups.filter((group) => group.candidates.every((candidate) => candidate.status === "settled"));
-  const pendingGroups = groups.filter((group) => !group.candidates.every((candidate) => candidate.status === "settled"));
-  const candidates = groups.flatMap((group) => group.candidates);
-  const settledCandidates = settledGroups.flatMap((group) => group.candidates);
-  const hits = settledCandidates.filter((candidate) => candidate.hit);
-  const payoutYen = hits.reduce((sum, candidate) => sum + (candidate.payout_per_100_yen ?? 0), 0);
-  const purchaseYen = candidates.length * 100;
-  const returnRate = settledCandidates.length ? payoutYen / (settledCandidates.length * 100) * 100 : null;
-
-  return {
-    settledRaces: settledGroups.length,
-    pendingRaces: pendingGroups.length,
-    purchasePoints: candidates.length,
-    purchaseYen,
-    hits: hits.length,
-    payoutYen,
-    returnRate,
-  };
-}
-
-function ResultsSummary({ title, summary }: { title: string; summary: ReturnType<typeof summarizeResults> }) {
-  return <section className="edge-summary-block" aria-label={title}>
-    <h3>{title}</h3>
-    <div className="edge-history-summary detailed">
-      <div><span>結果確定</span><strong>{summary.settledRaces}R</strong></div>
-      <div><span>結果確認中</span><strong>{summary.pendingRaces}R</strong></div>
-      <div><span>購入点数</span><strong>{summary.purchasePoints}点</strong><small>{formatYen(summary.purchaseYen)}</small></div>
-      <div><span>的中</span><strong>{summary.hits}点</strong></div>
-      <div><span>的中払戻合計</span><strong>{formatYen(summary.payoutYen)}</strong></div>
-      <div><span>検証回収率</span><strong>{summary.returnRate == null ? "—" : `${summary.returnRate.toFixed(1)}%`}</strong></div>
-    </div>
-  </section>;
-}
-
-function PickList({ candidates }: { candidates: EdgeCandidate[] }) {
-  return <div className="edge-pick-list">{candidates.map((candidate) => <section className={`edge-pick ${candidate.hit ? "hit" : ""}`} key={candidate.edge_id}>
-    <div className="edge-pick-heading"><strong>{candidate.combination}</strong>{candidate.hit && <span>的中</span>}</div>
-    <dl>
-      <div><dt>確率</dt><dd>{(candidate.predicted_probability * 100).toFixed(1)}%</dd></div>
-      <div><dt>オッズ</dt><dd>{candidate.odds_decimal.toFixed(1)}倍</dd></div>
-      <div><dt>期待値</dt><dd>{candidate.expected_value_percent.toFixed(0)}%</dd></div>
-    </dl>
-    <OddsTimeline candidate={candidate} />
-  </section>)}</div>;
-}
-
-function LiveRaceCard({ group, isNext }: { group: EdgeRaceGroup; isNext: boolean }) {
-  const strongest = Math.max(...group.candidates.map((candidate) => candidate.expected_value_percent));
-  return <article className={`edge-live-card ${isNext ? "next" : ""}`}>
-    <header>
-      <div className="edge-live-time"><span>{isNext ? "NEXT" : "締切"}</span><strong>{timeLabel(group.start_at)}</strong></div>
-      <div className="edge-live-race"><strong>{group.venue_name} {group.race_no}R</strong><span>{group.candidates.length}点</span></div>
-      {strongest >= 300 && <b>強いEDGE</b>}
-    </header>
-    <PickList candidates={group.candidates} />
-  </article>;
-}
-
-export default async function EdgePage() {
-  const { date, today, history, progress } = await getEdgeDashboard();
-  const now = new Date().toISOString();
-  const nowMs = Date.parse(now);
-  const todayGroups = groupByRace(today);
-  const historyGroups = groupByRace(history);
-  const liveGroups = sortByStart(todayGroups.filter((group) => Date.parse(group.start_at) > nowMs
-    && !group.candidates.every((candidate) => candidate.status === "settled")));
-  const finishedGroups = sortByStart(uniqueRaces([
-    ...todayGroups.filter((group) => Date.parse(group.start_at) <= nowMs),
-    ...historyGroups,
-  ]), "desc");
-  const finishedCandidates = finishedGroups.flatMap((group) => group.candidates);
-  const todayFinishedGroups = finishedGroups.filter((group) => group.candidates.some((candidate) => candidate.race_date === date));
-  const todaySummary = summarizeResults(todayFinishedGroups);
-  const totalSummary = summarizeResults(finishedGroups);
-  const currentHourJst = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tokyo", hour: "2-digit", hour12: false }).format(new Date()));
-  const monitoringEnded = currentHourJst >= 22;
-
-  return <>
-    <div className="edge-page-head compact">
-      <Link href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
-      <p className="section-kicker">LIVE EDGE / {dateLabel(now)}</p>
-      <h1>いま買えるEDGE</h1>
-      <p className="edge-lead">約20分前に候補を公開し、15分前・10分前のオッズ変化も追跡します。終了したレースは下の検証履歴へ移動します。</p>
-    </div>
-
-    <section className="edge-live" aria-labelledby="edge-live-title">
-      <div className="section-heading split">
-        <div><h2 id="edge-live-title">これからのレース</h2><p>期待値150%以上の買い目</p></div>
-        <span className="edge-count">{liveGroups.length}レース・{liveGroups.reduce((sum, group) => sum + group.candidates.length, 0)}点</span>
-      </div>
-      {liveGroups.length === 0 ? <div className="edge-empty"><CircleHelp aria-hidden="true" /><div><h3>現在、購入できるEDGE候補はありません</h3><p>新しい候補は、各レースの締切20分前前後に追加されます。</p></div></div> : <div className="edge-live-list">{liveGroups.map((group, index) => <LiveRaceCard group={group} isNext={index === 0} key={group.race_id} />)}</div>}
+export default async function EdgePage({searchParams}: {searchParams: Promise<Record<string, string | string[] | undefined>>}) {
+  const query = await searchParams;
+  const today = todayJst();
+  const date = typeof query.date === "string" && validDate(query.date) ? query.date : today;
+  const phase: Phase = query.phase === "t15" || query.phase === "t10" ? query.phase : "t20";
+  const model: Model = query.model === "exhibition" ? "exhibition" : "morning";
+  const threshold = thresholds.find((t) => String(t) === query.threshold) ?? 150;
+  const page = Math.max(1, Math.min(100, Number(query.page) || 1));
+  const [index, day, dailySummary] = await Promise.all([getEdgeV2Index(), getEdgeV2Day(date), getEdgeV2Summary(date)]);
+  const dailyRows = dailySummary?.comparison.filter((r) => !r.paired && r.scope === "all120" && r.model === model && r.phase === phase) ?? [];
+  const progress = index?.days.find((d) => d.date === date)?.progress;
+  const rows = index?.comparison.filter((r) => !r.paired && r.scope === "all120" && r.model === model && r.phase === phase) ?? [];
+  const paired = index?.comparison.filter((r) => r.paired && r.scope === "all120" && r.phase === phase) ?? [];
+  const scopeRows = index?.comparison.filter((r) => !r.paired && r.model === model && r.phase === phase && r.threshold === threshold) ?? [];
+  const races = Object.values(day?.races ?? {});
+  const chosen = races.filter((race) => {const s = race.snapshots[phase];return s && selectedPicks(s, model, threshold).length > 0;});
+  const live = chosen.filter((r) => Date.parse(r.start_at) > Date.now()).sort((a,b) => Date.parse(a.start_at) - Date.parse(b.start_at));
+  const past = chosen.filter((r) => Date.parse(r.start_at) <= Date.now()).sort((a,b) => Date.parse(b.start_at) - Date.parse(a.start_at));
+  const heartbeatAge = progress?.last_tick_at ? (Date.now() - Date.parse(progress.last_tick_at)) / 60000 : null;
+  const jstHour = Number(new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Tokyo", hour: "2-digit", hourCycle: "h23"}).format(new Date()));
+  const stale = date === today && jstHour >= 7 && jstHour < 22 && (heartbeatAge == null || heartbeatAge > 5);
+  const pages = Math.max(1, Math.ceil(past.length / 20));
+  const currentPage = Math.min(page, pages);
+  const pageLink = (p: number) => `/edge?${new URLSearchParams({date, phase, model, threshold: String(threshold), page: String(p)})}#edge-history`;
+  return <div className="edge-v2">
+    <Link className="back-link" href="/">今日のHIT予想へ</Link>
+    <p className="section-kicker">EDGE / FULL 120</p><h1>全120通りから、<br/>市場とのずれを探す。</h1>
+    <p className="edge-v2-lead">朝・展示後の予測確率と、20・15・10分前のオッズを比較します。新方式は前向き検証中です。</p>
+    <p><Link href="/edge/legacy">旧方式（上位8点限定）の履歴を見る →</Link></p>
+    <form className="edge-v2-controls" action="/edge">
+      <label>開催日<input type="date" name="date" defaultValue={date}/></label>
+      <label>確率<select name="model" defaultValue={model}><option value="morning">朝</option><option value="exhibition">展示後</option></select></label>
+      <label>観測時点<select name="phase" defaultValue={phase}>{Object.entries(phaseLabels).map(([key,label]) => <option key={key} value={key}>{label}</option>)}</select></label>
+      <label>期待値基準<select name="threshold" defaultValue={threshold}>{thresholds.map((t) => <option key={t} value={t}>{t}%以上</option>)}</select></label><button type="submit">表示する</button>
+    </form>
+    <section className={`edge-v2-health ${stale || progress?.last_error ? "warning" : ""}`}>
+      <strong>{stale ? "監視更新を確認できていません" : progress?.last_error ? "取得処理の異常を検出" : "この日の観測状況"}</strong>
+      <p>対象 {progress?.scheduled ?? "—"}R ／ 20分前 {progress?.phases.t20 ?? 0}R ／ 15分前 {progress?.phases.t15 ?? 0}R ／ 10分前 {progress?.phases.t10 ?? 0}R ／ 確定オッズ {progress?.final_grids ?? 0}R</p>
+      <p>取得窓を過ぎた未取得：20分前 {progress?.missed.t20 ?? "—"}R・15分前 {progress?.missed.t15 ?? "—"}R・10分前 {progress?.missed.t10 ?? "—"}R</p>
+      <small>最終監視 {progress?.last_tick_at ? time(progress.last_tick_at) : "未確認"}。候補なしと取得できなかったレースを分けて表示します。</small>
     </section>
-
-    <section className="edge-progress compact" aria-label="本日の確認状況">
-      <div><span>本日の対象</span><strong>{progress.scheduled || "—"}<small>R</small></strong></div>
-      <div><span>確認済み</span><strong>{progress.observed}<small>R</small></strong></div>
-      <div><span>{monitoringEnded ? "未確認" : "これから確認"}</span><strong>{progress.scheduled ? progress.remaining : "—"}<small>R</small></strong></div>
-      <p>{monitoringEnded && progress.remaining > 0 ? "本日の監視は終了しました。未確認数もそのまま公開しています。" : "締切25〜17分前に順次判定します。"} {progress.lastObservedAt ? `最終確認 ${new Date(progress.lastObservedAt).toLocaleTimeString("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" })}` : "まだ本日の判定は始まっていません。"}</p>
+    <section><h2>これからのレース <small>{live.length}R</small></h2>
+      {!live.length && <p className="edge-v2-empty">選択した条件の候補はありません。{model === "exhibition" && "展示情報が揃わないレースは、朝の確率で代用しません。"}</p>}
+      {live.map((race) => <RaceCard key={race.race_id} race={race} snapshot={race.snapshots[phase]!} {...{phase,model,threshold}}/>)}</section>
+    <section><h2>{date}の成績</h2><p>{phaseLabels[phase]}・{modelLabels[model]}。各点100円の検証成績です。</p><ComparisonTable rows={dailyRows}/></section>
+    <section><h2>固定した閾値の比較</h2><p>新方式の全期間・{phaseLabels[phase]}・{modelLabels[model]}。締切前の公開を確認できた記録のみ、各点100円で集計します。</p><ComparisonTable rows={rows}/></section>
+    <section><h2>全120通りに広げた効果</h2><p>同じ時刻・同じ確率・{threshold}%基準で比較します。点数に応じて投資額が変わるため、払戻合計だけで優劣を決めません。</p>
+      <div className="edge-v2-table"><table><thead><tr><th>対象順位</th><th>確定点数</th><th>的中</th><th>投資</th><th>払戻</th><th>回収率</th></tr></thead><tbody>{scopeRows.map((r) => <tr key={r.scope}><th>{{all120: "全120通り", top8: "上位8点", rank9plus: "追加9〜120位"}[r.scope]}</th><td>{r.settled_points}</td><td>{r.hits}</td><td>{yen(r.stake_yen)}</td><td>{yen(r.payout_yen)}</td><td>{percent(r.return_rate)}</td></tr>)}</tbody></table>{!scopeRows.length && <p>記録待ち</p>}</div>
     </section>
-
-    <section className="edge-history" aria-labelledby="edge-history-title">
-      <div className="section-heading split">
-        <div><p className="section-kicker">VERIFICATION LEDGER</p><h2 id="edge-history-title">終了したレース・検証結果</h2><p>レースを選ぶと、記録した買い目の詳細を確認できます。</p></div>
-        <span className="edge-count">記録 {finishedGroups.length}レース・{finishedCandidates.length}点</span>
-      </div>
-      <div className="edge-summary-comparison">
-        <ResultsSummary title="本日の結果" summary={todaySummary} />
-        <ResultsSummary title="トータル" summary={totalSummary} />
-      </div>
-      {finishedGroups.length === 0 ? <div className="edge-empty"><CircleHelp aria-hidden="true" /><div><h3>終了したレースはまだありません</h3><p>レース終了後、結果とともにここへ移動します。</p></div></div> : <HistoryLedger groups={finishedGroups.slice(0, 80)} now={now} />}
-    </section>
-
-    <details className="edge-method">
-      <summary>EDGEの判定方法について</summary>
-      <section className="edge-explain" aria-labelledby="edge-about-title">
-        <div className="edge-explain-main"><p className="section-kicker">HOW IT WORKS</p><h2 id="edge-about-title">「当たりそうなのに、オッズが高い」買い目を探します</h2><p>締切20分前前後に候補を公開し、15分前・10分前にも同じ買い目のオッズを確認します。買い目を後から消さず、基準を維持したかまで検証します。</p></div>
-        <div className="edge-rule-list"><div><Clock3 aria-hidden="true" /><strong>20分前に初回公開</strong><span>購入判断の時間を確保</span></div><div><FlaskConical aria-hidden="true" /><strong>15分前・10分前に再確認</strong><span>維持・低下・基準割れを表示</span></div><div><ShieldCheck aria-hidden="true" /><strong>通常予想と分離</strong><span>HIT成績には影響なし</span></div></div>
-      </section>
+    <details className="edge-v2-comparison"><summary>朝と展示後を、同じレース・同じオッズで比較</summary><p>{phaseLabels[phase]}に両方の確率が揃い、締切前公開を確認できた共通レースのみです。展示情報の欠測を朝モデルの成績に混ぜません。</p><ComparisonTable rows={paired} paired/>
+      {paired.filter((r) => r.threshold === 150).map((r) => <p key={r.model}>{modelLabels[r.model]}：共通 {r.paired_races}R ／ 確率評価 {r.scored_races}R ／ Log loss {r.scored_races ? (r.log_loss_sum/r.scored_races).toFixed(4) : "—"} ／ Brier {r.scored_races ? (r.brier_sum/r.scored_races).toFixed(4) : "—"}</p>)}
+      <p className="edge-v2-meta">確率評価は閾値に関係なく全120通りで計算します。どちらも低いほど良く、返還・中止レースは除外します。</p>
     </details>
-
-    <aside className="edge-disclaimer"><strong>検証中の表示です</strong><p>期待値は利益を保証する数字ではありません。オッズは締切まで変動し、予測確率にも誤差があります。このページの候補は通常予想・成績集計とは別管理です。</p></aside>
-  </>;
+    <section id="edge-history"><h2>{date}の履歴 <small>{past.length}R</small></h2><p>候補を後から消さず、観測時点ごとに残します。別の時点で基準割れしても元の記録は維持します。</p>
+      {!past.length && <p className="edge-v2-empty">選択条件の履歴はありません。</p>}
+      {past.slice((currentPage-1)*20, currentPage*20).map((race) => <RaceCard key={race.race_id} race={race} snapshot={race.snapshots[phase]!} {...{phase,model,threshold}}/>)}
+      {pages > 1 && <nav className="edge-v2-pagination" aria-label="履歴ページ">{currentPage > 1 && <Link href={pageLink(currentPage-1)}>前へ</Link>}<span>{currentPage} / {pages}</span>{currentPage < pages && <Link href={pageLink(currentPage+1)}>次へ</Link>}</nav>}
+      <nav className="edge-v2-dates" aria-label="記録済みの日付">{index?.days.map((d) => <Link key={d.date} href={`/edge?${new URLSearchParams({date:d.date,phase,model,threshold:String(threshold)})}`}>{d.date}</Link>)}</nav>
+    </section>
+    <aside className="edge-disclaimer"><strong>表示期待値は、利益や信頼度の保証ではありません。</strong><p>予測確率×観測時オッズ×100で計算します。確率の誤差と締切までのオッズ変動は未補正です。300%以上も強い予想とは扱いません。未確定は回収率から除き、返還は投資額から除外します。HITと旧EDGEの成績には合算しません。</p></aside>
+  </div>;
 }

@@ -13,7 +13,9 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn('cron: "37 4 * * *"', workflow)  # 13:37 JST
         self.assertIn('cron: "7 10 * * *"', workflow)  # 19:07 JST
         self.assertNotIn("timezone:", workflow)
-        self.assertIn("cancel-in-progress: true", workflow)
+        self.assertIn("cancel-in-progress: false", workflow)
+        self.assertIn("watch_edge_v2.py", workflow)
+        self.assertIn("actions: write", workflow)
 
     def test_results_workflow_recovers_a_missing_edge_observer(self):
         workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")

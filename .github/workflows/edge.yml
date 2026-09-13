@@ -6,6 +6,10 @@ on:
     paths:
       - scripts/edge_shadow.py
       - scripts/watch_edge.py
+      - scripts/edge_v2.py
+      - scripts/edge_v2_model.py
+      - scripts/edge_v2_metrics.py
+      - scripts/watch_edge_v2.py
       - scripts/send_payload.py
       - tests/test_edge_workflow.py
       - requirements.txt
@@ -14,20 +18,22 @@ on:
   schedule:
     # GitHub Actions cron is UTC. Start ahead of the first race window and avoid
     # the busiest top-of-hour slots. These run at 07:47, 13:37, and 19:07 JST.
-    # Three overlapping watchers cover the service day and check every 3 minutes.
+    # Single-writer watcher checks roughly every minute and chains its successor.
     - cron: "47 22 * * *"
     - cron: "37 4 * * *"
     - cron: "7 10 * * *"
+    # Hourly recovery is a backstop; the watcher directly queues its successor.
+    - cron: "19 22-23,0-12 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: boat-race-edge-shadow
-  # A newly deployed observer must replace the old long-running process so the
-  # latest measurement logic starts before the next race window.
-  cancel-in-progress: true
+  # One durable writer. Scheduled jobs must not cancel a running observer.
+  cancel-in-progress: false
 
 jobs:
   observe:
@@ -57,4 +63,6 @@ jobs:
           EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
           EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
-        run: python scripts/watch_edge.py
+          GH_TOKEN: ${{ github.token }}
+          OMP_NUM_THREADS: "1"
+        run: python scripts/watch_edge_v2.py
