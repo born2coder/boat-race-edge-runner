@@ -1,7 +1,6 @@
 import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { after } from "next/server";
 import { supabaseRequest } from "@/db/supabase";
 import { parseOfficialResult } from "@/lib/official-result-parser";
 import { officialResultUrl } from "@/lib/race-lifecycle";
@@ -25,22 +24,24 @@ const fetchResult = unstable_cache(async (raceId: string, rosterJson: string) =>
     console.warn("Official result temporarily unavailable", raceId, error instanceof Error ? error.name : "UnknownError");
     return null;
   }
-}, ["official-race-results-v3"], { revalidate: 60 });
+}, ["official-race-results-v4"], { revalidate: 60 });
 
 export const getOfficialResult = cache(async (raceId: string, rosterJson: string) => {
   const result = await fetchResult(raceId, rosterJson);
   if (result) {
-    after(async () => {
+    // Await persistence within the caller's background task; no nested after().
+    for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
         // Insert only: never overwrite a stored result or any published prediction.
         await supabaseRequest("results?on_conflict=race_id", {
           method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
           body: JSON.stringify(result), signal: AbortSignal.timeout(5000),
         }, "service");
+        break;
       } catch {
-        console.error("Official result persistence failed; daily reconciliation will retry", raceId);
+        if (attempt === 1) console.error("Official result persistence failed; daily reconciliation will retry", raceId);
       }
-    });
+    }
   }
   return result;
 });

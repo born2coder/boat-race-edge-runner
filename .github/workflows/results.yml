@@ -9,7 +9,7 @@ on:
       - tests/test_edge_workflow.py
       - .github/workflows/results.yml
   schedule:
-    - cron: "17 21-23,0-13 * * *"
+    - cron: "7,22,37,52 21-23,0-13 * * *"
   workflow_dispatch:
     inputs:
       service_date:

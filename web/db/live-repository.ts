@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { fixture, type PocFixture, type Prediction, type Race, type Ticket } from "@/lib/poc";
 import { hasSupabaseReadConfiguration, queryString, supabaseRequest } from "@/db/supabase";
 import { getOfficialResult } from "@/db/official-results";
@@ -227,24 +228,30 @@ function emptyCurrentDay(date: string): PocFixture["current_day"] {
 // Results reference races, not predictions. Embed through the actual foreign key.
 const joinedSelect = "*,race:races!inner(*,result:results(*)),reassessment:prediction_reassessments(status,observed_at)";
 
-async function readPredictions(extra: Record<string, string | number | undefined> = {}) {
+async function readPredictions(extra: Record<string, string | number | undefined> = {}, background = true) {
   const query = queryString({ select: joinedSelect, order: "published_at.desc", limit: 5000, ...extra });
   const rows = await supabaseRequest<PredictionRow[]>(`predictions?${query}`);
   // Only existing published records, only missing recent results, at most 20 races.
   // The archive importer remains the long-term reconciliation source.
   const now = Date.now();
-  const pending = rows.filter((row) => {
-    const race = one(row.race);
+  const missing = rows.map((row) => one(row.race)).filter((race): race is RaceRow => {
     if (!race || one(race.result)) return false;
     const age = now - Date.parse(race.start_at);
     return age >= 0 && age < 48 * 60 * 60 * 1000;
-  }).slice(0, 20);
-  await Promise.all(pending.map(async (row) => {
-    const race = one(row.race)!;
-    const roster = race.entries.map(({ lane_no, racer_id }) => ({ lane_no, racer_id }));
-    const result = await getOfficialResult(race.race_id, JSON.stringify(roster));
-    if (result) race.result = result;
-  }));
+  });
+  const pending = [...new Map(missing.map((race) => [race.race_id, race])).values()]
+    .sort((a, b) => Date.parse(b.start_at) - Date.parse(a.start_at)).slice(0, 20);
+  const recover = async () => {
+    await Promise.allSettled(pending.map(async (race) => {
+      const roster = race.entries.map(({ lane_no, racer_id }) => ({ lane_no, racer_id }));
+      await getOfficialResult(race.race_id, JSON.stringify(roster));
+    }));
+  };
+  // Never make a public page wait for the official site's response.
+  if (pending.length) {
+    if (background) after(recover);
+    else await recover();
+  }
   return rows.map(hydratePrediction).filter((item): item is Prediction => Boolean(item));
 }
 
@@ -265,7 +272,13 @@ async function readOfficialPredictions(extra: Record<string, string | number | u
 
 // Called after authenticated ingestion too, so results can recover without visitors.
 export async function recoverPublishedResults(serviceDate: string) {
-  await readOfficialPredictions({ "race.race_date": `eq.${serviceDate}` });
+  await Promise.all([
+    readPredictions({ "race.race_date": `eq.${serviceDate}` }, false),
+    (async () => {
+      const candidates = (await readEdgeDatabase()).filter((candidate) => candidate.race_date === serviceDate);
+      await attachEdgeResults(candidates, false);
+    })(),
+  ]);
 }
 
 export async function getPageFixture(): Promise<PocFixture> {
@@ -342,7 +355,7 @@ async function readEdgeDatabase(): Promise<EdgeCandidate[]> {
   }
 }
 
-async function attachEdgeResults(candidates: EdgeCandidate[]): Promise<EdgeCandidate[]> {
+async function attachEdgeResults(candidates: EdgeCandidate[], background = true): Promise<EdgeCandidate[]> {
   if (!hasSupabaseReadConfiguration() || candidates.length === 0) return candidates;
   const raceIds = Array.from(new Set(candidates.map((candidate) => candidate.race_id)));
   try {
@@ -365,6 +378,7 @@ async function attachEdgeResults(candidates: EdgeCandidate[]): Promise<EdgeCandi
       .map(({ raceId }) => raceId);
 
     if (pendingRaceIds.length > 0) {
+      const recover = async () => {
       const races = await supabaseRequest<Array<Pick<RaceRow, "race_id" | "entries">>>(
         `races?${queryString({ select: "race_id,entries", race_id: `in.(${pendingRaceIds.join(",")})`, limit: 20 })}`,
       );
@@ -375,6 +389,12 @@ async function attachEdgeResults(candidates: EdgeCandidate[]): Promise<EdgeCandi
       for (const [raceId, result] of recovered) {
         if (result) byRace.set(raceId, result);
       }
+      };
+      if (background) after(async () => {
+        try { await recover(); }
+        catch { console.error("EDGE result background recovery failed"); }
+      });
+      else await recover();
     }
 
     return candidates.map((candidate) => {

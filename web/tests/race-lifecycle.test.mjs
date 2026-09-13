@@ -58,8 +58,8 @@ test("no fabricated settlement on missing, wrong-date, wrong-race, or wrong-rost
   assert.equal(parseOfficialResult(sample(), id, roster.slice(1), observed), null);
 });
 
-test("refunds, dead heats, disqualifications and mismatched payouts remain pending", () => {
-  for (const args of [{ refund: "2" }, { extraPayout: "¥1,000" }, { code: "Ｆ" }, { code: "転" }, { combination: [1, 2, 3] }]) {
+test("refunds, dead heats, unknown finish codes and mismatched payouts remain pending", () => {
+  for (const args of [{ refund: "2" }, { extraPayout: "¥1,000" }, { code: "Ｆ" }, { code: "謎" }, { combination: [1, 2, 3] }]) {
     assert.equal(parseOfficialResult(sample(args), id, roster, observed), null);
   }
   assert.equal(parseOfficialResult(sample().replace("６</td>", "５</td>"), id, roster, observed), null);
@@ -134,4 +134,52 @@ test("rendered daily board keeps Biwako's miss out of upcoming and preserves the
   assert.match(emptyTotal, /結果確定 0レース分/);
   assert.doesNotMatch(emptyTotal, /NaN|Infinity|0\.0%/);
   assert.doesNotMatch(emptyHtml, /1-3-2|1-2-3|3-1-2/);
+});
+
+test("non-refunded accidents settle when the winning three and payout agree", () => {
+  for (const code of ["転", "落", "沈", "不", "失"]) {
+    const result = parseOfficialResult(sample({ code }), id, roster, observed);
+    assert.equal(result.combination, "1-3-6");
+    assert.equal(result.finishers[5].finish_position, null);
+    assert.equal(result.finishers[5].result_code, code);
+    assert.equal(parseOfficialResult(sample({ code }).replace("１</td>", "転</td>"), id, roster, observed), null);
+  }
+});
+
+test("public history returns stored rows before slow recovery and sees persisted results next refresh", async () => {
+  const source = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
+  const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const tasks = [];
+  const rows = [{
+    prediction_id: "p1", race_id: id, tickets: [{ combination: "1-3-6", stake_yen: 100 }],
+    publication_mode: "morning_fixed_hit_v1", official_performance_eligible: true,
+    published_at: new Date(Date.now() - 7200000).toISOString(),
+    race: { race_id: id, race_date: "2026-09-05", venue_code: "11", venue_name: "びわこ",
+      race_no: 1, start_at: new Date(Date.now() - 3600000).toISOString(), entries: roster, result: null },
+  }];
+  let calls = 0;
+  const exports = {};
+  new Function("exports", "require", code)(exports, (name) => {
+    if (name === "next/server") return { after: (task) => tasks.push(task) };
+    if (name === "@/lib/poc") return { fixture: {} };
+    if (name === "@/db/supabase") return {
+      hasSupabaseReadConfiguration: () => true, queryString: () => "",
+      supabaseRequest: async () => rows,
+    };
+    if (name === "@/db/official-results") return { getOfficialResult: async () => {
+      calls++;
+      rows[0].race.result = parseOfficialResult(sample(), id, roster, observed);
+      return rows[0].race.result;
+    } };
+    return require(name);
+  });
+  const first = await exports.getDisplayPredictions();
+  assert.equal(first.length, 1);
+  assert.equal(first[0].result, null);
+  assert.equal(calls, 0);
+  assert.equal(tasks.length, 1);
+  await tasks[0]();
+  const next = await exports.getDisplayPredictions();
+  assert.equal(next[0].result.combination, "1-3-6");
+  assert.equal(calls, 1);
 });
