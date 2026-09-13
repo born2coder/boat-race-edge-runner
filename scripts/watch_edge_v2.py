@@ -93,6 +93,8 @@ def main():
                     recovery_cursor += 1
                     observer.settle(previous)
                     edge.write_state(previous)
+                state["last_error"] = None
+                state["last_settlement_at"] = edge.utcnow().isoformat()
                 edge.write_state(state)
                 persist()
                 failures = 0
@@ -110,7 +112,12 @@ def main():
                     continue_observer()
                     raise
             if not 7 <= now_jst.hour < 22:
-                break
+                if not failures:
+                    break
+                # A deployment can briefly leave the new read routes unavailable.
+                # Do not silently declare that night-time recovery succeeded.
+                time.sleep(5)
+                continue
             time.sleep(max(1, POLL_SECONDS - (time.monotonic() - tick)))
         else:
             # Queue the successor directly; do not wait for a potentially late cron.
