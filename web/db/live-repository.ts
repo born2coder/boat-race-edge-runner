@@ -153,10 +153,19 @@ function hydratePrediction(row: PredictionRow): Prediction | undefined {
   const reassessment = one(row.reassessment);
   const purchased = tickets.slice(0, 3);
   const stake = purchased.reduce((sum, ticket) => sum + ticket.stake_yen, 0);
-  const result = resultRow && !resultRow.finishers.some((f) => f.finish_position === null || Boolean(f.result_code)) ? (() => {
+  const result = resultRow ? (() => {
+    // An abnormal finish outside the winning three boats does not invalidate
+    // the official trifecta result. F/L boats are refunded; accidents and
+    // disqualifications after a valid start remain ordinary settled losses.
+    const refundedLanes = new Set(resultRow.finishers
+      .filter((finisher) => /^(F|L)/.test(finisher.result_code ?? ""))
+      .map((finisher) => finisher.lane_no));
+    const isRefunded = (ticket: Ticket) => ticket.combination
+      .split("-").some((lane) => refundedLanes.has(Number(lane)));
+    const refund = purchased.reduce((sum, ticket) => sum + (isRefunded(ticket) ? ticket.stake_yen : 0), 0);
     const lines = purchased.map((ticket) => ({
       ...ticket,
-      return_yen: ticket.combination === resultRow.combination
+      return_yen: !isRefunded(ticket) && ticket.combination === resultRow.combination
         ? resultRow.payout_per_100_yen * ticket.stake_yen / 100
         : 0,
     }));
@@ -174,10 +183,10 @@ function hydratePrediction(row: PredictionRow): Prediction | undefined {
         result_combination: resultRow.combination,
         payout_per_100_yen: resultRow.payout_per_100_yen,
         original_stake_yen: stake,
-        counted_stake_yen: stake,
-        refund_yen: 0,
+        counted_stake_yen: stake - refund,
+        refund_yen: refund,
         gross_return_yen: gross,
-        profit_yen: gross - stake,
+        profit_yen: gross + refund - stake,
         hit: gross > 0,
         lines,
       },
