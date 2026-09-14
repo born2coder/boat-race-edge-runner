@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 import time
 import urllib.request
@@ -14,7 +15,7 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts import edge_shadow, prepare_forward
+from scripts import edge_shadow, prepare_forward, edge_official, build_fixture
 from scripts.edge_v2_model import predict_full
 from scripts.edge_v2_metrics import VERSION, PHASES, comparison, aggregate_days, snapshot_hash, iso
 
@@ -81,6 +82,7 @@ def capture(race, phase, grid, models, computed_at):
         "morning": morning["probabilities"],
         "exhibition": exhibition["probabilities"] if exhibition else None,
         "exhibition_source_ready_at": exhibition["source_ready_at"] if exhibition else None,
+        "exhibition_status": "available" if exhibition else race.get("preview_status", "source_not_ready"),
         "model_bundle_sha256": prepare_forward.MODEL_SHA256,
     }
     snapshot["snapshot_id"] = snapshot_hash(snapshot)
@@ -125,6 +127,9 @@ def progress(state, now):
                                  for r in races) for p in PHASES},
             "final_grids": sum(bool(r.get("final")) for r in races),
             "results": sum(bool(r.get("result")) for r in races),
+            "pending_results": sum(not r.get("result") and iso(r["start_at"]) < now for r in races),
+            "exhibition": {p: sum(r.get("snapshots", {}).get(p, {}).get("exhibition") is not None for r in races) for p in PHASES},
+            "result_error": state.get("result_error"),
             "last_tick_at": state.get("last_tick_at"), "last_error": state.get("last_error")}
 
 
@@ -159,6 +164,35 @@ class Observer:
         self.session = session
         self.models = None
         self.frozen_date = None
+        self.preview_cache = {}
+        self.archive_checks = {}
+
+    def overlay_previews(self, data, date, due, races):
+        """Fresh official inputs, obtained before inference; never backfill old snapshots."""
+        import pandas as pd
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            futures = {pool.submit(edge_official.fetch_preview, races[rid]): rid for rid in due}
+            for future in as_completed(futures):
+                rid = futures[future]
+                try:
+                    preview = future.result()
+                    if iso(preview["evidence"]["obtained_at"]) >= iso(races[rid]["start_at"]):
+                        raise ValueError("Preview arrived after closing")
+                    self.preview_cache[rid] = preview
+                    races[rid]["preview_status"] = "official_source_ready"
+                    races[rid].setdefault("preview_observations", {})[due[rid]] = preview
+                except Exception as error:
+                    races[rid]["preview_status"] = "official_source_unavailable"
+                    races[rid]["preview_error"] = {"at": utcnow().isoformat(), "reason": str(error)[:160]}
+        for source in ("tkz", "stt", "sui"):
+            path = prepare_forward._day_path(data, "previews/" + source, date)
+            existing = pd.read_csv(path, dtype={"レースコード": str}) if path.exists() else pd.DataFrame()
+            rows = [v[source] for rid, v in self.preview_cache.items() if rid in due]
+            if rows:
+                combined = pd.concat([existing, pd.DataFrame(rows)], ignore_index=True)
+                combined["レースコード"] = combined["レースコード"].astype(str)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                combined.drop_duplicates("レースコード", keep="last").to_csv(path, index=False)
 
     def load(self, date):
         data = prepare_forward._clone_data(self.session / "boatracecsv", date)
@@ -193,13 +227,24 @@ class Observer:
                 state["races"][raw]["snapshots"] = {}
             # Cards can become complete after the first schedule read.
             state["races"][raw]["eligible_roster"] = prepare_forward._race_is_publishable(race)
+            state["races"][raw]["roster"] = [{"lane_no": e["lane_no"], "racer_id": e["racer_id"]} for e in race["entries"]]
         due = {rid: phase_due(r, now) for rid, r in state["races"].items() if r.get("eligible_roster")}
         due = {rid: phase for rid, phase in due.items() if phase}
         morning, exhibition = {}, {}
         if due:
             frame = schedule[schedule["race_id"].astype(str).isin(due)].copy()
             morning = predict_full(frame, self.models["morning"], self.hybrid, self.module, "morning", pd.Timestamp(now))
-            exhibition = predict_full(frame, self.models["exhibition"], self.hybrid, self.module, "exhibition", pd.Timestamp(now))
+            self.overlay_previews(data, state["date"], due, state["races"])
+            refreshed = prepare_forward._load_service_day_compatible(self.hybrid, data, state["date"])
+            exhibition_frame = refreshed[refreshed["race_id"].astype(str).isin(due)].copy()
+            rejected = {}
+            exhibition = predict_full(exhibition_frame, self.models["exhibition"], self.hybrid, self.module,
+                                      "exhibition", pd.Timestamp(utcnow()), diagnostics=rejected)
+            for rid in due:
+                if rid not in exhibition:
+                    reason = rejected.get(rid, "model_input_incomplete")
+                    state["races"][rid].setdefault("exhibition_rejections", {})[due[rid]] = reason
+                    state["races"][rid]["preview_status"] = reason
         computed_at = utcnow().isoformat()
         # Fetch pre-race snapshots first; result recovery must not delay them.
         with ThreadPoolExecutor(max_workers=6) as pool:
@@ -216,8 +261,52 @@ class Observer:
         state["last_error"] = None
 
     def settle(self, state):
-        refresh_results(state)
-        pending = [r for r in state["races"].values() if r.get("result") and not r.get("final") and r.get("snapshots")]
+        now = utcnow()
+        date = state["date"]
+        # The official daily archive recovers ALL races, independently of site cron.
+        if time.monotonic() - self.archive_checks.get(date, -10000) >= 900:
+            self.archive_checks[date] = time.monotonic()
+            try:
+                artifact = build_fixture.fetch_artifact("K", date)
+                parsed = build_fixture.parse_results(artifact)
+                evidence = {"url": artifact.url, "obtained_at": artifact.fetched_at,
+                            "sha256": artifact.content_sha256, "source": "official_archive"}
+                for rid, result in parsed.items():
+                    race = state["races"].get(raw_id(rid))
+                    value = edge_official.archive_result(rid, result, evidence)
+                    if race is not None and value:
+                        race["result"] = value
+                        race.pop("result_error", None)
+                state["result_archive"] = evidence
+                state["result_error"] = None
+                # Also repair the existing site's result table using its signed API.
+                if os.environ.get("EDGE_SITE_INGEST_SECRET") and os.environ.get("EDGE_SITE_INGEST_ENDPOINT"):
+                    payload = {"schema_version": "boat-race-edge-ingest/v1", "generated_at": now.isoformat(),
+                               "service_date": date, "artifacts": [], "races": [], "decisions": [], "predictions": [],
+                               "results": [{"race_id": rid, **r} for rid, r in parsed.items() if "combination" in r]}
+                    path = self.session / (date + "-results.json")
+                    prepare_forward._atomic_json(path, payload)
+                    sent = subprocess.run([sys.executable, str(ROOT / "scripts/send_payload.py"), str(path)],
+                                          capture_output=True, text=True, timeout=70)
+                    if sent.returncode:
+                        state["result_error"] = {"at": utcnow().isoformat(), "kind": "site_result_sync_failed"}
+            except Exception as error:
+                state["result_error"] = {"at": utcnow().isoformat(), "kind": type(error).__name__}
+        # Between archive updates, poll a bounded batch of overdue official pages.
+        overdue = [r for r in state["races"].values() if not r.get("result") and r.get("roster")
+                   and (now - iso(r["start_at"])).total_seconds() >= 120]
+        overdue.sort(key=lambda r: r.get("result_attempt_at", ""))
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            futures = {pool.submit(edge_official.fetch_result, r): r for r in overdue[:8]}
+            for future in as_completed(futures):
+                race = futures[future]; race["result_attempt_at"] = utcnow().isoformat()
+                try:
+                    race["result"] = future.result()
+                    race.pop("result_error", None)
+                except Exception as error:
+                    race["result_error"] = str(error)[:160]
+        pending = [r for r in state["races"].values() if r.get("result") and not r["result"].get("cancelled")
+                   and not r.get("final") and r.get("snapshots")]
         # Bounded work; prioritize oldest overdue races, retry missing grids later.
         pending.sort(key=lambda r: r.get("final_attempt_at", ""))
         with ThreadPoolExecutor(max_workers=4) as pool:

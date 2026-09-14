@@ -1,8 +1,8 @@
 name: Validate full120 frozen model contract
 on:
   push:
-    branches: [edge-refresh-v2]
-    paths: ["scripts/edge_v2*.py", "scripts/smoke_edge_v2.py", ".github/workflows/edge-v2-contract.yml"]
+    branches: [edge-refresh-v2, edge-stability-check]
+    paths: ["scripts/edge_v2*.py", "scripts/edge_official.py", "scripts/smoke_edge_v2.py", ".github/workflows/edge-v2-contract.yml"]
   workflow_dispatch:
 permissions:
   contents: read

@@ -32,7 +32,7 @@ def validate_distribution(values, combinations):
     return [float(x) for x in array]
 
 
-def predict_full(frame, model, hybrid, model_module, kind, now):
+def predict_full(frame, model, hybrid, model_module, kind, now, diagnostics=None):
     """Use the original inference and safety metadata, capture before top8 truncation.
 
     Fail closed if the frozen interface changes: no fabricated lower-ranked mass.
@@ -43,6 +43,8 @@ def predict_full(frame, model, hybrid, model_module, kind, now):
     proxy = CaptureDistribution(model)
     prediction = getattr(hybrid, f"predict_{kind}")(frame, proxy)
     if prediction.empty:
+        if diagnostics is not None:
+            diagnostics.update({str(rid): "model_input_incomplete" for rid in frame["race_id"]})
         return {}
     if not proxy.calls:
         raise RuntimeError("Frozen model did not expose predict_trifecta; contract check failed")
@@ -63,8 +65,12 @@ def predict_full(frame, model, hybrid, model_module, kind, now):
             ready = pd.to_datetime(row.get("source_ready_at"), errors="coerce", utc=True)
             cutoff = pd.to_datetime(row.get("safe_cutoff_at"), errors="coerce", utc=True)
             if not bool(row.get("source_safe", False)) or pd.isna(ready) or pd.isna(cutoff):
+                if diagnostics is not None:
+                    diagnostics[str(row["race_id"])] = "source_missing_or_unsafe"
                 continue
             if ready > now or now >= cutoff:
+                if diagnostics is not None:
+                    diagnostics[str(row["race_id"])] = "source_from_future" if ready > now else "safety_cutoff_passed"
                 continue
         result[str(row["race_id"])] = {
             "probabilities": values,
