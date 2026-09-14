@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getEdgeV2Day, getEdgeV2Index, getEdgeV2Summary, validDate } from "@/db/edge-v2-repository";
 import { todayJst } from "@/db/live-repository";
-import { isPublicBeforeDeadline, selectedPicks, thresholds, type EdgeRaceV2, type Snapshot, type Phase, type Model, type Comparison } from "@/lib/edge-v2";
+import { dayProgress, isPublicBeforeDeadline, selectedPicks, thresholds, type EdgeRaceV2, type Snapshot, type Phase, type Model, type Comparison } from "@/lib/edge-v2";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "EDGE｜全120通りの期待値検証", description: "朝と展示後の全120通りを同じオッズで比較。20・15・10分前の観測と確定結果を記録します。", alternates: { canonical: "/edge" } };
@@ -52,7 +52,7 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
   const page = Math.max(1, Math.min(100, Number(query.page) || 1));
   const [index, day, dailySummary] = await Promise.all([getEdgeV2Index(), getEdgeV2Day(date), getEdgeV2Summary(date)]);
   const dailyRows = dailySummary?.comparison.filter((r) => !r.paired && r.scope === "all120" && r.model === model && r.phase === phase) ?? [];
-  const progress = index?.days.find((d) => d.date === date)?.progress;
+  const progress = day ? dayProgress(day) : undefined;
   const rows = index?.comparison.filter((r) => !r.paired && r.scope === "all120" && r.model === model && r.phase === phase) ?? [];
   const paired = index?.comparison.filter((r) => r.paired && r.scope === "all120" && r.phase === phase) ?? [];
   const scopeRows = index?.comparison.filter((r) => !r.paired && r.model === model && r.phase === phase && r.threshold === threshold) ?? [];

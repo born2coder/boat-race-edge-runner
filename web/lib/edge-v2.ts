@@ -30,7 +30,25 @@ export type ProgressV2 = { scheduled: number; checked: number; phases: Record<Ph
   result_error?: { kind: string; at: string } | null;
   last_error?: { kind: string; at: string } | null };
 export type EdgeIndexV2 = { version: string; updated_at: string; days: Array<{date: string; progress: ProgressV2}>; comparison: Comparison[] };
-export type EdgeDayV2 = { version: string; date: string; races: Record<string, EdgeRaceV2> };
+export type EdgeDayV2 = { version: string; date: string; races: Record<string, EdgeRaceV2>;
+  last_tick_at?: string | null; last_error?: ProgressV2["last_error"]; result_error?: ProgressV2["result_error"] };
+
+export function dayProgress(day: EdgeDayV2, now = Date.now()): ProgressV2 {
+  const races = Object.values(day.races);
+  const phases = ["t20", "t15", "t10"] as const;
+  const windowEnd = {t20: 17, t15: 13, t10: 8};
+  const counts = (predicate: (race: EdgeRaceV2, phase: Phase) => boolean) =>
+    Object.fromEntries(phases.map((phase) => [phase, races.filter((race) => predicate(race, phase)).length])) as Record<Phase, number>;
+  return {
+    scheduled: races.length, checked: races.filter((r) => Object.keys(r.snapshots).length > 0).length,
+    phases: counts((r, p) => Boolean(r.snapshots[p])),
+    missed: counts((r, p) => !r.snapshots[p] && (Date.parse(r.start_at) - now) / 60000 < windowEnd[p]),
+    exhibition: counts((r, p) => r.snapshots[p]?.exhibition != null),
+    final_grids: races.filter((r) => r.final).length, results: races.filter((r) => r.result).length,
+    pending_results: races.filter((r) => !r.result && Date.parse(r.start_at) < now).length,
+    last_tick_at: day.last_tick_at ?? null, last_error: day.last_error, result_error: day.result_error,
+  };
+}
 
 export function isPublicBeforeDeadline(race: EdgeRaceV2, snapshot: Snapshot) {
   const receipt = race.receipts?.[snapshot.snapshot_id];
