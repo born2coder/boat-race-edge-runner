@@ -262,6 +262,10 @@ class Observer:
         state["last_error"] = None
 
     def settle(self, state):
+        if not state["races"]:
+            # Before the schedule is loaded, there are no results to recover.
+            state["result_error"] = None
+            return
         now = utcnow()
         date = state["date"]
         # The official daily archive recovers ALL races, independently of site cron.

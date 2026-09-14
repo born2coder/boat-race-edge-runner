@@ -63,13 +63,17 @@ def main():
     failures = 0
     recovery_cursor = 0
     night_ticks = 0
-    # At night, one bounded settlement pass still records final odds and receipts.
+    next_night_settlement = 0
+    # Keep the process alive overnight so morning does not depend on cron delivery.
     with tempfile.TemporaryDirectory(prefix="edge-v2-") as folder:
         publisher = DataPublisher(edge.ROOT, Path(folder) / "public-data")
         observer = edge.Observer(Path(folder))
         while time.monotonic() - started < MAX_SECONDS:
             tick = time.monotonic()
             now_jst = edge.utcnow().astimezone(prepare_forward.JST)
+            if not 7 <= now_jst.hour < 22 and tick < next_night_settlement:
+                time.sleep(POLL_SECONDS)
+                continue
             date = now_jst.date().isoformat()
             if state is None or state["date"] != date:
                 path = edge.STATE / "days" / (date + ".json")
@@ -128,7 +132,8 @@ def main():
                     pending = any(r.get("snapshots") and (not r.get("result") or
                         (not r["result"].get("cancelled") and not r.get("final"))) for r in state["races"].values())
                     if not pending or night_ticks >= 25:
-                        break
+                        next_night_settlement = time.monotonic() + 900
+                        time.sleep(POLL_SECONDS)
                     continue
                 # A deployment can briefly leave the new read routes unavailable.
                 # Do not silently declare that night-time recovery succeeded.
