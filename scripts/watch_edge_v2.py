@@ -17,9 +17,11 @@ if __package__ in (None, ""):
 
 from scripts import edge_v2 as edge
 from scripts import prepare_forward
+from scripts.edge_publication import DataPublisher
 
 POLL_SECONDS = 60
 MAX_SECONDS = 315 * 60
+publisher = None
 
 
 def git(*args):
@@ -27,6 +29,8 @@ def git(*args):
 
 
 def persist():
+    if publisher is not None:
+        return publisher.persist()
     git("add", "--", "state/edge_v2")
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=edge.ROOT).returncode == 1:
         git("commit", "-m", "Record full120 EDGE observations and publication receipts")
@@ -49,6 +53,7 @@ def continue_observer():
 
 
 def main():
+    global publisher
     if os.environ.get("EDGE_REPOSITORY_VISIBILITY") != "public":
         raise RuntimeError("Public observation repository required")
     git("config", "user.name", "boat-race-edge-bot")
@@ -57,8 +62,10 @@ def main():
     state = None
     failures = 0
     recovery_cursor = 0
+    night_ticks = 0
     # At night, one bounded settlement pass still records final odds and receipts.
     with tempfile.TemporaryDirectory(prefix="edge-v2-") as folder:
+        publisher = DataPublisher(edge.ROOT, Path(folder) / "public-data")
         observer = edge.Observer(Path(folder))
         while time.monotonic() - started < MAX_SECONDS:
             tick = time.monotonic()
@@ -74,7 +81,7 @@ def main():
                     observer.tick(state)
                     edge.write_state(state)
                     persist()
-                    edge.confirm_publication(state)
+                    publisher.acknowledge(edge.confirm_publication(state))
                 observer.settle(state)
                 # Each loop also revisits unfinished recent days (no retrospective forecasts).
                 recovery_days = []
@@ -97,6 +104,10 @@ def main():
                 state["last_settlement_at"] = edge.utcnow().isoformat()
                 edge.write_state(state)
                 persist()
+                if not 7 <= now_jst.hour < 22:
+                    publisher.acknowledge(edge.confirm_publication(state))
+                    edge.write_state(state)
+                    persist()
                 failures = 0
             except Exception as error:
                 failures += 1
@@ -113,7 +124,12 @@ def main():
                     raise
             if not 7 <= now_jst.hour < 22:
                 if not failures:
-                    break
+                    night_ticks += 1
+                    pending = any(r.get("snapshots") and (not r.get("result") or
+                        (not r["result"].get("cancelled") and not r.get("final"))) for r in state["races"].values())
+                    if not pending or night_ticks >= 25:
+                        break
+                    continue
                 # A deployment can briefly leave the new read routes unavailable.
                 # Do not silently declare that night-time recovery succeeded.
                 time.sleep(5)

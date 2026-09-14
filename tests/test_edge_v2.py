@@ -29,6 +29,24 @@ def fixture():
 
 
 class EdgeV2Tests(unittest.TestCase):
+    def test_exhibition_rejects_future_source_and_reports_the_reason(self):
+        probabilities = np.array([[1/120] * 120])
+        model = SimpleNamespace(predict_trifecta=lambda frame: probabilities)
+        def infer(frame, proxy):
+            values = proxy.predict_trifecta(frame)[0]
+            row = {"race_id": "example", "source_safe": True,
+                   "source_ready_at": "2026-09-14T01:01:00Z", "safe_cutoff_at": "2026-09-14T01:20:00Z"}
+            for rank in range(1, 9):
+                row[f"top{rank}_combo"] = COMBOS[rank-1]
+                row[f"top{rank}_score"] = values[rank-1]
+            return pd.DataFrame([row])
+        hybrid = SimpleNamespace(predict_exhibition=infer)
+        module = SimpleNamespace(TRIPLES=np.array([[int(x)-1 for x in c.split('-')] for c in COMBOS]))
+        frame = pd.DataFrame([{"race_id": "example"}]); reasons = {}
+        self.assertEqual(predict_full(frame, model, hybrid, module, "exhibition", pd.Timestamp("2026-09-14T01:00:00Z"), reasons), {})
+        self.assertEqual(reasons, {"example": "source_from_future"})
+        self.assertIn("example", predict_full(frame, model, hybrid, module, "exhibition", pd.Timestamp("2026-09-14T01:02:00Z")))
+
     def test_probability_score_includes_unselected_races_and_excludes_refunds(self):
         race = fixture()
         row = summarize([race], "t20", "morning", 300, paired=True)

@@ -1,7 +1,7 @@
 import { EDGE_VERSION, type EdgeDayV2, type EdgeIndexV2, type Comparison } from "@/lib/edge-v2";
 import { hasSupabaseReadConfiguration, queryString, supabaseRequest } from "@/db/supabase";
 
-const base = "https://raw.githubusercontent.com/born2coder/boat-race-edge-runner/main/state/edge_v2";
+const base = "https://raw.githubusercontent.com/born2coder/boat-race-edge-runner/edge-data/state/edge_v2";
 export function validDate(date: string) { return /^20\d{2}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date)); }
 
 async function read<T>(path: string): Promise<T | null> {
@@ -27,5 +27,5 @@ export async function getDayResults(date: string) {
       select: "race_id,combination,payout_per_100_yen,finishers", race_id: `like.BR:${date.replaceAll("-", "")}:*`, limit: 288,
     })}`);
   return rows.map((row) => ({race_id: row.race_id, combination: row.combination, payout_per_100_yen: row.payout_per_100_yen,
-    refunded_lanes: row.finishers.filter((finisher) => /^(F|L)/.test(finisher.result_code ?? "")).map((finisher) => finisher.lane_no)}));
+    refunded_lanes: row.finishers.filter((finisher) => /^(F|L)/.test(finisher.result_code ?? "") || finisher.result_code === "K0").map((finisher) => finisher.lane_no)}));
 }

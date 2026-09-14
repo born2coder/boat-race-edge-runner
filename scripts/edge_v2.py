@@ -157,6 +157,7 @@ def confirm_publication(state):
         for snapshot in race.get("snapshots", {}).values():
             if snapshot["snapshot_id"] in confirmed:
                 race.setdefault("receipts", {}).setdefault(snapshot["snapshot_id"], served)
+    return receipt
 
 
 class Observer:
@@ -282,7 +283,10 @@ class Observer:
                 # Also repair the existing site's result table using its signed API.
                 if os.environ.get("EDGE_SITE_INGEST_SECRET") and os.environ.get("EDGE_SITE_INGEST_ENDPOINT"):
                     payload = {"schema_version": "boat-race-edge-ingest/v1", "generated_at": now.isoformat(),
-                               "service_date": date, "artifacts": [], "races": [], "decisions": [], "predictions": [],
+                               "service_date": date, "artifacts": [{"kind": artifact.kind, "date": artifact.date,
+                                   "url": artifact.url, "fetched_at": artifact.fetched_at,
+                                   "content_sha256": artifact.content_sha256, "byte_length": artifact.byte_length}],
+                               "races": [], "decisions": [], "predictions": [],
                                "results": [{"race_id": rid, **r} for rid, r in parsed.items() if "combination" in r]}
                     path = self.session / (date + "-results.json")
                     prepare_forward._atomic_json(path, payload)
