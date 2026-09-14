@@ -50,3 +50,17 @@ class ContinuityTests(TestCase):
                 self.assertIsNone(state["result_error"])
             else:
                 self.assertEqual(state["result_error"]["kind"], "HTTPError")
+
+    def test_exhibition_retries_transport_timeout_with_a_bound(self):
+        import io
+        from scripts import edge_official
+        race = {"race_date": "2026-09-15", "venue_code": 10, "race_no": 2}
+        with mock.patch.object(edge_official.urllib.request, "urlopen", side_effect=[TimeoutError(), io.BytesIO(b"ok")]) as get:
+            body, evidence = edge_official.page(race, "beforeinfo")
+        self.assertEqual(body, "ok")
+        self.assertEqual(get.call_count, 2)
+        self.assertEqual(get.call_args.kwargs["timeout"], 15)
+        with mock.patch.object(edge_official.urllib.request, "urlopen", side_effect=TimeoutError()) as get:
+            with self.assertRaises(TimeoutError):
+                edge_official.page(race, "beforeinfo")
+        self.assertEqual(get.call_count, 2)
