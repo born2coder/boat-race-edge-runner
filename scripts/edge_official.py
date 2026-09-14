@@ -5,6 +5,7 @@ import hashlib
 import re
 import unicodedata
 import urllib.request
+import urllib.error
 from datetime import datetime, timezone
 from urllib.parse import urlparse, parse_qs
 
@@ -26,8 +27,19 @@ def page(race, kind):
     url = (f"https://www.boatrace.jp/owpc/pc/race/{kind}?hd={race['race_date'].replace('-', '')}"
            f"&jcd={int(race['venue_code']):02d}&rno={int(race['race_no'])}")
     request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 FuneNoKotowari/2.1"})
-    with urllib.request.urlopen(request, timeout=8) as response:
-        body = response.read()
+    # Exhibition is sampled once per phase: retry transient transport failures
+    # before recording that phase. Results already retry on the next watcher tick.
+    attempts = 2 if kind == "beforeinfo" else 1
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                body = response.read()
+            break
+        except urllib.error.HTTPError:
+            raise
+        except (TimeoutError, urllib.error.URLError):
+            if attempt + 1 == attempts:
+                raise
     return body.decode("utf-8"), {"url": url, "obtained_at": datetime.now(timezone.utc).isoformat(),
                                    "sha256": hashlib.sha256(body).hexdigest()}
 
