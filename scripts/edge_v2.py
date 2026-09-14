@@ -298,6 +298,13 @@ class Observer:
                                           capture_output=True, text=True, timeout=70)
                     if sent.returncode:
                         state["result_error"] = {"at": utcnow().isoformat(), "kind": "site_result_sync_failed"}
+            except urllib.error.HTTPError as error:
+                # Today's daily K archive is normally absent until publication.
+                # Live race result pages below continue to settle overdue races.
+                if error.code == 404 and date == now.astimezone(prepare_forward.JST).date().isoformat():
+                    state["result_error"] = None
+                else:
+                    state["result_error"] = {"at": utcnow().isoformat(), "kind": type(error).__name__}
             except Exception as error:
                 state["result_error"] = {"at": utcnow().isoformat(), "kind": type(error).__name__}
         # Between archive updates, poll a bounded batch of overdue official pages.

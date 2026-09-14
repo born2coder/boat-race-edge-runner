@@ -35,3 +35,18 @@ class ContinuityTests(TestCase):
             edge_v2.Observer.__new__(edge_v2.Observer).settle(state)
         fetch.assert_not_called()
         self.assertIsNone(state["result_error"])
+
+    def test_current_archive_404_is_pending_but_server_failure_is_an_error(self):
+        from urllib.error import HTTPError
+        now = datetime(2026, 9, 15, 0, 0, tzinfo=timezone.utc)
+        for status in (404, 503):
+            observer = edge_v2.Observer.__new__(edge_v2.Observer)
+            observer.archive_checks = {}
+            state = {"date": "2026-09-15", "races": {"future": {"start_at": "2026-09-15T01:00:00+00:00"}}}
+            with mock.patch.object(edge_v2, "utcnow", return_value=now), \
+                 mock.patch.object(edge_v2.build_fixture, "fetch_artifact", side_effect=HTTPError("https://example.test", status, "test", {}, None)):
+                observer.settle(state)
+            if status == 404:
+                self.assertIsNone(state["result_error"])
+            else:
+                self.assertEqual(state["result_error"]["kind"], "HTTPError")
