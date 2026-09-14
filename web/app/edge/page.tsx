@@ -24,20 +24,21 @@ function RaceCard({race, snapshot, phase, model, threshold}: {race: EdgeRaceV2; 
   const result = race.result;
   const hits = picks.filter((p) => p.combination === result?.combination);
   const refunded = picks.filter((p) => p.combination.split("-").some((lane) => result?.refunded_lanes?.includes(Number(lane))));
+  const voided = result?.cancelled || (picks.length > 0 && refunded.length === picks.length);
   const closed = Date.parse(race.start_at) <= Date.now();
-  const status = !eligible ? published ? "締切前公開の条件外" : "公開確認中" : result ? hits.length ? "的中" : "不的中" : closed ? "結果確認中" : "検証候補";
+  const status = !eligible ? published ? "締切前公開の条件外" : "公開確認中" : result ? voided ? "返還" : hits.length ? "的中" : "不的中" : closed ? "結果確認中" : "検証候補";
   return <details className="edge-v2-race">
     <summary><span>{race.venue} {race.race_no}R <small>締切 {time(race.start_at).slice(0, 5)}</small></span><b>{status}</b><span>{picks.length}点 {eligible && result && <small>払戻 {yen(hits.length ? result.payout_per_100_yen : 0)}</small>}</span></summary>
     <div className="edge-v2-race-body"><p>{phaseLabels[phase]}の記録・{modelLabels[model]} ／ 各100円、計{yen(picks.length * 100)}{refunded.length > 0 && `（${refunded.length}点返還・回収率の分母から除外）`}</p>
       <p className="edge-v2-meta">取得 {time(snapshot.observed_at)}（実測{snapshot.minutes_before.toFixed(1)}分前）／ 公式更新 {snapshot.official_update_time} ／ 公開確認 {published ? time(published) : "確認中"}</p>
-      {result && <p>結果 <strong>{result.combination}</strong>・100円あたり{yen(result.payout_per_100_yen)}</p>}
+      {result && <p>結果 <strong>{result.cancelled ? "3連単不成立・返還" : result.combination}</strong>{!result.cancelled && `・100円あたり${yen(result.payout_per_100_yen)}`}</p>}
       <div className="edge-v2-table"><table><thead><tr><th>買い目</th><th>確率順位</th><th>確率</th><th>選択時オッズ</th><th>期待値</th><th>20分前</th><th>15分前</th><th>10分前</th><th>確定</th></tr></thead>
         <tbody>{picks.map((pick) => <tr key={pick.combination} className={pick.combination === result?.combination ? "edge-v2-hit" : ""}><th>{pick.combination}</th><td>{pick.rank}位</td><td>{percent(pick.probability * 100)}</td><td>{pick.odds.toFixed(1)}倍</td><td>{percent(pick.expected)}</td>
           {(["t20", "t15", "t10"] as Phase[]).map((p) => {const s = race.snapshots[p]; const i = s?.combinations.indexOf(pick.combination) ?? -1;return <td key={p}>{s && i >= 0 ? `${s.odds[i].toFixed(1)}倍 / ${(pick.probability * s.odds[i] * 100).toFixed(0)}%` : closed ? "未取得" : "待機"}</td>;})}
           <td>{race.final?.odds[pick.combination] != null ? `${race.final.odds[pick.combination].toFixed(1)}倍 / ${(pick.probability * race.final.odds[pick.combination] * 100).toFixed(0)}%` : pick.combination === result?.combination ? `${(result.payout_per_100_yen / 100).toFixed(1)}倍（払戻）` : "未取得"}</td></tr>)}</tbody></table></div>
       <p className="edge-v2-meta">各時点は「オッズ / 期待値」。選択時点の確率を固定し、オッズ変動だけで基準を割った時点を確認できます。公開遅延：{published ? `${Math.max(0, (Date.parse(published) - Date.parse(snapshot.observed_at)) / 1000).toFixed(0)}秒` : "未確認"}。</p>
       {!race.final && closed && <p className="edge-v2-meta">全120通りの確定オッズは未取得です。的中買い目の払戻だけで全体のオッズ低下率を推定しません。</p>}
-      <p><a href={`https://github.com/born2coder/boat-race-edge-runner/blob/main/state/edge_v2/days/${race.race_date}.json`} target="_blank" rel="noreferrer">この日の全120通りの記録</a></p>
+      <p><a href={`https://github.com/born2coder/boat-race-edge-runner/blob/edge-data/state/edge_v2/days/${race.race_date}.json`} target="_blank" rel="noreferrer">この日の全120通りの記録</a></p>
     </div></details>;
 }
 
@@ -82,6 +83,8 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
       <strong>{stale ? "監視更新を確認できていません" : progress?.last_error ? "取得処理の異常を検出" : missing ? "取得できなかったレースがあります" : "この日の観測状況"}</strong>
       <p>対象 {progress?.scheduled ?? "—"}R ／ 20分前 {progress?.phases.t20 ?? 0}R ／ 15分前 {progress?.phases.t15 ?? 0}R ／ 10分前 {progress?.phases.t10 ?? 0}R ／ 確定オッズ {progress?.final_grids ?? 0}R</p>
       <p>取得窓を過ぎた未取得：20分前 {progress?.missed.t20 ?? "—"}R・15分前 {progress?.missed.t15 ?? "—"}R・10分前 {progress?.missed.t10 ?? "—"}R</p>
+      <p>展示後確率：20分前 {progress?.exhibition?.t20 ?? 0}R・15分前 {progress?.exhibition?.t15 ?? 0}R・10分前 {progress?.exhibition?.t10 ?? 0}R</p>
+      <p>結果取得 {progress?.results ?? 0}R ／ 締切後の結果待ち {progress?.pending_results ?? "—"}R。{progress?.result_error && "結果取得・同期の一部にエラーがあります。"}</p>
       <small>最終監視 {progress?.last_tick_at ? time(progress.last_tick_at) : "未確認"}。候補なしと取得できなかったレースを分けて表示します。</small>
     </section>
     <section><h2>これからのレース <small>{live.length}R</small></h2>

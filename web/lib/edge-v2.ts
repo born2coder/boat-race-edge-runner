@@ -7,6 +7,7 @@ export type Snapshot = {
   request_started_at: string; official_update_time: string; minutes_before: number;
   combinations: string[]; odds: number[]; morning: number[]; exhibition: number[] | null;
   exhibition_source_ready_at: string | null;
+  exhibition_status?: string;
 };
 export type EdgeRaceV2 = {
   race_id: string; race_date: string; venue_code: string; venue: string; race_no: number; start_at: string;
@@ -25,6 +26,8 @@ export type Comparison = {
 };
 export type ProgressV2 = { scheduled: number; checked: number; phases: Record<Phase, number>;
   missed: Record<Phase, number>; final_grids: number; results: number; last_tick_at: string | null;
+  exhibition?: Record<Phase, number>; pending_results?: number;
+  result_error?: { kind: string; at: string } | null;
   last_error?: { kind: string; at: string } | null };
 export type EdgeIndexV2 = { version: string; updated_at: string; days: Array<{date: string; progress: ProgressV2}>; comparison: Comparison[] };
 export type EdgeDayV2 = { version: string; date: string; races: Record<string, EdgeRaceV2> };
