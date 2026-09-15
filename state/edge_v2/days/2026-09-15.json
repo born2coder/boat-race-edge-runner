@@ -2,7 +2,7 @@
   "date": "2026-09-15",
   "last_error": null,
   "last_settlement_at": "2026-09-15T00:10:40.152141+00:00",
-  "last_tick_at": "2026-09-15T00:10:18.148162+00:00",
+  "last_tick_at": "2026-09-15T00:11:35.760996+00:00",
   "races": {
     "202609150401": {
       "eligible_roster": true,
@@ -7330,6 +7330,20 @@
     },
     "202609151403": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-15T00:11:35.760916+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-15T00:11:26.504263+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-15",
       "race_id": "BR:20260915:14:03",
       "race_name": "どきどきなると",
