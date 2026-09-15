@@ -1,15 +1,31 @@
+import { cache } from "react";
 import { EDGE_VERSION, type EdgeDayV2, type EdgeIndexV2, type Comparison } from "@/lib/edge-v2";
 import { hasSupabaseReadConfiguration, queryString, supabaseRequest } from "@/db/supabase";
 
-const base = "https://raw.githubusercontent.com/born2coder/boat-race-edge-runner/edge-data/state/edge_v2";
+const repository = "born2coder/boat-race-edge-runner";
+// One revision per render; the shared Next fetch cache bounds unauthenticated
+// GitHub ref requests to about 30/hour across the page and receipt endpoint.
+export const getEdgeV2Revision = cache(async (): Promise<string | null> => {
+  try {
+    const bucket = Math.floor(Date.now() / 120_000);
+    const response = await fetch(`https://api.github.com/repos/${repository}/git/ref/heads/edge-data?bucket=${bucket}`,
+      { next: { revalidate: 120 }, headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(8_000) });
+    if (!response.ok) return null;
+    const value = await response.json();
+    return /^[a-f0-9]{40}$/.test(value.object?.sha ?? "") ? value.object.sha : null;
+  } catch { return null; }
+});
 export function validDate(date: string) { return /^20\d{2}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date)); }
 
 async function read<T>(path: string): Promise<T | null> {
   try {
-    // no-store skips Next's cache but cannot invalidate GitHub's five-minute
-    // CDN cache. Share a fresh key each minute across the page and receipt API.
+    const revision = await getEdgeV2Revision();
+    // Immutable commit URLs cannot serve a previous branch revision from CDN.
+    // Fall back to the existing read path during GitHub API rate limiting.
+    const ref = revision ?? "edge-data";
     const minute = Math.floor(Date.now() / 60_000);
-    const response = await fetch(`${base}/${path}?minute=${minute}`, { cache: "no-store", signal: AbortSignal.timeout(12_000) });
+    const response = await fetch(`https://raw.githubusercontent.com/${repository}/${ref}/state/edge_v2/${path}?minute=${minute}`,
+      { cache: "no-store", signal: AbortSignal.timeout(12_000) });
     if (!response.ok) return null;
     const value = await response.json();
     return value.version === EDGE_VERSION ? value as T : null;
