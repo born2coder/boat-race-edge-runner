@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import time
 import unicodedata
 import urllib.request
 import urllib.error
@@ -25,7 +26,7 @@ def number(value):
 
 def page(race, kind):
     url = (f"https://www.boatrace.jp/owpc/pc/race/{kind}?hd={race['race_date'].replace('-', '')}"
-           f"&jcd={int(race['venue_code']):02d}&rno={int(race['race_no'])}")
+           f"&jcd={int(race['venue_code']):02d}&rno={int(race['race_no'])}&_edge_minute={int(time.time() // 60)}")
     request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 FuneNoKotowari/2.1"})
     # Exhibition is sampled once per phase: retry transient transport failures
     # before recording that phase. Results already retry on the next watcher tick.
