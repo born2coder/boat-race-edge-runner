@@ -1,7 +1,7 @@
 {
   "date": "2026-09-15",
   "last_error": null,
-  "last_settlement_at": "2026-09-14T23:58:49.259931+00:00",
+  "last_settlement_at": "2026-09-15T00:00:14.505019+00:00",
   "last_tick_at": "2026-09-14T23:59:28.950269+00:00",
   "races": {
     "202609150401": {
@@ -5081,8 +5081,56 @@
       "race_id": "BR:20260915:14:01",
       "race_name": "とるならなると",
       "race_no": 1,
-      "result_attempt_at": "2026-09-14T23:58:39.222932+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "1-3-5",
+        "evidence": {
+          "obtained_at": "2026-09-14T23:59:53.214185+00:00",
+          "sha256": "c0b10752edd53b9faae2134754bedeea9ddec54b8ca1b60229e14f123b558c17",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260915&jcd=14&rno=1"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 1,
+            "racer_id": "3304",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 3,
+            "racer_id": "3722",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 5,
+            "racer_id": "5389",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 4,
+            "racer_id": "5403",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 2,
+            "racer_id": "4110",
+            "result_code": null
+          },
+          {
+            "finish_position": 6,
+            "lane_no": 6,
+            "racer_id": "3578",
+            "result_code": null
+          }
+        ],
+        "payout_per_100_yen": 2840,
+        "race_id": "BR:20260915:14:01",
+        "refunded_lanes": []
+      },
+      "result_attempt_at": "2026-09-14T23:59:53.240337+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -8719,8 +8767,8 @@
     }
   },
   "result_archive": {
-    "obtained_at": "2026-09-14T23:44:25+00:00",
-    "sha256": "4a360bd2b30f36f8e3ec3653eb87bd797b8ef9f0ab3845d96cf9ca36d554a9be",
+    "obtained_at": "2026-09-14T23:59:41+00:00",
+    "sha256": "a6d0fd63fc493c0e73e2da9b2cfd83d193a9628c98fa9257b8b2a7ecb2650b25",
     "source": "official_archive",
     "url": "https://www1.mbrace.or.jp/od2/K/202609/k260915.lzh"
   },
