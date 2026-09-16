@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -19,7 +20,7 @@ from scripts import prepare_type_g
 
 ROOT = Path(__file__).resolve().parents[1]
 POLL_SECONDS = 180
-MAX_SECONDS = 345 * 60  # Leave time for setup/cleanup below GitHub's six-hour limit.
+MAX_SECONDS = 315 * 60  # Queue a successor well below GitHub's six-hour limit.
 
 
 def check_mode(state: dict | None, now: datetime) -> str:
@@ -39,6 +40,20 @@ def check_mode(state: dict | None, now: datetime) -> str:
 
 def run(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(args, cwd=ROOT, check=True, timeout=120)
+
+
+def continue_observer() -> None:
+    """Queue the next watcher directly instead of depending on cron delivery."""
+    token, repo = os.environ.get("GH_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    if not token or not repo:
+        raise RuntimeError("HIT observer continuation configuration missing")
+    request = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}/actions/workflows/forward.yml/dispatches",
+        data=b'{"ref":"main"}', method="POST",
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        if response.status != 204:
+            raise RuntimeError("HIT observer continuation not accepted")
 
 
 def persist_state(path: Path, message: str) -> None:
@@ -80,34 +95,40 @@ def main() -> None:
     # standard runner. Making this repository private cannot silently incur hours.
     if os.environ.get("EDGE_REPOSITORY_VISIBILITY") != "public":
         raise RuntimeError("Continuous publication requires a public repository")
-    date = datetime.now(prepare_forward.JST).date().isoformat()
-    os.environ["EDGE_SERVICE_DATE"] = date
-    print(json.dumps({"watch_service_date": date, "watch_poll_seconds": POLL_SECONDS}), flush=True)
-    state_path = ROOT / "state" / prepare_forward.MODEL_VERSION / f"{date}.json"
     run("git", "config", "user.name", "boat-race-edge-bot")
     run("git", "config", "user.email", "actions@users.noreply.github.com")
     started = time.monotonic()
+    date = None
+    state_path = None
     failures = 0
     first_check = True
     with tempfile.TemporaryDirectory(prefix="edge-watch-") as session:
         while time.monotonic() - started < MAX_SECONDS:
             now = datetime.now(prepare_forward.JST)
-            if now.date().isoformat() != date or now.hour >= 22:
-                break
+            current_date = now.date().isoformat()
+            if current_date != date:
+                date = current_date
+                os.environ["EDGE_SERVICE_DATE"] = date
+                state_path = ROOT / "state" / prepare_forward.MODEL_VERSION / f"{date}.json"
+                failures = 0
+                first_check = True
+                print(json.dumps({"watch_service_date": date, "watch_poll_seconds": POLL_SECONDS}), flush=True)
             state = json.loads(state_path.read_text()) if state_path.exists() else None
             mode = check_mode(state, now)
             if first_check and state is not None and mode == "idle":
                 mode = "check"  # Validate source/model access immediately on startup.
             print(json.dumps({"watch_checked_at": now.isoformat(), "mode": mode}), flush=True)
-            if mode == "finished":
-                break
             if mode == "check":
                 try:
-                    prepare_forward.main(Path(session))
+                    # A separate checkout per service day keeps sparse data paths
+                    # correct when one process spans midnight.
+                    day_session = Path(session) / date
+                    day_session.mkdir(parents=True, exist_ok=True)
+                    prepare_forward.main(day_session)
                     publish_pending(state_path)
                     type_g_state = ROOT / "state" / prepare_type_g.TYPE_G_VERSION / f"{date}.json"
                     try:
-                        prepare_type_g.main(Path(session))
+                        prepare_type_g.main(day_session)
                         publish_type_g_pending(type_g_state)
                     except Exception as type_g_error:
                         # The experiment must never block the official HIT stream.
@@ -118,9 +139,11 @@ def main() -> None:
                     failures += 1
                     print(json.dumps({"watch_error": type(error).__name__, "consecutive_failures": failures}), flush=True)
                     if failures >= 5:
+                        continue_observer()
                         raise
             time.sleep(POLL_SECONDS)
-    print(json.dumps({"watch_finished_at": datetime.now(prepare_forward.JST).isoformat()}), flush=True)
+        else:
+            continue_observer()
 
 
 if __name__ == "__main__":

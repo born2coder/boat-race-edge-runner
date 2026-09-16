@@ -22,11 +22,12 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 concurrency:
   group: boat-race-edge-forward
-  cancel-in-progress: false
+  # Scheduled runs queue; a code deployment replaces the old loaded process.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   publish:
@@ -61,4 +62,5 @@ jobs:
           EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
           TYPE_G_ARTIFACT_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: python scripts/watch_forward.py
