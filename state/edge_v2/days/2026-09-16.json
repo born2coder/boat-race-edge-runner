@@ -2,7 +2,7 @@
   "date": "2026-09-16",
   "last_error": null,
   "last_settlement_at": "2026-09-16T06:42:38.667986+00:00",
-  "last_tick_at": "2026-09-16T06:41:56.516914+00:00",
+  "last_tick_at": "2026-09-16T06:43:00.601021+00:00",
   "races": {
     "202609160401": {
       "eligible_roster": true,
@@ -97358,6 +97358,20 @@
     },
     "202609161203": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-16T06:43:00.600954+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-16T06:42:52.241380+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-16",
       "race_id": "BR:20260916:12:03",
       "race_name": "一般戦",
