@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import tempfile
 import unittest
 from datetime import datetime
@@ -104,7 +105,7 @@ class WatchTests(unittest.TestCase):
             path = root / "state" / watch.prepare_forward.MODEL_VERSION / "2026-09-05.json"
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps(sample()))
-            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), patch.object(watch, "ROOT", root), patch.object(watch, "datetime") as clock, patch.object(watch, "run"), patch.object(watch, "publish_pending") as publish, patch.object(watch.prepare_forward, "main", side_effect=[RuntimeError("temporary"), None]) as prepare, patch.object(watch.time, "monotonic", side_effect=[0, 0, 60, watch.MAX_SECONDS]), patch.object(watch.time, "sleep") as sleep:
+            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), patch.object(watch, "ROOT", root), patch.object(watch, "datetime") as clock, patch.object(watch, "run"), patch.object(watch, "publish_pending") as publish, patch.object(watch.prepare_forward, "main", side_effect=[RuntimeError("temporary"), None]) as prepare, patch.object(watch.time, "monotonic", side_effect=[0, 0, 60, watch.MAX_SECONDS]), patch.object(watch.time, "sleep") as sleep, patch.object(watch, "continue_observer") as successor:
                 clock.now.return_value = at("13:48:00")
                 clock.fromisoformat.side_effect = datetime.fromisoformat
                 watch.main()
@@ -114,6 +115,7 @@ class WatchTests(unittest.TestCase):
                 self.assertEqual(prepare.call_args_list[0], prepare.call_args_list[1])
                 self.type_g_prepare.assert_called_once()
                 self.type_g_publish.assert_called_once()
+                successor.assert_called_once_with()
 
     def test_type_g_failure_does_not_stop_official_hit(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -122,7 +124,7 @@ class WatchTests(unittest.TestCase):
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps(sample()))
             self.type_g_prepare.side_effect = RuntimeError("type-G unavailable")
-            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), patch.object(watch, "ROOT", root), patch.object(watch, "datetime") as clock, patch.object(watch, "run"), patch.object(watch, "publish_pending") as publish, patch.object(watch.prepare_forward, "main") as prepare, patch.object(watch.time, "monotonic", side_effect=[0, 0, 60, watch.MAX_SECONDS]), patch.object(watch.time, "sleep") as sleep:
+            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), patch.object(watch, "ROOT", root), patch.object(watch, "datetime") as clock, patch.object(watch, "run"), patch.object(watch, "publish_pending") as publish, patch.object(watch.prepare_forward, "main") as prepare, patch.object(watch.time, "monotonic", side_effect=[0, 0, 60, watch.MAX_SECONDS]), patch.object(watch.time, "sleep") as sleep, patch.object(watch, "continue_observer"):
                 clock.now.return_value = at("13:48:00")
                 clock.fromisoformat.side_effect = datetime.fromisoformat
                 watch.main()
@@ -131,6 +133,33 @@ class WatchTests(unittest.TestCase):
                 self.assertEqual(sleep.call_count, 2)
                 self.assertEqual(self.type_g_prepare.call_count, 2)
                 self.type_g_publish.assert_not_called()
+
+    def test_watcher_crosses_midnight_and_checks_the_new_service_day(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            moments = [at("23:59:00"), datetime.fromisoformat("2026-09-06T06:01:00+09:00")]
+            ticks = [0]
+
+            def sleep(_seconds):
+                ticks[0] += 1
+
+            with patch.dict("os.environ", {"EDGE_REPOSITORY_VISIBILITY": "public"}), \
+                 patch.object(watch, "ROOT", root), \
+                 patch.object(watch, "datetime") as clock, \
+                 patch.object(watch, "run"), \
+                 patch.object(watch.time, "monotonic", side_effect=lambda: 0 if ticks[0] < 2 else watch.MAX_SECONDS), \
+                 patch.object(watch.time, "sleep", side_effect=sleep), \
+                 patch.object(watch.prepare_forward, "main") as prepare, \
+                 patch.object(watch, "publish_pending"), \
+                 patch.object(watch, "continue_observer") as successor:
+                clock.now.side_effect = lambda _tz: moments[min(ticks[0], 1)]
+                clock.fromisoformat.side_effect = datetime.fromisoformat
+                watch.main()
+                self.assertEqual(os.environ["EDGE_SERVICE_DATE"], "2026-09-06")
+
+            prepare.assert_called_once()
+            self.assertEqual(prepare.call_args.args[0].name, "2026-09-06")
+            successor.assert_called_once_with()
 
 
 if __name__ == "__main__":

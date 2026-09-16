@@ -26,6 +26,12 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn("actions/workflows/edge.yml/dispatches", workflow)
         self.assertIn('"queued", "in_progress"', workflow)
 
+    def test_results_workflow_recovers_a_missing_hit_observer(self):
+        workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")
+
+        self.assertIn("Ensure HIT observer is running", workflow)
+        self.assertIn("actions/workflows/forward.yml/dispatches", workflow)
+
     def test_results_workflow_backfills_recent_service_days(self):
         workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")
 
@@ -41,6 +47,8 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn('cron: "45 2 * * *"', workflow)  # 11:45 JST
         self.assertIn('cron: "30 8 * * *"', workflow)  # 17:30 JST
         self.assertNotIn("timezone:", workflow)
+        self.assertIn("cancel-in-progress: ${{ github.event_name == 'push' }}", workflow)
+        self.assertIn("actions: write", workflow)
 
 
 if __name__ == "__main__":
