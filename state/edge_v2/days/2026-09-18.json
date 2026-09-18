@@ -2,7 +2,7 @@
   "date": "2026-09-18",
   "last_error": null,
   "last_settlement_at": "2026-09-18T07:37:40.614725+00:00",
-  "last_tick_at": "2026-09-18T07:36:43.619810+00:00",
+  "last_tick_at": "2026-09-18T07:38:04.815797+00:00",
   "races": {
     "202609180201": {
       "eligible_roster": true,
@@ -111899,6 +111899,20 @@
     },
     "202609181205": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-18T07:38:04.815432+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-18T07:37:54.332786+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-18",
       "race_id": "BR:20260918:12:05",
       "race_name": "住之江ファイブ",
