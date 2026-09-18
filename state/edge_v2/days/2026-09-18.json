@@ -2,7 +2,7 @@
   "date": "2026-09-18",
   "last_error": null,
   "last_settlement_at": "2026-09-18T08:10:03.587817+00:00",
-  "last_tick_at": "2026-09-18T08:09:14.133361+00:00",
+  "last_tick_at": "2026-09-18T08:10:26.739056+00:00",
   "races": {
     "202609180201": {
       "eligible_roster": true,
@@ -165655,6 +165655,20 @@
     },
     "202609181506": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-18T08:10:26.738723+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-18T08:10:18.194954+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-18",
       "race_id": "BR:20260918:15:06",
       "race_name": "かけうどん６",
