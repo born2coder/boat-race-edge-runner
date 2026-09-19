@@ -1,0 +1,6430 @@
+{
+  "date": "2026-09-20",
+  "model_artifact_created_at": "2026-09-07T13:14:56.061245+00:00",
+  "model_version": "HIT_type_G_v1",
+  "morning_locked_at": "2026-09-19T22:33:07.386473+00:00",
+  "published_count": 0,
+  "schema_version": "boat-race-edge-type-g-state/v1",
+  "selected": [
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_091baeb10d9cefcf5983",
+        "publication_hash": "3494358bbe9ff4fd3ef3783609b5c21cc7333a5f795cbc5d053ffef57088ec78",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "堀之内紀代子",
+            "rank": 1,
+            "score": 0.67176812
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "菅野 はやか",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "冨名腰 桃奈",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "橋谷田 佳織",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "戸田 海咲音",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "池 千夏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 54,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 29.8,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 69,
+            "lane_no": 1,
+            "local_2rate": 40.9,
+            "local_win_rate": 5.89,
+            "motor_2rate": 34.3,
+            "motor_no": 33,
+            "national_2rate": 47.4,
+            "national_win_rate": 6.47,
+            "racer_id": "4011",
+            "racer_name": "堀之内紀代子",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 29.2,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 80,
+            "lane_no": 2,
+            "local_2rate": 21.4,
+            "local_win_rate": 4.66,
+            "motor_2rate": 34.2,
+            "motor_no": 16,
+            "national_2rate": 17.6,
+            "national_win_rate": 3.54,
+            "racer_id": "4275",
+            "racer_name": "菅野 はやか",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 37.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 51,
+            "lane_no": 3,
+            "local_2rate": 6.6,
+            "local_win_rate": 3.33,
+            "motor_2rate": 38.5,
+            "motor_no": 58,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.13,
+            "racer_id": "5117",
+            "racer_name": "冨名腰 桃奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 32.7,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 38,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.26,
+            "motor_2rate": 46.5,
+            "motor_no": 72,
+            "national_2rate": 8.8,
+            "national_win_rate": 3.35,
+            "racer_id": "3355",
+            "racer_name": "橋谷田 佳織",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 30.4,
+            "branch": "山口",
+            "class": "B2",
+            "equipment_boat_no": 75,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.06,
+            "motor_2rate": 39.2,
+            "motor_no": 60,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.52,
+            "racer_id": "5387",
+            "racer_name": "戸田 海咲音",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 32.9,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 71,
+            "lane_no": 6,
+            "local_2rate": 24.0,
+            "local_win_rate": 4.32,
+            "motor_2rate": 29.3,
+            "motor_no": 20,
+            "national_2rate": 6.3,
+            "national_win_rate": 3.24,
+            "racer_id": "3509",
+            "racer_name": "池 千夏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:01",
+        "race_name": "ファーストＢ",
+        "race_no": 1,
+        "start_at": "2026-09-20T10:40:00+09:00",
+        "start_time_jst": "10:40",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201701"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_225db94e1cfb1d047ed5",
+        "publication_hash": "8ea24e33acfecacbd4a0fcd7a223734a8fe31b8d9bc3b57765d230a4e2a46373",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "堀之内紀代子",
+            "rank": 1,
+            "score": 0.67204254
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "菅野 はやか",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "冨名腰 桃奈",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "橋谷田 佳織",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "戸田 海咲音",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "池 千夏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 54,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 29.8,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 69,
+            "lane_no": 1,
+            "local_2rate": 40.9,
+            "local_win_rate": 5.89,
+            "motor_2rate": 34.3,
+            "motor_no": 33,
+            "national_2rate": 47.4,
+            "national_win_rate": 6.47,
+            "racer_id": "4011",
+            "racer_name": "堀之内紀代子",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 29.2,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 80,
+            "lane_no": 2,
+            "local_2rate": 21.4,
+            "local_win_rate": 4.66,
+            "motor_2rate": 34.2,
+            "motor_no": 16,
+            "national_2rate": 17.6,
+            "national_win_rate": 3.54,
+            "racer_id": "4275",
+            "racer_name": "菅野 はやか",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 37.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 51,
+            "lane_no": 3,
+            "local_2rate": 6.6,
+            "local_win_rate": 3.33,
+            "motor_2rate": 38.5,
+            "motor_no": 58,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.13,
+            "racer_id": "5117",
+            "racer_name": "冨名腰 桃奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 32.7,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 38,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.26,
+            "motor_2rate": 46.5,
+            "motor_no": 72,
+            "national_2rate": 8.8,
+            "national_win_rate": 3.35,
+            "racer_id": "3355",
+            "racer_name": "橋谷田 佳織",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 30.4,
+            "branch": "山口",
+            "class": "B2",
+            "equipment_boat_no": 75,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.06,
+            "motor_2rate": 39.2,
+            "motor_no": 60,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.52,
+            "racer_id": "5387",
+            "racer_name": "戸田 海咲音",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 32.9,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 71,
+            "lane_no": 6,
+            "local_2rate": 24.0,
+            "local_win_rate": 4.32,
+            "motor_2rate": 29.3,
+            "motor_no": 20,
+            "national_2rate": 6.3,
+            "national_win_rate": 3.24,
+            "racer_id": "3509",
+            "racer_name": "池 千夏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:01",
+        "race_name": "ファーストＢ",
+        "race_no": 1,
+        "start_at": "2026-09-20T10:40:00+09:00",
+        "start_time_jst": "10:40",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201701"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_240709b8a9db300d42e6",
+        "publication_hash": "56f8e57fdfe8d4b5c64e6465d65fd359c6699dc6fb339d3a1cc0b28fbd32fdc9",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:05",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "平山 智加",
+            "rank": 1,
+            "score": 0.66892409
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "喜井 つかさ",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "山崎 小葉音",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "加藤 奈月",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "野田 亜湖",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "後藤 美翼",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 53,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 41,
+            "boat_2rate": 35.2,
+            "branch": "香川",
+            "class": "A1",
+            "equipment_boat_no": 18,
+            "lane_no": 1,
+            "local_2rate": 38.4,
+            "local_win_rate": 6.13,
+            "motor_2rate": 32.8,
+            "motor_no": 67,
+            "national_2rate": 50.4,
+            "national_win_rate": 6.76,
+            "racer_id": "4387",
+            "racer_name": "平山 智加",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 38.7,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 16,
+            "lane_no": 2,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.38,
+            "motor_2rate": 31.9,
+            "motor_no": 23,
+            "national_2rate": 40.0,
+            "national_win_rate": 5.83,
+            "racer_id": "4536",
+            "racer_name": "喜井 つかさ",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 34.5,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 73,
+            "lane_no": 3,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.1,
+            "motor_2rate": 29.4,
+            "motor_no": 78,
+            "national_2rate": 29.4,
+            "national_win_rate": 5.06,
+            "racer_id": "5069",
+            "racer_name": "山崎 小葉音",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 35.3,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 58,
+            "lane_no": 4,
+            "local_2rate": 11.1,
+            "local_win_rate": 3.5,
+            "motor_2rate": 28.0,
+            "motor_no": 62,
+            "national_2rate": 13.6,
+            "national_win_rate": 4.14,
+            "racer_id": "4400",
+            "racer_name": "加藤 奈月",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 29.6,
+            "branch": "徳島",
+            "class": "B2",
+            "equipment_boat_no": 30,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.18,
+            "motor_2rate": 37.3,
+            "motor_no": 79,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.2,
+            "racer_id": "5380",
+            "racer_name": "野田 亜湖",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 29.9,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 14,
+            "lane_no": 6,
+            "local_2rate": 42.8,
+            "local_win_rate": 5.67,
+            "motor_2rate": 38.2,
+            "motor_no": 25,
+            "national_2rate": 33.6,
+            "national_win_rate": 5.58,
+            "racer_id": "4680",
+            "racer_name": "後藤 美翼",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:05",
+        "race_name": "ランチタイム",
+        "race_no": 5,
+        "start_at": "2026-09-20T12:39:00+09:00",
+        "start_time_jst": "12:39",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201705"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_3a136191016dbe1807b0",
+        "publication_hash": "e577b4fb04001b7988267a86f534775f4391085eed5a4a431ae7f26d3df74768",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:05",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "平山 智加",
+            "rank": 1,
+            "score": 0.66163593
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "喜井 つかさ",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "山崎 小葉音",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "加藤 奈月",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "野田 亜湖",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "後藤 美翼",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 52,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 41,
+            "boat_2rate": 35.2,
+            "branch": "香川",
+            "class": "A1",
+            "equipment_boat_no": 18,
+            "lane_no": 1,
+            "local_2rate": 38.4,
+            "local_win_rate": 6.13,
+            "motor_2rate": 32.8,
+            "motor_no": 67,
+            "national_2rate": 50.4,
+            "national_win_rate": 6.76,
+            "racer_id": "4387",
+            "racer_name": "平山 智加",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 38.7,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 16,
+            "lane_no": 2,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.38,
+            "motor_2rate": 31.9,
+            "motor_no": 23,
+            "national_2rate": 40.0,
+            "national_win_rate": 5.83,
+            "racer_id": "4536",
+            "racer_name": "喜井 つかさ",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 34.5,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 73,
+            "lane_no": 3,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.1,
+            "motor_2rate": 29.4,
+            "motor_no": 78,
+            "national_2rate": 29.4,
+            "national_win_rate": 5.06,
+            "racer_id": "5069",
+            "racer_name": "山崎 小葉音",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 35.3,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 58,
+            "lane_no": 4,
+            "local_2rate": 11.1,
+            "local_win_rate": 3.5,
+            "motor_2rate": 28.0,
+            "motor_no": 62,
+            "national_2rate": 13.6,
+            "national_win_rate": 4.14,
+            "racer_id": "4400",
+            "racer_name": "加藤 奈月",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 29.6,
+            "branch": "徳島",
+            "class": "B2",
+            "equipment_boat_no": 30,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.18,
+            "motor_2rate": 37.3,
+            "motor_no": 79,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.2,
+            "racer_id": "5380",
+            "racer_name": "野田 亜湖",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 29.9,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 14,
+            "lane_no": 6,
+            "local_2rate": 42.8,
+            "local_win_rate": 5.67,
+            "motor_2rate": 38.2,
+            "motor_no": 25,
+            "national_2rate": 33.6,
+            "national_win_rate": 5.58,
+            "racer_id": "4680",
+            "racer_name": "後藤 美翼",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:05",
+        "race_name": "ランチタイム",
+        "race_no": 5,
+        "start_at": "2026-09-20T12:39:00+09:00",
+        "start_time_jst": "12:39",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201705"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_f8be1cfafc3ed0c77a1b",
+        "publication_hash": "2586d80a4d27b87efc9c86ccd7a446a0b1fd1ff8c4cf814f8192421f17d31147",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:10:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "小坂 尚哉",
+            "rank": 1,
+            "score": 0.65261527
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "中本 大樹",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "牧村 俊輝",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "大月 遊雅",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "生方 靖亜",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "川上 清人",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 52,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-4",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 40,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 22,
+            "lane_no": 1,
+            "local_2rate": 35.0,
+            "local_win_rate": 6.5,
+            "motor_2rate": 31.6,
+            "motor_no": 61,
+            "national_2rate": 61.6,
+            "national_win_rate": 7.53,
+            "racer_id": "4295",
+            "racer_name": "小坂 尚哉",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 34.6,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 30,
+            "lane_no": 2,
+            "local_2rate": 21.8,
+            "local_win_rate": 4.09,
+            "motor_2rate": 31.8,
+            "motor_no": 36,
+            "national_2rate": 36.9,
+            "national_win_rate": 5.19,
+            "racer_id": "5282",
+            "racer_name": "中本 大樹",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 38.5,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 40,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.83,
+            "motor_2rate": 19.3,
+            "motor_no": 47,
+            "national_2rate": 12.5,
+            "national_win_rate": 3.42,
+            "racer_id": "5345",
+            "racer_name": "牧村 俊輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 26.8,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 59,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 3.97,
+            "motor_2rate": 33.5,
+            "motor_no": 62,
+            "national_2rate": 17.2,
+            "national_win_rate": 4.0,
+            "racer_id": "5190",
+            "racer_name": "大月 遊雅",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 30.4,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 32.0,
+            "motor_no": 25,
+            "national_2rate": 32.1,
+            "national_win_rate": 5.16,
+            "racer_id": "5090",
+            "racer_name": "生方 靖亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 47,
+            "lane_no": 6,
+            "local_2rate": 10.3,
+            "local_win_rate": 3.07,
+            "motor_2rate": 32.8,
+            "motor_no": 60,
+            "national_2rate": 21.3,
+            "national_win_rate": 3.79,
+            "racer_id": "4020",
+            "racer_name": "川上 清人",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:10:01",
+        "race_name": "みくにあさイチ",
+        "race_no": 1,
+        "start_at": "2026-09-20T08:32:00+09:00",
+        "start_time_jst": "08:32",
+        "venue": "三国",
+        "venue_code": "10"
+      },
+      "race_id_raw": "202609201001"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_ea9753d536b5a58e807a",
+        "publication_hash": "044bfaeea1fbef5a841acc01a80cde24a662224af3610a7056c9dd04fcb43dc8",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:10:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "小坂 尚哉",
+            "rank": 1,
+            "score": 0.65402266
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "中本 大樹",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "牧村 俊輝",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "大月 遊雅",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "生方 靖亜",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "川上 清人",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 53,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-4",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 40,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 22,
+            "lane_no": 1,
+            "local_2rate": 35.0,
+            "local_win_rate": 6.5,
+            "motor_2rate": 31.6,
+            "motor_no": 61,
+            "national_2rate": 61.6,
+            "national_win_rate": 7.53,
+            "racer_id": "4295",
+            "racer_name": "小坂 尚哉",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 34.6,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 30,
+            "lane_no": 2,
+            "local_2rate": 21.8,
+            "local_win_rate": 4.09,
+            "motor_2rate": 31.8,
+            "motor_no": 36,
+            "national_2rate": 36.9,
+            "national_win_rate": 5.19,
+            "racer_id": "5282",
+            "racer_name": "中本 大樹",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 38.5,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 40,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.83,
+            "motor_2rate": 19.3,
+            "motor_no": 47,
+            "national_2rate": 12.5,
+            "national_win_rate": 3.42,
+            "racer_id": "5345",
+            "racer_name": "牧村 俊輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 26.8,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 59,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 3.97,
+            "motor_2rate": 33.5,
+            "motor_no": 62,
+            "national_2rate": 17.2,
+            "national_win_rate": 4.0,
+            "racer_id": "5190",
+            "racer_name": "大月 遊雅",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 30.4,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 32.0,
+            "motor_no": 25,
+            "national_2rate": 32.1,
+            "national_win_rate": 5.16,
+            "racer_id": "5090",
+            "racer_name": "生方 靖亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 47,
+            "lane_no": 6,
+            "local_2rate": 10.3,
+            "local_win_rate": 3.07,
+            "motor_2rate": 32.8,
+            "motor_no": 60,
+            "national_2rate": 21.3,
+            "national_win_rate": 3.79,
+            "racer_id": "4020",
+            "racer_name": "川上 清人",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:10:01",
+        "race_name": "みくにあさイチ",
+        "race_no": 1,
+        "start_at": "2026-09-20T08:32:00+09:00",
+        "start_time_jst": "08:32",
+        "venue": "三国",
+        "venue_code": "10"
+      },
+      "race_id_raw": "202609201001"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_2254ceaff6dbb390a923",
+        "publication_hash": "00a29b5027b9ef76508b8f6972d9b8f33d3cea969c915b29b3183c4c288c2d60",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:02",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "今井 美亜",
+            "rank": 1,
+            "score": 0.59809472
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "平高 奈菜",
+            "rank": 2,
+            "score": 0.03418073
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "小林 愛実",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "滝沢 織寧",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "植竹 玲奈",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "高木 茉白",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 52,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "4-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 36,
+            "boat_2rate": 34.4,
+            "branch": "福井",
+            "class": "A1",
+            "equipment_boat_no": 67,
+            "lane_no": 1,
+            "local_2rate": 42.3,
+            "local_win_rate": 6.31,
+            "motor_2rate": 29.7,
+            "motor_no": 73,
+            "national_2rate": 41.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4611",
+            "racer_name": "今井 美亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 30.6,
+            "branch": "岡山",
+            "class": "B1",
+            "equipment_boat_no": 23,
+            "lane_no": 2,
+            "local_2rate": 28.5,
+            "local_win_rate": 5.18,
+            "motor_2rate": 40.7,
+            "motor_no": 32,
+            "national_2rate": 21.1,
+            "national_win_rate": 4.44,
+            "racer_id": "5165",
+            "racer_name": "小林 愛実",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 33.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 3,
+            "local_2rate": 20.0,
+            "local_win_rate": 3.9,
+            "motor_2rate": 33.1,
+            "motor_no": 71,
+            "national_2rate": 14.2,
+            "national_win_rate": 3.78,
+            "racer_id": "5287",
+            "racer_name": "滝沢 織寧",
+            "weight_kg": 0
+          },
+          {
+            "age": 39,
+            "boat_2rate": 34.5,
+            "branch": "香川",
+            "class": "A2",
+            "equipment_boat_no": 63,
+            "lane_no": 4,
+            "local_2rate": 45.7,
+            "local_win_rate": 6.69,
+            "motor_2rate": 36.0,
+            "motor_no": 61,
+            "national_2rate": 49.5,
+            "national_win_rate": 6.79,
+            "racer_id": "4450",
+            "racer_name": "平高 奈菜",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 35.0,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.0,
+            "motor_2rate": 38.5,
+            "motor_no": 11,
+            "national_2rate": 7.5,
+            "national_win_rate": 2.9,
+            "racer_id": "5361",
+            "racer_name": "植竹 玲奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 32.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 22,
+            "lane_no": 6,
+            "local_2rate": 0.0,
+            "local_win_rate": 3.0,
+            "motor_2rate": 28.7,
+            "motor_no": 80,
+            "national_2rate": 15.7,
+            "national_win_rate": 3.23,
+            "racer_id": "5360",
+            "racer_name": "高木 茉白",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:02",
+        "race_name": "予選",
+        "race_no": 2,
+        "start_at": "2026-09-20T11:07:00+09:00",
+        "start_time_jst": "11:07",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201702"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_951dbfa0fc500b4bea74",
+        "publication_hash": "921c15c216ad3ebac0ba54ae1c87bff123db8db3f515c2266a1d3790e63dd100",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:02",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "今井 美亜",
+            "rank": 1,
+            "score": 0.59043336
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "平高 奈菜",
+            "rank": 2,
+            "score": 0.03503832
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "小林 愛実",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "滝沢 織寧",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "植竹 玲奈",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "高木 茉白",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 51,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "4-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 36,
+            "boat_2rate": 34.4,
+            "branch": "福井",
+            "class": "A1",
+            "equipment_boat_no": 67,
+            "lane_no": 1,
+            "local_2rate": 42.3,
+            "local_win_rate": 6.31,
+            "motor_2rate": 29.7,
+            "motor_no": 73,
+            "national_2rate": 41.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4611",
+            "racer_name": "今井 美亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 30.6,
+            "branch": "岡山",
+            "class": "B1",
+            "equipment_boat_no": 23,
+            "lane_no": 2,
+            "local_2rate": 28.5,
+            "local_win_rate": 5.18,
+            "motor_2rate": 40.7,
+            "motor_no": 32,
+            "national_2rate": 21.1,
+            "national_win_rate": 4.44,
+            "racer_id": "5165",
+            "racer_name": "小林 愛実",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 33.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 3,
+            "local_2rate": 20.0,
+            "local_win_rate": 3.9,
+            "motor_2rate": 33.1,
+            "motor_no": 71,
+            "national_2rate": 14.2,
+            "national_win_rate": 3.78,
+            "racer_id": "5287",
+            "racer_name": "滝沢 織寧",
+            "weight_kg": 0
+          },
+          {
+            "age": 39,
+            "boat_2rate": 34.5,
+            "branch": "香川",
+            "class": "A2",
+            "equipment_boat_no": 63,
+            "lane_no": 4,
+            "local_2rate": 45.7,
+            "local_win_rate": 6.69,
+            "motor_2rate": 36.0,
+            "motor_no": 61,
+            "national_2rate": 49.5,
+            "national_win_rate": 6.79,
+            "racer_id": "4450",
+            "racer_name": "平高 奈菜",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 35.0,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.0,
+            "motor_2rate": 38.5,
+            "motor_no": 11,
+            "national_2rate": 7.5,
+            "national_win_rate": 2.9,
+            "racer_id": "5361",
+            "racer_name": "植竹 玲奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 32.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 22,
+            "lane_no": 6,
+            "local_2rate": 0.0,
+            "local_win_rate": 3.0,
+            "motor_2rate": 28.7,
+            "motor_no": 80,
+            "national_2rate": 15.7,
+            "national_win_rate": 3.23,
+            "racer_id": "5360",
+            "racer_name": "高木 茉白",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:02",
+        "race_name": "予選",
+        "race_no": 2,
+        "start_at": "2026-09-20T11:07:00+09:00",
+        "start_time_jst": "11:07",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201702"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_d57e4d5e751664096309",
+        "publication_hash": "d6b0165ebd078be7dcdec22d6490ecbe8bece4d395468df8b07e32749ce32e5e",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "北村 征嗣",
+            "rank": 1,
+            "score": 0.57253306
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山崎 義明",
+            "rank": 2,
+            "score": 0.03892981
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "沢田 昭宏",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "塩崎 優司",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "田中 大輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "安藤 裕貴",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 50,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 27.5,
+            "branch": "大阪",
+            "class": "A1",
+            "equipment_boat_no": 21,
+            "lane_no": 1,
+            "local_2rate": 52.3,
+            "local_win_rate": 6.98,
+            "motor_2rate": 28.5,
+            "motor_no": 29,
+            "national_2rate": 39.3,
+            "national_win_rate": 6.1,
+            "racer_id": "3997",
+            "racer_name": "北村 征嗣",
+            "weight_kg": 0
+          },
+          {
+            "age": 59,
+            "boat_2rate": 29.6,
+            "branch": "埼玉",
+            "class": "A2",
+            "equipment_boat_no": 51,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 35.5,
+            "motor_no": 38,
+            "national_2rate": 37.9,
+            "national_win_rate": 5.69,
+            "racer_id": "3319",
+            "racer_name": "山崎 義明",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 3,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 38.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 4,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.0,
+            "motor_2rate": 28.0,
+            "motor_no": 14,
+            "national_2rate": 17.0,
+            "national_win_rate": 3.75,
+            "racer_id": "3730",
+            "racer_name": "塩崎 優司",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 34.2,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 66,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 44.6,
+            "motor_no": 35,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.32,
+            "racer_id": "5458",
+            "racer_name": "田中 大輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 31.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 46,
+            "lane_no": 6,
+            "local_2rate": 33.3,
+            "local_win_rate": 4.83,
+            "motor_2rate": 36.3,
+            "motor_no": 36,
+            "national_2rate": 27.0,
+            "national_win_rate": 4.47,
+            "racer_id": "3831",
+            "racer_name": "安藤 裕貴",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:03",
+        "race_name": "予選",
+        "race_no": 3,
+        "start_at": "2026-09-20T11:50:00+09:00",
+        "start_time_jst": "11:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201603"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_a75e3bdbc7cdf3c98dee",
+        "publication_hash": "ffbacf5d3aec6501dbe4f6010f159d51854f3a27f3daebc0a52f9f48cd1f0150",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "北村 征嗣",
+            "rank": 1,
+            "score": 0.54378924
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山崎 義明",
+            "rank": 2,
+            "score": 0.03882929
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "沢田 昭宏",
+            "rank": 3,
+            "score": 0.03039101
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "塩崎 優司",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "田中 大輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "安藤 裕貴",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 50,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "3-1-2",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 27.5,
+            "branch": "大阪",
+            "class": "A1",
+            "equipment_boat_no": 21,
+            "lane_no": 1,
+            "local_2rate": 52.3,
+            "local_win_rate": 6.98,
+            "motor_2rate": 28.5,
+            "motor_no": 29,
+            "national_2rate": 39.3,
+            "national_win_rate": 6.1,
+            "racer_id": "3997",
+            "racer_name": "北村 征嗣",
+            "weight_kg": 0
+          },
+          {
+            "age": 59,
+            "boat_2rate": 29.6,
+            "branch": "埼玉",
+            "class": "A2",
+            "equipment_boat_no": 51,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 35.5,
+            "motor_no": 38,
+            "national_2rate": 37.9,
+            "national_win_rate": 5.69,
+            "racer_id": "3319",
+            "racer_name": "山崎 義明",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 3,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 38.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 4,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.0,
+            "motor_2rate": 28.0,
+            "motor_no": 14,
+            "national_2rate": 17.0,
+            "national_win_rate": 3.75,
+            "racer_id": "3730",
+            "racer_name": "塩崎 優司",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 34.2,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 66,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 44.6,
+            "motor_no": 35,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.32,
+            "racer_id": "5458",
+            "racer_name": "田中 大輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 31.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 46,
+            "lane_no": 6,
+            "local_2rate": 33.3,
+            "local_win_rate": 4.83,
+            "motor_2rate": 36.3,
+            "motor_no": 36,
+            "national_2rate": 27.0,
+            "national_win_rate": 4.47,
+            "racer_id": "3831",
+            "racer_name": "安藤 裕貴",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:03",
+        "race_name": "予選",
+        "race_no": 3,
+        "start_at": "2026-09-20T11:50:00+09:00",
+        "start_time_jst": "11:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201603"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_67a45a4b277ec09a7e7a",
+        "publication_hash": "d51f1b59da2bcd139fd484e0e988bd3e0c762ffe6de741424d0de545e389ba55",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:15:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "河村 了",
+            "rank": 1,
+            "score": 0.462895
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "藤岡 俊介",
+            "rank": 2,
+            "score": 0.07766119
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "高橋 正男",
+            "rank": 3,
+            "score": 0.04783251
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "渡邉 健",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "表 健太",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "志道 吉和",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 49,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-2-1",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 42,
+            "boat_2rate": 43.2,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 26,
+            "lane_no": 1,
+            "local_2rate": 27.2,
+            "local_win_rate": 6.0,
+            "motor_2rate": 0.0,
+            "motor_no": 39,
+            "national_2rate": 46.8,
+            "national_win_rate": 6.75,
+            "racer_id": "4308",
+            "racer_name": "河村 了",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 16.6,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 18,
+            "lane_no": 2,
+            "local_2rate": 55.5,
+            "local_win_rate": 6.07,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 53.7,
+            "national_win_rate": 6.44,
+            "racer_id": "4133",
+            "racer_name": "高橋 正男",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 20.5,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 32,
+            "lane_no": 3,
+            "local_2rate": 30.4,
+            "local_win_rate": 4.78,
+            "motor_2rate": 0.0,
+            "motor_no": 54,
+            "national_2rate": 11.7,
+            "national_win_rate": 3.32,
+            "racer_id": "5044",
+            "racer_name": "渡邉 健",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 55.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 54,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 2.4,
+            "motor_2rate": 0.0,
+            "motor_no": 21,
+            "national_2rate": 4.4,
+            "national_win_rate": 3.0,
+            "racer_id": "5101",
+            "racer_name": "表 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 50,
+            "boat_2rate": 14.7,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 13,
+            "lane_no": 5,
+            "local_2rate": 25.0,
+            "local_win_rate": 3.94,
+            "motor_2rate": 0.0,
+            "motor_no": 44,
+            "national_2rate": 19.7,
+            "national_win_rate": 3.77,
+            "racer_id": "3953",
+            "racer_name": "志道 吉和",
+            "weight_kg": 0
+          },
+          {
+            "age": 43,
+            "boat_2rate": 33.3,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 36,
+            "lane_no": 6,
+            "local_2rate": 51.6,
+            "local_win_rate": 7.35,
+            "motor_2rate": 0.0,
+            "motor_no": 48,
+            "national_2rate": 58.0,
+            "national_win_rate": 7.04,
+            "racer_id": "4278",
+            "racer_name": "藤岡 俊介",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:15:07",
+        "race_name": "一般",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:02:00+09:00",
+        "start_time_jst": "18:02",
+        "venue": "丸亀",
+        "venue_code": "15"
+      },
+      "race_id_raw": "202609201507"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_307d48fee1d8284c5699",
+        "publication_hash": "60ba9ac531f5d68ae299efbc37f6483a9b2778b1dbec0de4c3d448e7bc482b52",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:15:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "河村 了",
+            "rank": 1,
+            "score": 0.47093555
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "藤岡 俊介",
+            "rank": 2,
+            "score": 0.07843672
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "高橋 正男",
+            "rank": 3,
+            "score": 0.04550284
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "渡邉 健",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "表 健太",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "志道 吉和",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 49,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-2-1",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 42,
+            "boat_2rate": 43.2,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 26,
+            "lane_no": 1,
+            "local_2rate": 27.2,
+            "local_win_rate": 6.0,
+            "motor_2rate": 0.0,
+            "motor_no": 39,
+            "national_2rate": 46.8,
+            "national_win_rate": 6.75,
+            "racer_id": "4308",
+            "racer_name": "河村 了",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 16.6,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 18,
+            "lane_no": 2,
+            "local_2rate": 55.5,
+            "local_win_rate": 6.07,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 53.7,
+            "national_win_rate": 6.44,
+            "racer_id": "4133",
+            "racer_name": "高橋 正男",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 20.5,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 32,
+            "lane_no": 3,
+            "local_2rate": 30.4,
+            "local_win_rate": 4.78,
+            "motor_2rate": 0.0,
+            "motor_no": 54,
+            "national_2rate": 11.7,
+            "national_win_rate": 3.32,
+            "racer_id": "5044",
+            "racer_name": "渡邉 健",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 55.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 54,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 2.4,
+            "motor_2rate": 0.0,
+            "motor_no": 21,
+            "national_2rate": 4.4,
+            "national_win_rate": 3.0,
+            "racer_id": "5101",
+            "racer_name": "表 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 50,
+            "boat_2rate": 14.7,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 13,
+            "lane_no": 5,
+            "local_2rate": 25.0,
+            "local_win_rate": 3.94,
+            "motor_2rate": 0.0,
+            "motor_no": 44,
+            "national_2rate": 19.7,
+            "national_win_rate": 3.77,
+            "racer_id": "3953",
+            "racer_name": "志道 吉和",
+            "weight_kg": 0
+          },
+          {
+            "age": 43,
+            "boat_2rate": 33.3,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 36,
+            "lane_no": 6,
+            "local_2rate": 51.6,
+            "local_win_rate": 7.35,
+            "motor_2rate": 0.0,
+            "motor_no": 48,
+            "national_2rate": 58.0,
+            "national_win_rate": 7.04,
+            "racer_id": "4278",
+            "racer_name": "藤岡 俊介",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:15:07",
+        "race_name": "一般",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:02:00+09:00",
+        "start_time_jst": "18:02",
+        "venue": "丸亀",
+        "venue_code": "15"
+      },
+      "race_id_raw": "202609201507"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_c4b9ea969c86757f0c28",
+        "publication_hash": "b18c077f38c8025510cc1d05eb91aca18cce9a8c116fa7e7e2aa4724be146aa4",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:12",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "笠原 亮",
+            "rank": 1,
+            "score": 0.60533588
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "吉田 凌太朗",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "上田 健太",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "安東 幸治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "松本 真広",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "沢田 昭宏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 47,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 32.6,
+            "branch": "静岡",
+            "class": "A1",
+            "equipment_boat_no": 57,
+            "lane_no": 1,
+            "local_2rate": 44.4,
+            "local_win_rate": 6.33,
+            "motor_2rate": 37.0,
+            "motor_no": 39,
+            "national_2rate": 54.7,
+            "national_win_rate": 7.04,
+            "racer_id": "4019",
+            "racer_name": "笠原 亮",
+            "weight_kg": 0
+          },
+          {
+            "age": 32,
+            "boat_2rate": 31.4,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 25,
+            "lane_no": 2,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.85,
+            "motor_2rate": 26.0,
+            "motor_no": 25,
+            "national_2rate": 45.7,
+            "national_win_rate": 6.24,
+            "racer_id": "4903",
+            "racer_name": "吉田 凌太朗",
+            "weight_kg": 0
+          },
+          {
+            "age": 30,
+            "boat_2rate": 28.0,
+            "branch": "愛知",
+            "class": "A2",
+            "equipment_boat_no": 11,
+            "lane_no": 3,
+            "local_2rate": 52.3,
+            "local_win_rate": 7.24,
+            "motor_2rate": 38.5,
+            "motor_no": 17,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.42,
+            "racer_id": "5002",
+            "racer_name": "上田 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 25.5,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 28,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 33.1,
+            "motor_no": 53,
+            "national_2rate": 36.0,
+            "national_win_rate": 5.43,
+            "racer_id": "4122",
+            "racer_name": "安東 幸治",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 31.8,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 41,
+            "lane_no": 5,
+            "local_2rate": 22.2,
+            "local_win_rate": 4.5,
+            "motor_2rate": 33.6,
+            "motor_no": 31,
+            "national_2rate": 11.7,
+            "national_win_rate": 4.07,
+            "racer_id": "5107",
+            "racer_name": "松本 真広",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 6,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:12",
+        "race_name": "記者選抜戦",
+        "race_no": 12,
+        "start_at": "2026-09-20T16:50:00+09:00",
+        "start_time_jst": "16:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201612"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_aa48d1a080289d2e8fed",
+        "publication_hash": "ef5313717a21538f31bfd99bd4a6a45485d0bbe004eb54d29fe9df496accbd3c",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:12",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "笠原 亮",
+            "rank": 1,
+            "score": 0.6053311
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "吉田 凌太朗",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "上田 健太",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "安東 幸治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "松本 真広",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "沢田 昭宏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 47,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 32.6,
+            "branch": "静岡",
+            "class": "A1",
+            "equipment_boat_no": 57,
+            "lane_no": 1,
+            "local_2rate": 44.4,
+            "local_win_rate": 6.33,
+            "motor_2rate": 37.0,
+            "motor_no": 39,
+            "national_2rate": 54.7,
+            "national_win_rate": 7.04,
+            "racer_id": "4019",
+            "racer_name": "笠原 亮",
+            "weight_kg": 0
+          },
+          {
+            "age": 32,
+            "boat_2rate": 31.4,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 25,
+            "lane_no": 2,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.85,
+            "motor_2rate": 26.0,
+            "motor_no": 25,
+            "national_2rate": 45.7,
+            "national_win_rate": 6.24,
+            "racer_id": "4903",
+            "racer_name": "吉田 凌太朗",
+            "weight_kg": 0
+          },
+          {
+            "age": 30,
+            "boat_2rate": 28.0,
+            "branch": "愛知",
+            "class": "A2",
+            "equipment_boat_no": 11,
+            "lane_no": 3,
+            "local_2rate": 52.3,
+            "local_win_rate": 7.24,
+            "motor_2rate": 38.5,
+            "motor_no": 17,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.42,
+            "racer_id": "5002",
+            "racer_name": "上田 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 25.5,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 28,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 33.1,
+            "motor_no": 53,
+            "national_2rate": 36.0,
+            "national_win_rate": 5.43,
+            "racer_id": "4122",
+            "racer_name": "安東 幸治",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 31.8,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 41,
+            "lane_no": 5,
+            "local_2rate": 22.2,
+            "local_win_rate": 4.5,
+            "motor_2rate": 33.6,
+            "motor_no": 31,
+            "national_2rate": 11.7,
+            "national_win_rate": 4.07,
+            "racer_id": "5107",
+            "racer_name": "松本 真広",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 6,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:12",
+        "race_name": "記者選抜戦",
+        "race_no": 12,
+        "start_at": "2026-09-20T16:50:00+09:00",
+        "start_time_jst": "16:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201612"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_0e0ab3665be61add8973",
+        "publication_hash": "7eddb3986283599aba5f530a9ed6c98e1ffebb0d96df7d010128e9e651fd43af",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:01:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "奈須 啓太",
+            "rank": 1,
+            "score": 0.58614032
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "村上 宗太郎",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "大澤 普司",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "北川 幸典",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "藤本 元輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "小川 晃司",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 47,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 43,
+            "boat_2rate": 32.4,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 24,
+            "lane_no": 1,
+            "local_2rate": 45.4,
+            "local_win_rate": 6.82,
+            "motor_2rate": 50.5,
+            "motor_no": 27,
+            "national_2rate": 44.3,
+            "national_win_rate": 6.12,
+            "racer_id": "4330",
+            "racer_name": "奈須 啓太",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 35.6,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 33,
+            "lane_no": 2,
+            "local_2rate": 16.6,
+            "local_win_rate": 4.5,
+            "motor_2rate": 31.7,
+            "motor_no": 11,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.2,
+            "racer_id": "5201",
+            "racer_name": "村上 宗太郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 37.9,
+            "branch": "群馬",
+            "class": "A1",
+            "equipment_boat_no": 31,
+            "lane_no": 3,
+            "local_2rate": 45.9,
+            "local_win_rate": 6.41,
+            "motor_2rate": 41.7,
+            "motor_no": 32,
+            "national_2rate": 40.4,
+            "national_win_rate": 6.07,
+            "racer_id": "3740",
+            "racer_name": "大澤 普司",
+            "weight_kg": 0
+          },
+          {
+            "age": 63,
+            "boat_2rate": 38.0,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.0,
+            "motor_2rate": 39.4,
+            "motor_no": 12,
+            "national_2rate": 35.7,
+            "national_win_rate": 5.75,
+            "racer_id": "3054",
+            "racer_name": "北川 幸典",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "B1",
+            "equipment_boat_no": 28,
+            "lane_no": 5,
+            "local_2rate": 10.5,
+            "local_win_rate": 2.63,
+            "motor_2rate": 35.7,
+            "motor_no": 53,
+            "national_2rate": 28.5,
+            "national_win_rate": 4.55,
+            "racer_id": "5179",
+            "racer_name": "藤本 元輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 35.2,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 42,
+            "lane_no": 6,
+            "local_2rate": 17.3,
+            "local_win_rate": 4.43,
+            "motor_2rate": 36.3,
+            "motor_no": 24,
+            "national_2rate": 15.6,
+            "national_win_rate": 4.4,
+            "racer_id": "3352",
+            "racer_name": "小川 晃司",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:01:07",
+        "race_name": "ドラドキ３男子",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:17:00+09:00",
+        "start_time_jst": "18:17",
+        "venue": "桐生",
+        "venue_code": "01"
+      },
+      "race_id_raw": "202609200107"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_fb23d57e097e3c0a2e28",
+        "publication_hash": "904b0254005399916fb83e2943b96b89446e59baab11863cdf3900a99352fc95",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:01:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "奈須 啓太",
+            "rank": 1,
+            "score": 0.59479596
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "村上 宗太郎",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "大澤 普司",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "北川 幸典",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "藤本 元輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "小川 晃司",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 48,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 43,
+            "boat_2rate": 32.4,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 24,
+            "lane_no": 1,
+            "local_2rate": 45.4,
+            "local_win_rate": 6.82,
+            "motor_2rate": 50.5,
+            "motor_no": 27,
+            "national_2rate": 44.3,
+            "national_win_rate": 6.12,
+            "racer_id": "4330",
+            "racer_name": "奈須 啓太",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 35.6,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 33,
+            "lane_no": 2,
+            "local_2rate": 16.6,
+            "local_win_rate": 4.5,
+            "motor_2rate": 31.7,
+            "motor_no": 11,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.2,
+            "racer_id": "5201",
+            "racer_name": "村上 宗太郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 37.9,
+            "branch": "群馬",
+            "class": "A1",
+            "equipment_boat_no": 31,
+            "lane_no": 3,
+            "local_2rate": 45.9,
+            "local_win_rate": 6.41,
+            "motor_2rate": 41.7,
+            "motor_no": 32,
+            "national_2rate": 40.4,
+            "national_win_rate": 6.07,
+            "racer_id": "3740",
+            "racer_name": "大澤 普司",
+            "weight_kg": 0
+          },
+          {
+            "age": 63,
+            "boat_2rate": 38.0,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.0,
+            "motor_2rate": 39.4,
+            "motor_no": 12,
+            "national_2rate": 35.7,
+            "national_win_rate": 5.75,
+            "racer_id": "3054",
+            "racer_name": "北川 幸典",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "B1",
+            "equipment_boat_no": 28,
+            "lane_no": 5,
+            "local_2rate": 10.5,
+            "local_win_rate": 2.63,
+            "motor_2rate": 35.7,
+            "motor_no": 53,
+            "national_2rate": 28.5,
+            "national_win_rate": 4.55,
+            "racer_id": "5179",
+            "racer_name": "藤本 元輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 35.2,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 42,
+            "lane_no": 6,
+            "local_2rate": 17.3,
+            "local_win_rate": 4.43,
+            "motor_2rate": 36.3,
+            "motor_no": 24,
+            "national_2rate": 15.6,
+            "national_win_rate": 4.4,
+            "racer_id": "3352",
+            "racer_name": "小川 晃司",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:01:07",
+        "race_name": "ドラドキ３男子",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:17:00+09:00",
+        "start_time_jst": "18:17",
+        "venue": "桐生",
+        "venue_code": "01"
+      },
+      "race_id_raw": "202609200107"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_825997d1555d040ad6b0",
+        "publication_hash": "f724c1c6b105f4c2dd987c3c74fcb8743bc59b57e7a06b991a500869e993e536",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:23:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "寺本 重宣",
+            "rank": 1,
+            "score": 0.60102976
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山下 智己",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "西尾 亮輔",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "芝田 浩治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "西村 仁吾",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "嶋田 貴支",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 46,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 43.7,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 2,
+            "lane_no": 1,
+            "local_2rate": 53.3,
+            "local_win_rate": 6.73,
+            "motor_2rate": 0.0,
+            "motor_no": 31,
+            "national_2rate": 39.8,
+            "national_win_rate": 5.97,
+            "racer_id": "4086",
+            "racer_name": "寺本 重宣",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 35.9,
+            "branch": "兵庫",
+            "class": "B2",
+            "equipment_boat_no": 50,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 15.6,
+            "national_win_rate": 3.59,
+            "racer_id": "5333",
+            "racer_name": "山下 智己",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 37.8,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 17,
+            "lane_no": 3,
+            "local_2rate": 11.4,
+            "local_win_rate": 3.69,
+            "motor_2rate": 0.0,
+            "motor_no": 14,
+            "national_2rate": 18.1,
+            "national_win_rate": 4.02,
+            "racer_id": "4752",
+            "racer_name": "西尾 亮輔",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 28.8,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.43,
+            "motor_2rate": 0.0,
+            "motor_no": 34,
+            "national_2rate": 45.6,
+            "national_win_rate": 5.89,
+            "racer_id": "3484",
+            "racer_name": "芝田 浩治",
+            "weight_kg": 0
+          },
+          {
+            "age": 18,
+            "boat_2rate": 25.2,
+            "branch": "長崎",
+            "class": "B2",
+            "equipment_boat_no": 22,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.13,
+            "motor_2rate": 0.0,
+            "motor_no": 28,
+            "national_2rate": 3.5,
+            "national_win_rate": 1.65,
+            "racer_id": "5443",
+            "racer_name": "西村 仁吾",
+            "weight_kg": 0
+          },
+          {
+            "age": 55,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 24,
+            "lane_no": 6,
+            "local_2rate": 32.3,
+            "local_win_rate": 5.18,
+            "motor_2rate": 0.0,
+            "motor_no": 32,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.17,
+            "racer_id": "3478",
+            "racer_name": "嶋田 貴支",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:23:03",
+        "race_name": "３ライズ戦",
+        "race_no": 3,
+        "start_at": "2026-09-20T09:40:00+09:00",
+        "start_time_jst": "09:40",
+        "venue": "唐津",
+        "venue_code": "23"
+      },
+      "race_id_raw": "202609202303"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_d70f69b6fea37ad5bad5",
+        "publication_hash": "e3053928148a5b2b0c1288fce6a1cbf8b7246a3a6472ed55a30266c25da399bc",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:23:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "寺本 重宣",
+            "rank": 1,
+            "score": 0.60526022
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山下 智己",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "西尾 亮輔",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "芝田 浩治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "西村 仁吾",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "嶋田 貴支",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 46,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 43.7,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 2,
+            "lane_no": 1,
+            "local_2rate": 53.3,
+            "local_win_rate": 6.73,
+            "motor_2rate": 0.0,
+            "motor_no": 31,
+            "national_2rate": 39.8,
+            "national_win_rate": 5.97,
+            "racer_id": "4086",
+            "racer_name": "寺本 重宣",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 35.9,
+            "branch": "兵庫",
+            "class": "B2",
+            "equipment_boat_no": 50,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 15.6,
+            "national_win_rate": 3.59,
+            "racer_id": "5333",
+            "racer_name": "山下 智己",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 37.8,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 17,
+            "lane_no": 3,
+            "local_2rate": 11.4,
+            "local_win_rate": 3.69,
+            "motor_2rate": 0.0,
+            "motor_no": 14,
+            "national_2rate": 18.1,
+            "national_win_rate": 4.02,
+            "racer_id": "4752",
+            "racer_name": "西尾 亮輔",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 28.8,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.43,
+            "motor_2rate": 0.0,
+            "motor_no": 34,
+            "national_2rate": 45.6,
+            "national_win_rate": 5.89,
+            "racer_id": "3484",
+            "racer_name": "芝田 浩治",
+            "weight_kg": 0
+          },
+          {
+            "age": 18,
+            "boat_2rate": 25.2,
+            "branch": "長崎",
+            "class": "B2",
+            "equipment_boat_no": 22,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.13,
+            "motor_2rate": 0.0,
+            "motor_no": 28,
+            "national_2rate": 3.5,
+            "national_win_rate": 1.65,
+            "racer_id": "5443",
+            "racer_name": "西村 仁吾",
+            "weight_kg": 0
+          },
+          {
+            "age": 55,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 24,
+            "lane_no": 6,
+            "local_2rate": 32.3,
+            "local_win_rate": 5.18,
+            "motor_2rate": 0.0,
+            "motor_no": 32,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.17,
+            "racer_id": "3478",
+            "racer_name": "嶋田 貴支",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:23:03",
+        "race_name": "３ライズ戦",
+        "race_no": 3,
+        "start_at": "2026-09-20T09:40:00+09:00",
+        "start_time_jst": "09:40",
+        "venue": "唐津",
+        "venue_code": "23"
+      },
+      "race_id_raw": "202609202303"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_7087e810755326fbdd20",
+        "publication_hash": "0075e3177e44fd54e48138c9778d553dc2a31edc5ed634506889a768d6d200db",
+        "publication_mode": "type_g_shadow_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:06:12",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "下條 雄太郎",
+            "rank": 1,
+            "score": 0.56428456
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "有賀 達也",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "近藤 雄一郎",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "橋本 久和",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "川上 剛",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "後藤 翔之",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 46,
+        "strategy_version": "type-g-dynamic10-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 40,
+            "boat_2rate": 34.8,
+            "branch": "長崎",
+            "class": "A1",
+            "equipment_boat_no": 76,
+            "lane_no": 1,
+            "local_2rate": 52.3,
+            "local_win_rate": 6.95,
+            "motor_2rate": 41.6,
+            "motor_no": 38,
+            "national_2rate": 50.0,
+            "national_win_rate": 7.34,
+            "racer_id": "4352",
+            "racer_name": "下條 雄太郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 37.9,
+            "branch": "埼玉",
+            "class": "A2",
+            "equipment_boat_no": 30,
+            "lane_no": 2,
+            "local_2rate": 70.0,
+            "local_win_rate": 8.1,
+            "motor_2rate": 33.3,
+            "motor_no": 10,
+            "national_2rate": 39.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4428",
+            "racer_name": "有賀 達也",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 35.2,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 50,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 23.5,
+            "motor_no": 21,
+            "national_2rate": 21.2,
+            "national_win_rate": 4.68,
+            "racer_id": "5007",
+            "racer_name": "近藤 雄一郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 56,
+            "boat_2rate": 36.7,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 48,
+            "lane_no": 4,
+            "local_2rate": 35.4,
+            "local_win_rate": 5.61,
+            "motor_2rate": 22.2,
+            "motor_no": 65,
+            "national_2rate": 32.9,
+            "national_win_rate": 5.14,
+            "racer_id": "3475",
+            "racer_name": "橋本 久和",
+            "weight_kg": 0
+          },
+          {
+            "age": 45,
+            "boat_2rate": 30.7,
+            "branch": "福岡",
+            "class": "A1",
+            "equipment_boat_no": 41,
+            "lane_no": 5,
+            "local_2rate": 34.7,
+            "local_win_rate": 5.87,
+            "motor_2rate": 33.9,
+            "motor_no": 7,
+            "national_2rate": 31.9,
+            "national_win_rate": 5.64,
+            "racer_id": "4189",
+            "racer_name": "川上 剛",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 32.9,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 23,
+            "lane_no": 6,
+            "local_2rate": 36.8,
+            "local_win_rate": 5.79,
+            "motor_2rate": 47.5,
+            "motor_no": 37,
+            "national_2rate": 45.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4460",
+            "racer_name": "後藤 翔之",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:06:12",
+        "race_name": "予選特選",
+        "race_no": 12,
+        "start_at": "2026-09-20T17:04:00+09:00",
+        "start_time_jst": "17:04",
+        "venue": "浜名湖",
+        "venue_code": "06"
+      },
+      "race_id_raw": "202609200612"
+    },
+    {
+      "prediction": {
+        "model_version": "W_morning_badge_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_b8f0153bdd46979f4765",
+        "publication_hash": "04e1afecfba7f098a4b867fad27c6d847ed2a8968bd3e55905c50011aa5bc493",
+        "publication_mode": "type_g_control_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:06:12",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "下條 雄太郎",
+            "rank": 1,
+            "score": 0.56570653
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "有賀 達也",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "近藤 雄一郎",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "橋本 久和",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "川上 剛",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "後藤 翔之",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 46,
+        "strategy_version": "type-g-control-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 40,
+            "boat_2rate": 34.8,
+            "branch": "長崎",
+            "class": "A1",
+            "equipment_boat_no": 76,
+            "lane_no": 1,
+            "local_2rate": 52.3,
+            "local_win_rate": 6.95,
+            "motor_2rate": 41.6,
+            "motor_no": 38,
+            "national_2rate": 50.0,
+            "national_win_rate": 7.34,
+            "racer_id": "4352",
+            "racer_name": "下條 雄太郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 37.9,
+            "branch": "埼玉",
+            "class": "A2",
+            "equipment_boat_no": 30,
+            "lane_no": 2,
+            "local_2rate": 70.0,
+            "local_win_rate": 8.1,
+            "motor_2rate": 33.3,
+            "motor_no": 10,
+            "national_2rate": 39.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4428",
+            "racer_name": "有賀 達也",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 35.2,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 50,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 23.5,
+            "motor_no": 21,
+            "national_2rate": 21.2,
+            "national_win_rate": 4.68,
+            "racer_id": "5007",
+            "racer_name": "近藤 雄一郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 56,
+            "boat_2rate": 36.7,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 48,
+            "lane_no": 4,
+            "local_2rate": 35.4,
+            "local_win_rate": 5.61,
+            "motor_2rate": 22.2,
+            "motor_no": 65,
+            "national_2rate": 32.9,
+            "national_win_rate": 5.14,
+            "racer_id": "3475",
+            "racer_name": "橋本 久和",
+            "weight_kg": 0
+          },
+          {
+            "age": 45,
+            "boat_2rate": 30.7,
+            "branch": "福岡",
+            "class": "A1",
+            "equipment_boat_no": 41,
+            "lane_no": 5,
+            "local_2rate": 34.7,
+            "local_win_rate": 5.87,
+            "motor_2rate": 33.9,
+            "motor_no": 7,
+            "national_2rate": 31.9,
+            "national_win_rate": 5.64,
+            "racer_id": "4189",
+            "racer_name": "川上 剛",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 32.9,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 23,
+            "lane_no": 6,
+            "local_2rate": 36.8,
+            "local_win_rate": 5.79,
+            "motor_2rate": 47.5,
+            "motor_no": 37,
+            "national_2rate": 45.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4460",
+            "racer_name": "後藤 翔之",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:06:12",
+        "race_name": "予選特選",
+        "race_no": 12,
+        "start_at": "2026-09-20T17:04:00+09:00",
+        "start_time_jst": "17:04",
+        "venue": "浜名湖",
+        "venue_code": "06"
+      },
+      "race_id_raw": "202609200612"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_73940d7d2c72e5380685",
+        "publication_hash": "8c9088462f33f4af34c489ca148eaeae85bef8a1e1ed711675b36bf7b0bada7c",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "堀之内紀代子",
+            "rank": 1,
+            "score": 0.67176812
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "菅野 はやか",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "冨名腰 桃奈",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "橋谷田 佳織",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "戸田 海咲音",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "池 千夏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 54,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 29.8,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 69,
+            "lane_no": 1,
+            "local_2rate": 40.9,
+            "local_win_rate": 5.89,
+            "motor_2rate": 34.3,
+            "motor_no": 33,
+            "national_2rate": 47.4,
+            "national_win_rate": 6.47,
+            "racer_id": "4011",
+            "racer_name": "堀之内紀代子",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 29.2,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 80,
+            "lane_no": 2,
+            "local_2rate": 21.4,
+            "local_win_rate": 4.66,
+            "motor_2rate": 34.2,
+            "motor_no": 16,
+            "national_2rate": 17.6,
+            "national_win_rate": 3.54,
+            "racer_id": "4275",
+            "racer_name": "菅野 はやか",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 37.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 51,
+            "lane_no": 3,
+            "local_2rate": 6.6,
+            "local_win_rate": 3.33,
+            "motor_2rate": 38.5,
+            "motor_no": 58,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.13,
+            "racer_id": "5117",
+            "racer_name": "冨名腰 桃奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 32.7,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 38,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.26,
+            "motor_2rate": 46.5,
+            "motor_no": 72,
+            "national_2rate": 8.8,
+            "national_win_rate": 3.35,
+            "racer_id": "3355",
+            "racer_name": "橋谷田 佳織",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 30.4,
+            "branch": "山口",
+            "class": "B2",
+            "equipment_boat_no": 75,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.06,
+            "motor_2rate": 39.2,
+            "motor_no": 60,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.52,
+            "racer_id": "5387",
+            "racer_name": "戸田 海咲音",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 32.9,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 71,
+            "lane_no": 6,
+            "local_2rate": 24.0,
+            "local_win_rate": 4.32,
+            "motor_2rate": 29.3,
+            "motor_no": 20,
+            "national_2rate": 6.3,
+            "national_win_rate": 3.24,
+            "racer_id": "3509",
+            "racer_name": "池 千夏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:01",
+        "race_name": "ファーストＢ",
+        "race_no": 1,
+        "start_at": "2026-09-20T10:40:00+09:00",
+        "start_time_jst": "10:40",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201701"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_6fb20f3642b67fd6ae3c",
+        "publication_hash": "e9f12dcf8105652abc96d6c3bbbe0bc99f287d1b33b0c75a9d15f6ab80c98448",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:10:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "小坂 尚哉",
+            "rank": 1,
+            "score": 0.65261527
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "中本 大樹",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "牧村 俊輝",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "大月 遊雅",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "生方 靖亜",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "川上 清人",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 52,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-5-4",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 40,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 22,
+            "lane_no": 1,
+            "local_2rate": 35.0,
+            "local_win_rate": 6.5,
+            "motor_2rate": 31.6,
+            "motor_no": 61,
+            "national_2rate": 61.6,
+            "national_win_rate": 7.53,
+            "racer_id": "4295",
+            "racer_name": "小坂 尚哉",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 34.6,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 30,
+            "lane_no": 2,
+            "local_2rate": 21.8,
+            "local_win_rate": 4.09,
+            "motor_2rate": 31.8,
+            "motor_no": 36,
+            "national_2rate": 36.9,
+            "national_win_rate": 5.19,
+            "racer_id": "5282",
+            "racer_name": "中本 大樹",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 38.5,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 40,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.83,
+            "motor_2rate": 19.3,
+            "motor_no": 47,
+            "national_2rate": 12.5,
+            "national_win_rate": 3.42,
+            "racer_id": "5345",
+            "racer_name": "牧村 俊輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 26.8,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 59,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 3.97,
+            "motor_2rate": 33.5,
+            "motor_no": 62,
+            "national_2rate": 17.2,
+            "national_win_rate": 4.0,
+            "racer_id": "5190",
+            "racer_name": "大月 遊雅",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 30.4,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 32.0,
+            "motor_no": 25,
+            "national_2rate": 32.1,
+            "national_win_rate": 5.16,
+            "racer_id": "5090",
+            "racer_name": "生方 靖亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 47,
+            "lane_no": 6,
+            "local_2rate": 10.3,
+            "local_win_rate": 3.07,
+            "motor_2rate": 32.8,
+            "motor_no": 60,
+            "national_2rate": 21.3,
+            "national_win_rate": 3.79,
+            "racer_id": "4020",
+            "racer_name": "川上 清人",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:10:01",
+        "race_name": "みくにあさイチ",
+        "race_no": 1,
+        "start_at": "2026-09-20T08:32:00+09:00",
+        "start_time_jst": "08:32",
+        "venue": "三国",
+        "venue_code": "10"
+      },
+      "race_id_raw": "202609201001"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_fd9ddc00390a867e656d",
+        "publication_hash": "181d046332583ee5ea38b323e8fd09db1b599058049da2095af3a13fdbea8e30",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:05",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "平山 智加",
+            "rank": 1,
+            "score": 0.66892409
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "喜井 つかさ",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "山崎 小葉音",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "加藤 奈月",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "野田 亜湖",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "後藤 美翼",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 53,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 41,
+            "boat_2rate": 35.2,
+            "branch": "香川",
+            "class": "A1",
+            "equipment_boat_no": 18,
+            "lane_no": 1,
+            "local_2rate": 38.4,
+            "local_win_rate": 6.13,
+            "motor_2rate": 32.8,
+            "motor_no": 67,
+            "national_2rate": 50.4,
+            "national_win_rate": 6.76,
+            "racer_id": "4387",
+            "racer_name": "平山 智加",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 38.7,
+            "branch": "岡山",
+            "class": "A2",
+            "equipment_boat_no": 16,
+            "lane_no": 2,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.38,
+            "motor_2rate": 31.9,
+            "motor_no": 23,
+            "national_2rate": 40.0,
+            "national_win_rate": 5.83,
+            "racer_id": "4536",
+            "racer_name": "喜井 つかさ",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 34.5,
+            "branch": "群馬",
+            "class": "B1",
+            "equipment_boat_no": 73,
+            "lane_no": 3,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.1,
+            "motor_2rate": 29.4,
+            "motor_no": 78,
+            "national_2rate": 29.4,
+            "national_win_rate": 5.06,
+            "racer_id": "5069",
+            "racer_name": "山崎 小葉音",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 35.3,
+            "branch": "福井",
+            "class": "B1",
+            "equipment_boat_no": 58,
+            "lane_no": 4,
+            "local_2rate": 11.1,
+            "local_win_rate": 3.5,
+            "motor_2rate": 28.0,
+            "motor_no": 62,
+            "national_2rate": 13.6,
+            "national_win_rate": 4.14,
+            "racer_id": "4400",
+            "racer_name": "加藤 奈月",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 29.6,
+            "branch": "徳島",
+            "class": "B2",
+            "equipment_boat_no": 30,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.18,
+            "motor_2rate": 37.3,
+            "motor_no": 79,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.2,
+            "racer_id": "5380",
+            "racer_name": "野田 亜湖",
+            "weight_kg": 0
+          },
+          {
+            "age": 36,
+            "boat_2rate": 29.9,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 14,
+            "lane_no": 6,
+            "local_2rate": 42.8,
+            "local_win_rate": 5.67,
+            "motor_2rate": 38.2,
+            "motor_no": 25,
+            "national_2rate": 33.6,
+            "national_win_rate": 5.58,
+            "racer_id": "4680",
+            "racer_name": "後藤 美翼",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:05",
+        "race_name": "ランチタイム",
+        "race_no": 5,
+        "start_at": "2026-09-20T12:39:00+09:00",
+        "start_time_jst": "12:39",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201705"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_03e658f4d15632eb1f0a",
+        "publication_hash": "08ed1883422556442dd84ebc1849bad04382a64028c3bfc17e524388ed59a68c",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:17:02",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "今井 美亜",
+            "rank": 1,
+            "score": 0.59809472
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "平高 奈菜",
+            "rank": 2,
+            "score": 0.03418073
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "小林 愛実",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "滝沢 織寧",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "植竹 玲奈",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "高木 茉白",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 52,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "4-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-5",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 36,
+            "boat_2rate": 34.4,
+            "branch": "福井",
+            "class": "A1",
+            "equipment_boat_no": 67,
+            "lane_no": 1,
+            "local_2rate": 42.3,
+            "local_win_rate": 6.31,
+            "motor_2rate": 29.7,
+            "motor_no": 73,
+            "national_2rate": 41.6,
+            "national_win_rate": 6.14,
+            "racer_id": "4611",
+            "racer_name": "今井 美亜",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 30.6,
+            "branch": "岡山",
+            "class": "B1",
+            "equipment_boat_no": 23,
+            "lane_no": 2,
+            "local_2rate": 28.5,
+            "local_win_rate": 5.18,
+            "motor_2rate": 40.7,
+            "motor_no": 32,
+            "national_2rate": 21.1,
+            "national_win_rate": 4.44,
+            "racer_id": "5165",
+            "racer_name": "小林 愛実",
+            "weight_kg": 0
+          },
+          {
+            "age": 26,
+            "boat_2rate": 33.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 53,
+            "lane_no": 3,
+            "local_2rate": 20.0,
+            "local_win_rate": 3.9,
+            "motor_2rate": 33.1,
+            "motor_no": 71,
+            "national_2rate": 14.2,
+            "national_win_rate": 3.78,
+            "racer_id": "5287",
+            "racer_name": "滝沢 織寧",
+            "weight_kg": 0
+          },
+          {
+            "age": 39,
+            "boat_2rate": 34.5,
+            "branch": "香川",
+            "class": "A2",
+            "equipment_boat_no": 63,
+            "lane_no": 4,
+            "local_2rate": 45.7,
+            "local_win_rate": 6.69,
+            "motor_2rate": 36.0,
+            "motor_no": 61,
+            "national_2rate": 49.5,
+            "national_win_rate": 6.79,
+            "racer_id": "4450",
+            "racer_name": "平高 奈菜",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 35.0,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 2.0,
+            "motor_2rate": 38.5,
+            "motor_no": 11,
+            "national_2rate": 7.5,
+            "national_win_rate": 2.9,
+            "racer_id": "5361",
+            "racer_name": "植竹 玲奈",
+            "weight_kg": 0
+          },
+          {
+            "age": 19,
+            "boat_2rate": 32.0,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 22,
+            "lane_no": 6,
+            "local_2rate": 0.0,
+            "local_win_rate": 3.0,
+            "motor_2rate": 28.7,
+            "motor_no": 80,
+            "national_2rate": 15.7,
+            "national_win_rate": 3.23,
+            "racer_id": "5360",
+            "racer_name": "高木 茉白",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:17:02",
+        "race_name": "予選",
+        "race_no": 2,
+        "start_at": "2026-09-20T11:07:00+09:00",
+        "start_time_jst": "11:07",
+        "venue": "宮島",
+        "venue_code": "17"
+      },
+      "race_id_raw": "202609201702"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_95dd72335018fa723936",
+        "publication_hash": "9da871e3fe8c6785c634a5736cf45a9d6c433f77d9ea843b81cc986bafe376e2",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "北村 征嗣",
+            "rank": 1,
+            "score": 0.57253306
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山崎 義明",
+            "rank": 2,
+            "score": 0.03892981
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "沢田 昭宏",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "塩崎 優司",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "田中 大輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "安藤 裕貴",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 50,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 47,
+            "boat_2rate": 27.5,
+            "branch": "大阪",
+            "class": "A1",
+            "equipment_boat_no": 21,
+            "lane_no": 1,
+            "local_2rate": 52.3,
+            "local_win_rate": 6.98,
+            "motor_2rate": 28.5,
+            "motor_no": 29,
+            "national_2rate": 39.3,
+            "national_win_rate": 6.1,
+            "racer_id": "3997",
+            "racer_name": "北村 征嗣",
+            "weight_kg": 0
+          },
+          {
+            "age": 59,
+            "boat_2rate": 29.6,
+            "branch": "埼玉",
+            "class": "A2",
+            "equipment_boat_no": 51,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 35.5,
+            "motor_no": 38,
+            "national_2rate": 37.9,
+            "national_win_rate": 5.69,
+            "racer_id": "3319",
+            "racer_name": "山崎 義明",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 3,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 38.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 39,
+            "lane_no": 4,
+            "local_2rate": 25.0,
+            "local_win_rate": 5.0,
+            "motor_2rate": 28.0,
+            "motor_no": 14,
+            "national_2rate": 17.0,
+            "national_win_rate": 3.75,
+            "racer_id": "3730",
+            "racer_name": "塩崎 優司",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 34.2,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 66,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 44.6,
+            "motor_no": 35,
+            "national_2rate": 0.0,
+            "national_win_rate": 1.32,
+            "racer_id": "5458",
+            "racer_name": "田中 大輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 31.2,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 46,
+            "lane_no": 6,
+            "local_2rate": 33.3,
+            "local_win_rate": 4.83,
+            "motor_2rate": 36.3,
+            "motor_no": 36,
+            "national_2rate": 27.0,
+            "national_win_rate": 4.47,
+            "racer_id": "3831",
+            "racer_name": "安藤 裕貴",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:03",
+        "race_name": "予選",
+        "race_no": 3,
+        "start_at": "2026-09-20T11:50:00+09:00",
+        "start_time_jst": "11:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201603"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_b3a6f0fc9ceb40c4c950",
+        "publication_hash": "76fac04f79820fa39c6ccf9f33999e31f0374e2b03d3464458026b6225379cad",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:15:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "河村 了",
+            "rank": 1,
+            "score": 0.462895
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "藤岡 俊介",
+            "rank": 2,
+            "score": 0.07766119
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "高橋 正男",
+            "rank": 3,
+            "score": 0.04783251
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "渡邉 健",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "表 健太",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "志道 吉和",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 49,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "2-1-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-1-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "6-2-1",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 42,
+            "boat_2rate": 43.2,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 26,
+            "lane_no": 1,
+            "local_2rate": 27.2,
+            "local_win_rate": 6.0,
+            "motor_2rate": 0.0,
+            "motor_no": 39,
+            "national_2rate": 46.8,
+            "national_win_rate": 6.75,
+            "racer_id": "4308",
+            "racer_name": "河村 了",
+            "weight_kg": 0
+          },
+          {
+            "age": 46,
+            "boat_2rate": 16.6,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 18,
+            "lane_no": 2,
+            "local_2rate": 55.5,
+            "local_win_rate": 6.07,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 53.7,
+            "national_win_rate": 6.44,
+            "racer_id": "4133",
+            "racer_name": "高橋 正男",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 20.5,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 32,
+            "lane_no": 3,
+            "local_2rate": 30.4,
+            "local_win_rate": 4.78,
+            "motor_2rate": 0.0,
+            "motor_no": 54,
+            "national_2rate": 11.7,
+            "national_win_rate": 3.32,
+            "racer_id": "5044",
+            "racer_name": "渡邉 健",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 55.5,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 54,
+            "lane_no": 4,
+            "local_2rate": 10.0,
+            "local_win_rate": 2.4,
+            "motor_2rate": 0.0,
+            "motor_no": 21,
+            "national_2rate": 4.4,
+            "national_win_rate": 3.0,
+            "racer_id": "5101",
+            "racer_name": "表 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 50,
+            "boat_2rate": 14.7,
+            "branch": "福岡",
+            "class": "B2",
+            "equipment_boat_no": 13,
+            "lane_no": 5,
+            "local_2rate": 25.0,
+            "local_win_rate": 3.94,
+            "motor_2rate": 0.0,
+            "motor_no": 44,
+            "national_2rate": 19.7,
+            "national_win_rate": 3.77,
+            "racer_id": "3953",
+            "racer_name": "志道 吉和",
+            "weight_kg": 0
+          },
+          {
+            "age": 43,
+            "boat_2rate": 33.3,
+            "branch": "兵庫",
+            "class": "A1",
+            "equipment_boat_no": 36,
+            "lane_no": 6,
+            "local_2rate": 51.6,
+            "local_win_rate": 7.35,
+            "motor_2rate": 0.0,
+            "motor_no": 48,
+            "national_2rate": 58.0,
+            "national_win_rate": 7.04,
+            "racer_id": "4278",
+            "racer_name": "藤岡 俊介",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:15:07",
+        "race_name": "一般",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:02:00+09:00",
+        "start_time_jst": "18:02",
+        "venue": "丸亀",
+        "venue_code": "15"
+      },
+      "race_id_raw": "202609201507"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_b741378ece2a0c7dd8cd",
+        "publication_hash": "d75dd55b17ba967c818d1bf820f108b6798605a301edfa48b280c919222f0ba7",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:01:07",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "奈須 啓太",
+            "rank": 1,
+            "score": 0.58614032
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "村上 宗太郎",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "大澤 普司",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "北川 幸典",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "藤本 元輝",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "小川 晃司",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 47,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-5",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 43,
+            "boat_2rate": 32.4,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 24,
+            "lane_no": 1,
+            "local_2rate": 45.4,
+            "local_win_rate": 6.82,
+            "motor_2rate": 50.5,
+            "motor_no": 27,
+            "national_2rate": 44.3,
+            "national_win_rate": 6.12,
+            "racer_id": "4330",
+            "racer_name": "奈須 啓太",
+            "weight_kg": 0
+          },
+          {
+            "age": 23,
+            "boat_2rate": 35.6,
+            "branch": "東京",
+            "class": "B2",
+            "equipment_boat_no": 33,
+            "lane_no": 2,
+            "local_2rate": 16.6,
+            "local_win_rate": 4.5,
+            "motor_2rate": 31.7,
+            "motor_no": 11,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.2,
+            "racer_id": "5201",
+            "racer_name": "村上 宗太郎",
+            "weight_kg": 0
+          },
+          {
+            "age": 52,
+            "boat_2rate": 37.9,
+            "branch": "群馬",
+            "class": "A1",
+            "equipment_boat_no": 31,
+            "lane_no": 3,
+            "local_2rate": 45.9,
+            "local_win_rate": 6.41,
+            "motor_2rate": 41.7,
+            "motor_no": 32,
+            "national_2rate": 40.4,
+            "national_win_rate": 6.07,
+            "racer_id": "3740",
+            "racer_name": "大澤 普司",
+            "weight_kg": 0
+          },
+          {
+            "age": 63,
+            "boat_2rate": 38.0,
+            "branch": "広島",
+            "class": "B1",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.0,
+            "motor_2rate": 39.4,
+            "motor_no": 12,
+            "national_2rate": 35.7,
+            "national_win_rate": 5.75,
+            "racer_id": "3054",
+            "racer_name": "北川 幸典",
+            "weight_kg": 0
+          },
+          {
+            "age": 29,
+            "boat_2rate": 30.0,
+            "branch": "兵庫",
+            "class": "B1",
+            "equipment_boat_no": 28,
+            "lane_no": 5,
+            "local_2rate": 10.5,
+            "local_win_rate": 2.63,
+            "motor_2rate": 35.7,
+            "motor_no": 53,
+            "national_2rate": 28.5,
+            "national_win_rate": 4.55,
+            "racer_id": "5179",
+            "racer_name": "藤本 元輝",
+            "weight_kg": 0
+          },
+          {
+            "age": 58,
+            "boat_2rate": 35.2,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 42,
+            "lane_no": 6,
+            "local_2rate": 17.3,
+            "local_win_rate": 4.43,
+            "motor_2rate": 36.3,
+            "motor_no": 24,
+            "national_2rate": 15.6,
+            "national_win_rate": 4.4,
+            "racer_id": "3352",
+            "racer_name": "小川 晃司",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:01:07",
+        "race_name": "ドラドキ３男子",
+        "race_no": 7,
+        "start_at": "2026-09-20T18:17:00+09:00",
+        "start_time_jst": "18:17",
+        "venue": "桐生",
+        "venue_code": "01"
+      },
+      "race_id_raw": "202609200107"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_4ea6ab5c24ba962ce78c",
+        "publication_hash": "debac5e3a4ce60c1efeb95af35c2e676647638117be05c74baf6a3084cc3f4f4",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:12",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "笠原 亮",
+            "rank": 1,
+            "score": 0.60533588
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "吉田 凌太朗",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "上田 健太",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "安東 幸治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "松本 真広",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "沢田 昭宏",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 47,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 32.6,
+            "branch": "静岡",
+            "class": "A1",
+            "equipment_boat_no": 57,
+            "lane_no": 1,
+            "local_2rate": 44.4,
+            "local_win_rate": 6.33,
+            "motor_2rate": 37.0,
+            "motor_no": 39,
+            "national_2rate": 54.7,
+            "national_win_rate": 7.04,
+            "racer_id": "4019",
+            "racer_name": "笠原 亮",
+            "weight_kg": 0
+          },
+          {
+            "age": 32,
+            "boat_2rate": 31.4,
+            "branch": "愛知",
+            "class": "A1",
+            "equipment_boat_no": 25,
+            "lane_no": 2,
+            "local_2rate": 50.0,
+            "local_win_rate": 6.85,
+            "motor_2rate": 26.0,
+            "motor_no": 25,
+            "national_2rate": 45.7,
+            "national_win_rate": 6.24,
+            "racer_id": "4903",
+            "racer_name": "吉田 凌太朗",
+            "weight_kg": 0
+          },
+          {
+            "age": 30,
+            "boat_2rate": 28.0,
+            "branch": "愛知",
+            "class": "A2",
+            "equipment_boat_no": 11,
+            "lane_no": 3,
+            "local_2rate": 52.3,
+            "local_win_rate": 7.24,
+            "motor_2rate": 38.5,
+            "motor_no": 17,
+            "national_2rate": 33.3,
+            "national_win_rate": 5.42,
+            "racer_id": "5002",
+            "racer_name": "上田 健太",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 25.5,
+            "branch": "福岡",
+            "class": "A2",
+            "equipment_boat_no": 28,
+            "lane_no": 4,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 33.1,
+            "motor_no": 53,
+            "national_2rate": 36.0,
+            "national_win_rate": 5.43,
+            "racer_id": "4122",
+            "racer_name": "安東 幸治",
+            "weight_kg": 0
+          },
+          {
+            "age": 27,
+            "boat_2rate": 31.8,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 41,
+            "lane_no": 5,
+            "local_2rate": 22.2,
+            "local_win_rate": 4.5,
+            "motor_2rate": 33.6,
+            "motor_no": 31,
+            "national_2rate": 11.7,
+            "national_win_rate": 4.07,
+            "racer_id": "5107",
+            "racer_name": "松本 真広",
+            "weight_kg": 0
+          },
+          {
+            "age": 40,
+            "boat_2rate": 31.0,
+            "branch": "大阪",
+            "class": "A2",
+            "equipment_boat_no": 72,
+            "lane_no": 6,
+            "local_2rate": 39.6,
+            "local_win_rate": 5.88,
+            "motor_2rate": 32.5,
+            "motor_no": 34,
+            "national_2rate": 36.5,
+            "national_win_rate": 5.61,
+            "racer_id": "4411",
+            "racer_name": "沢田 昭宏",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:12",
+        "race_name": "記者選抜戦",
+        "race_no": 12,
+        "start_at": "2026-09-20T16:50:00+09:00",
+        "start_time_jst": "16:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201612"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_17d87ed0e2208dd93ea5",
+        "publication_hash": "5bac870762f712e39fb630aa9c2103ed8e10fd674420422b0bab8a0d0931ef0a",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:23:03",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "寺本 重宣",
+            "rank": 1,
+            "score": 0.60102976
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "山下 智己",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "西尾 亮輔",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "芝田 浩治",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "西村 仁吾",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "嶋田 貴支",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 46,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-6-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 46,
+            "boat_2rate": 43.7,
+            "branch": "東京",
+            "class": "A2",
+            "equipment_boat_no": 2,
+            "lane_no": 1,
+            "local_2rate": 53.3,
+            "local_win_rate": 6.73,
+            "motor_2rate": 0.0,
+            "motor_no": 31,
+            "national_2rate": 39.8,
+            "national_win_rate": 5.97,
+            "racer_id": "4086",
+            "racer_name": "寺本 重宣",
+            "weight_kg": 0
+          },
+          {
+            "age": 22,
+            "boat_2rate": 35.9,
+            "branch": "兵庫",
+            "class": "B2",
+            "equipment_boat_no": 50,
+            "lane_no": 2,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 0.0,
+            "motor_no": 1,
+            "national_2rate": 15.6,
+            "national_win_rate": 3.59,
+            "racer_id": "5333",
+            "racer_name": "山下 智己",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 37.8,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 17,
+            "lane_no": 3,
+            "local_2rate": 11.4,
+            "local_win_rate": 3.69,
+            "motor_2rate": 0.0,
+            "motor_no": 14,
+            "national_2rate": 18.1,
+            "national_win_rate": 4.02,
+            "racer_id": "4752",
+            "racer_name": "西尾 亮輔",
+            "weight_kg": 0
+          },
+          {
+            "age": 54,
+            "boat_2rate": 28.8,
+            "branch": "兵庫",
+            "class": "A2",
+            "equipment_boat_no": 60,
+            "lane_no": 4,
+            "local_2rate": 42.8,
+            "local_win_rate": 6.43,
+            "motor_2rate": 0.0,
+            "motor_no": 34,
+            "national_2rate": 45.6,
+            "national_win_rate": 5.89,
+            "racer_id": "3484",
+            "racer_name": "芝田 浩治",
+            "weight_kg": 0
+          },
+          {
+            "age": 18,
+            "boat_2rate": 25.2,
+            "branch": "長崎",
+            "class": "B2",
+            "equipment_boat_no": 22,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 1.13,
+            "motor_2rate": 0.0,
+            "motor_no": 28,
+            "national_2rate": 3.5,
+            "national_win_rate": 1.65,
+            "racer_id": "5443",
+            "racer_name": "西村 仁吾",
+            "weight_kg": 0
+          },
+          {
+            "age": 55,
+            "boat_2rate": 34.1,
+            "branch": "香川",
+            "class": "B1",
+            "equipment_boat_no": 24,
+            "lane_no": 6,
+            "local_2rate": 32.3,
+            "local_win_rate": 5.18,
+            "motor_2rate": 0.0,
+            "motor_no": 32,
+            "national_2rate": 30.0,
+            "national_win_rate": 5.17,
+            "racer_id": "3478",
+            "racer_name": "嶋田 貴支",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:23:03",
+        "race_name": "３ライズ戦",
+        "race_no": 3,
+        "start_at": "2026-09-20T09:40:00+09:00",
+        "start_time_jst": "09:40",
+        "venue": "唐津",
+        "venue_code": "23"
+      },
+      "race_id_raw": "202609202303"
+    },
+    {
+      "prediction": {
+        "model_version": "HIT_type_G_v1",
+        "official_performance_eligible": false,
+        "prediction_id": "pred_77244ea8b4e376c9c9a3",
+        "publication_hash": "9c0503e1a6bcbfc0cfeda5e629cda2811e1e412d2a8dc37b3f8cd3afe8d5927a",
+        "publication_mode": "type_g_on_hit_v1",
+        "published_at": "2026-09-19T22:33:07.386473+00:00",
+        "race_id": "BR:20260920:16:01",
+        "ranking": [
+          {
+            "lane_no": 1,
+            "racer_name": "田村 隆信",
+            "rank": 1,
+            "score": 0.57451584
+          },
+          {
+            "lane_no": 2,
+            "racer_name": "福田 理",
+            "rank": 2,
+            "score": 0.0
+          },
+          {
+            "lane_no": 3,
+            "racer_name": "小澤 学",
+            "rank": 3,
+            "score": 0.0
+          },
+          {
+            "lane_no": 4,
+            "racer_name": "木幡 純也",
+            "rank": 4,
+            "score": 0.0
+          },
+          {
+            "lane_no": 5,
+            "racer_name": "櫻井 隼",
+            "rank": 5,
+            "score": 0.0
+          },
+          {
+            "lane_no": 6,
+            "racer_name": "杉山 太陽",
+            "rank": 6,
+            "score": 0.0
+          }
+        ],
+        "selection_reasons": [
+          "現行HITと同じ朝データで計算",
+          "type-G検証用として別集計",
+          "オッズ・払戻を使わず買い目を固定"
+        ],
+        "selection_score": 45,
+        "strategy_version": "type-g-on-hit-v1",
+        "tickets": [
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-3",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-4",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-2-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-2",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-3-6",
+            "stake_yen": 100
+          },
+          {
+            "bet_type": "trifecta",
+            "combination": "1-4-3",
+            "stake_yen": 100
+          }
+        ],
+        "virtual_stake_yen": 300
+      },
+      "race": {
+        "entries": [
+          {
+            "age": 48,
+            "boat_2rate": 43.1,
+            "branch": "徳島",
+            "class": "A1",
+            "equipment_boat_no": 71,
+            "lane_no": 1,
+            "local_2rate": 57.1,
+            "local_win_rate": 6.86,
+            "motor_2rate": 22.8,
+            "motor_no": 48,
+            "national_2rate": 36.1,
+            "national_win_rate": 5.64,
+            "racer_id": "4028",
+            "racer_name": "田村 隆信",
+            "weight_kg": 0
+          },
+          {
+            "age": 49,
+            "boat_2rate": 42.8,
+            "branch": "岡山",
+            "class": "B1",
+            "equipment_boat_no": 38,
+            "lane_no": 2,
+            "local_2rate": 22.8,
+            "local_win_rate": 4.25,
+            "motor_2rate": 48.0,
+            "motor_no": 55,
+            "national_2rate": 22.8,
+            "national_win_rate": 4.4,
+            "racer_id": "3982",
+            "racer_name": "福田 理",
+            "weight_kg": 0
+          },
+          {
+            "age": 44,
+            "boat_2rate": 35.9,
+            "branch": "東京",
+            "class": "B1",
+            "equipment_boat_no": 74,
+            "lane_no": 3,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 35.5,
+            "motor_no": 66,
+            "national_2rate": 15.7,
+            "national_win_rate": 4.07,
+            "racer_id": "4145",
+            "racer_name": "小澤 学",
+            "weight_kg": 0
+          },
+          {
+            "age": 38,
+            "boat_2rate": 32.6,
+            "branch": "愛知",
+            "class": "B1",
+            "equipment_boat_no": 52,
+            "lane_no": 4,
+            "local_2rate": 13.5,
+            "local_win_rate": 4.32,
+            "motor_2rate": 28.6,
+            "motor_no": 52,
+            "national_2rate": 19.2,
+            "national_win_rate": 4.12,
+            "racer_id": "4785",
+            "racer_name": "木幡 純也",
+            "weight_kg": 0
+          },
+          {
+            "age": 20,
+            "boat_2rate": 31.7,
+            "branch": "埼玉",
+            "class": "B1",
+            "equipment_boat_no": 20,
+            "lane_no": 5,
+            "local_2rate": 0.0,
+            "local_win_rate": 0.0,
+            "motor_2rate": 30.9,
+            "motor_no": 26,
+            "national_2rate": 1.2,
+            "national_win_rate": 2.24,
+            "racer_id": "5419",
+            "racer_name": "櫻井 隼",
+            "weight_kg": 0
+          },
+          {
+            "age": 25,
+            "boat_2rate": 33.1,
+            "branch": "福岡",
+            "class": "B1",
+            "equipment_boat_no": 44,
+            "lane_no": 6,
+            "local_2rate": 22.2,
+            "local_win_rate": 3.44,
+            "motor_2rate": 48.3,
+            "motor_no": 20,
+            "national_2rate": 17.8,
+            "national_win_rate": 3.98,
+            "racer_id": "5271",
+            "racer_name": "杉山 太陽",
+            "weight_kg": 0
+          }
+        ],
+        "race_date": "2026-09-20",
+        "race_id": "BR:20260920:16:01",
+        "race_name": "朝得ガァ〜コ戦",
+        "race_no": 1,
+        "start_at": "2026-09-20T10:50:00+09:00",
+        "start_time_jst": "10:50",
+        "venue": "児島",
+        "venue_code": "16"
+      },
+      "race_id_raw": "202609201601"
+    }
+  ]
+}
