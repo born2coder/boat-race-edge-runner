@@ -1,7 +1,7 @@
 {
   "date": "2026-09-19",
   "last_error": null,
-  "last_settlement_at": "2026-09-19T03:37:12.409521+00:00",
+  "last_settlement_at": "2026-09-19T03:38:54.329588+00:00",
   "last_tick_at": "2026-09-19T03:38:00.975538+00:00",
   "races": {
     "202609190201": {
@@ -13779,6 +13779,8 @@
         "6e026208ab5cf366de46c0e19d4f0921b0470c77cb964880bd3cb31cb59ca033": "2026-09-19T03:12:03.887Z",
         "b0f0f9541c5f33e1ac6e88f6146a1805b015f21d84d7611d52fbfd7de3088268": "2026-09-19T03:24:09.203Z"
       },
+      "result_attempt_at": "2026-09-19T03:38:14.017907+00:00",
+      "result_error": "Official result table missing",
       "roster": [
         {
           "lane_no": 1,
@@ -15093,6 +15095,9 @@
       "race_id": "BR:20260919:03:05",
       "race_name": "予選",
       "race_no": 5,
+      "receipts": {
+        "ac25c4c7cc76f9348030dfc8aa15ffda5e7f8537acc07a0c49d00d333e413288": "2026-09-19T03:38:04.432Z"
+      },
       "roster": [
         {
           "lane_no": 1,
@@ -20900,6 +20905,8 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
+      "final_attempt_at": "2026-09-19T03:38:32.574419+00:00",
+      "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-19T02:57:43.195561+00:00",
         "reason": "Official numeric field missing"
@@ -21066,8 +21073,58 @@
         "07b8062b17d27a9fa79951842f253ea5ac7ab007be3996b1a78a5537c16a57c5": "2026-09-19T02:58:35.681Z",
         "f0efb7d87eef7d54853938a5cfa62a02317a19398fe8cc28b503ab8b5af689d0": "2026-09-19T03:06:16.175Z"
       },
-      "result_attempt_at": "2026-09-19T03:37:01.132641+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "2-3-5",
+        "evidence": {
+          "obtained_at": "2026-09-19T03:38:21.419946+00:00",
+          "sha256": "87467f9709bce008d7e0bbced2a08e2a7c32f8bedb66ad294edfd87e8f99ecb5",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260919&jcd=04&rno=4&_edge_minute=29829818"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 2,
+            "racer_id": "4422",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 3,
+            "racer_id": "4377",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 5,
+            "racer_id": "4651",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 4,
+            "racer_id": "3771",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 6,
+            "racer_id": "5081",
+            "result_code": null
+          },
+          {
+            "finish_position": null,
+            "lane_no": 1,
+            "racer_id": "4880",
+            "result_code": "F"
+          }
+        ],
+        "payout_per_100_yen": 9020,
+        "race_id": "BR:20260919:04:04",
+        "refunded_lanes": [
+          1
+        ]
+      },
+      "result_attempt_at": "2026-09-19T03:38:21.448124+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -30638,7 +30695,7 @@
         "de0bc00fd36cfb2607ecad98cc2c116b67abda3c1d51572ff726fc0639a0c025": "2026-09-19T03:16:07.554Z",
         "e9656c1ff0cd8c97c8b458343e57e4ef3b75776c4c191f4644fcc91bbe8f34a1": "2026-09-19T03:03:03.107Z"
       },
-      "result_attempt_at": "2026-09-19T03:36:53.643888+00:00",
+      "result_attempt_at": "2026-09-19T03:38:13.994424+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -36168,7 +36225,7 @@
         "34c90664cbf5ddea15fbd55241bef2b2d62c3f2d88b20dcb536865b76f8a3932": "2026-09-19T03:04:01.146Z",
         "dead0c1c7e17c8c907db895a0d310c10ce3024c214f43e20e7fa36598b7fa803": "2026-09-19T03:14:08.523Z"
       },
-      "result_attempt_at": "2026-09-19T03:36:52.649230+00:00",
+      "result_attempt_at": "2026-09-19T03:38:12.999144+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -61427,7 +61484,7 @@
         "9288f7b0b19998549fce75b7ce01c764e1d4c91a0276b399eba09de612cb8878": "2026-09-19T03:14:08.523Z",
         "bba135dcc35f13fffa756ee96d6dbda0fac57e1958139e2f58e5cf6a670ce81c": "2026-09-19T03:19:07.800Z"
       },
-      "result_attempt_at": "2026-09-19T03:36:54.723995+00:00",
+      "result_attempt_at": "2026-09-19T03:38:22.270122+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -93459,7 +93516,7 @@
         "766bcd9764053292dc59bd0a403f756413b3f47a83cee14307403ebc1d53f1f3": "2026-09-19T03:22:08.358Z",
         "dc6bc58dd44f4fb59455aa277445b9cf0f121e2e0855394dc956592a4c4f8f41": "2026-09-19T03:19:07.800Z"
       },
-      "result_attempt_at": "2026-09-19T03:36:54.679643+00:00",
+      "result_attempt_at": "2026-09-19T03:38:12.965677+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
