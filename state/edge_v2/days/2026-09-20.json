@@ -1,7 +1,7 @@
 {
   "date": "2026-09-20",
   "last_error": null,
-  "last_settlement_at": "2026-09-20T12:12:13.870836+00:00",
+  "last_settlement_at": "2026-09-20T12:13:24.045261+00:00",
   "last_tick_at": "2026-09-20T12:12:38.738434+00:00",
   "races": {
     "202609200101": {
@@ -168490,7 +168490,7 @@
         "t15": "model_input_incomplete",
         "t20": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-09-20T12:12:03.263751+00:00",
+      "final_attempt_at": "2026-09-20T12:13:02.389572+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-20T01:07:39.855448+00:00",
@@ -197913,7 +197913,7 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-09-20T12:12:01.266786+00:00",
+      "final_attempt_at": "2026-09-20T12:13:01.383713+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-20T10:15:01.845230+00:00",
@@ -199563,7 +199563,7 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-09-20T12:12:03.296408+00:00",
+      "final_attempt_at": "2026-09-20T12:13:11.780826+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-20T10:45:51.287030+00:00",
@@ -213355,7 +213355,7 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-09-20T12:12:01.235862+00:00",
+      "final_attempt_at": "2026-09-20T12:13:02.400535+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-20T05:11:32.328439+00:00",
@@ -276075,6 +276075,8 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
+      "final_attempt_at": "2026-09-20T12:13:03.533249+00:00",
+      "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-20T11:34:58.793864+00:00",
         "reason": "Official numeric field missing"
@@ -276241,8 +276243,56 @@
         "b19fdab049d72fcf39c5cf84f6ffc99faf013dd0f548e272a60ce71f46a37aa0": "2026-09-20T11:44:02.453Z",
         "d1e4fe852e31421e02a33e497d08f423c0935851d347114d46319d527b07bf37": "2026-09-20T11:35:12.283Z"
       },
-      "result_attempt_at": "2026-09-20T12:11:52.995612+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "5-1-6",
+        "evidence": {
+          "obtained_at": "2026-09-20T12:12:53.105047+00:00",
+          "sha256": "1aed22b0fe83c573d06a312ca6848d8d66d5595e64c117ef8eee982ab960e397",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260920&jcd=24&rno=8&_edge_minute=29831772"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 5,
+            "racer_id": "5147",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 1,
+            "racer_id": "4299",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 6,
+            "racer_id": "4219",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 4,
+            "racer_id": "4895",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 3,
+            "racer_id": "4549",
+            "result_code": null
+          },
+          {
+            "finish_position": 6,
+            "lane_no": 2,
+            "racer_id": "4998",
+            "result_code": null
+          }
+        ],
+        "payout_per_100_yen": 111260,
+        "race_id": "BR:20260920:24:08",
+        "refunded_lanes": []
+      },
+      "result_attempt_at": "2026-09-20T12:12:53.143965+00:00",
       "roster": [
         {
           "lane_no": 1,
