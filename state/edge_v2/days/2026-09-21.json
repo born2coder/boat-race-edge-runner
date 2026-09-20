@@ -2,7 +2,7 @@
   "date": "2026-09-21",
   "last_error": null,
   "last_settlement_at": "2026-09-20T23:33:31.383088+00:00",
-  "last_tick_at": "2026-09-20T23:33:09.322452+00:00",
+  "last_tick_at": "2026-09-20T23:34:07.449237+00:00",
   "races": {
     "202609210101": {
       "eligible_roster": true,
@@ -2546,6 +2546,20 @@
     },
     "202609211002": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-20T23:34:07.449133+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-20T23:33:58.017468+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-21",
       "race_id": "BR:20260921:10:02",
       "race_name": "みくにあさガチ",
