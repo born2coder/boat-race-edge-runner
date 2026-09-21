@@ -2,7 +2,7 @@
   "date": "2026-09-21",
   "last_error": null,
   "last_settlement_at": "2026-09-20T23:59:42.427691+00:00",
-  "last_tick_at": "2026-09-20T23:59:08.468328+00:00",
+  "last_tick_at": "2026-09-21T00:00:09.336564+00:00",
   "races": {
     "202609210101": {
       "eligible_roster": true,
@@ -4124,6 +4124,20 @@
     },
     "202609211003": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-21T00:00:09.336466+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-20T23:59:59.026838+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-21",
       "race_id": "BR:20260921:10:03",
       "race_name": "みくにあさズバ",
