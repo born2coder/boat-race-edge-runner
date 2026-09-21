@@ -2,7 +2,7 @@
   "date": "2026-09-22",
   "last_error": null,
   "last_settlement_at": "2026-09-21T23:45:22.409328+00:00",
-  "last_tick_at": "2026-09-21T23:44:58.844563+00:00",
+  "last_tick_at": "2026-09-21T23:46:18.402109+00:00",
   "races": {
     "202609220101": {
       "eligible_roster": true,
@@ -8104,6 +8104,20 @@
     },
     "202609221802": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-21T23:46:18.402016+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-21T23:46:08.054310+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-22",
       "race_id": "BR:20260922:18:02",
       "race_name": "狙いトク特選",
