@@ -3,7 +3,10 @@
   "last_published_at": "2026-09-22T05:06:56.839207+00:00",
   "model_version": "W_morning_badge_v1",
   "morning_locked_at": "2026-09-21T22:32:19.866271+00:00",
-  "pending_reassessment_ids": [],
+  "pending_reassessment_ids": [
+    "pred_0e11cf41a5d69f875a6d",
+    "pred_8262f1d78bbd35929f42"
+  ],
   "published_count": 10,
   "schema_version": "boat-race-edge-forward-state/v2",
   "selected": [
@@ -231,7 +234,18 @@
         "venue_code": "03"
       },
       "race_id_raw": "202609220309",
-      "reassessment": null,
+      "reassessment": {
+        "exhibition_percentile": 0.99160388,
+        "morning_percentile": 0.99763186,
+        "observed_at": "2026-09-22T05:44:27.542318+00:00",
+        "percentile_uplift": -0.00602799,
+        "prediction_id": "pred_8262f1d78bbd35929f42",
+        "race_id": "BR:20260922:03:09",
+        "reassessment_hash": "0970b66c7a717b4075f492781985dbcabf210b368d053df299d34e358c165b38",
+        "rule_version": "exhibition-support-v1",
+        "status": "confirmed",
+        "top3_overlap": 3
+      },
       "reassessment_published_at": null
     },
     {
@@ -2102,7 +2116,18 @@
         "venue_code": "06"
       },
       "race_id_raw": "202609220608",
-      "reassessment": null,
+      "reassessment": {
+        "exhibition_percentile": 0.96254037,
+        "morning_percentile": 0.97761033,
+        "observed_at": "2026-09-22T05:44:27.542318+00:00",
+        "percentile_uplift": -0.01506997,
+        "prediction_id": "pred_0e11cf41a5d69f875a6d",
+        "race_id": "BR:20260922:06:08",
+        "reassessment_hash": "8640e90f318bc0ff8821a11670d43d9225d3188166b4dfc870d8c7f724978fe1",
+        "rule_version": "exhibition-support-v1",
+        "status": "confirmed",
+        "top3_overlap": 3
+      },
       "reassessment_published_at": null
     },
     {
@@ -2344,5 +2369,5 @@
       "reassessment_published_at": "2026-09-22T00:29:39.896170+00:00"
     }
   ],
-  "updated_at": "2026-09-22T05:06:53.534629+00:00"
+  "updated_at": "2026-09-22T05:46:04.717345+00:00"
 }
