@@ -2,7 +2,7 @@
   "date": "2026-09-22",
   "last_error": null,
   "last_settlement_at": "2026-09-22T03:34:32.105369+00:00",
-  "last_tick_at": "2026-09-22T03:33:58.413099+00:00",
+  "last_tick_at": "2026-09-22T03:35:18.214629+00:00",
   "races": {
     "202609220101": {
       "eligible_roster": true,
@@ -30179,6 +30179,20 @@
     },
     "202609220806": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-22T03:35:18.214523+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-22T03:35:08.831323+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-22",
       "race_id": "BR:20260922:08:06",
       "race_name": "昼トコ小判Ｒ",
