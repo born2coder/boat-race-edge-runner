@@ -2,7 +2,7 @@
   "date": "2026-09-22",
   "last_error": null,
   "last_settlement_at": "2026-09-22T02:00:07.697592+00:00",
-  "last_tick_at": "2026-09-22T01:59:32.194832+00:00",
+  "last_tick_at": "2026-09-22T02:00:29.848588+00:00",
   "races": {
     "202609220101": {
       "eligible_roster": true,
@@ -24780,6 +24780,20 @@
     },
     "202609221602": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-22T02:00:29.848495+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-22T02:00:21.502923+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-22",
       "race_id": "BR:20260922:16:02",
       "race_name": "一般",
