@@ -2,7 +2,7 @@
   "date": "2026-09-22",
   "last_error": null,
   "last_settlement_at": "2026-09-22T06:25:08.897581+00:00",
-  "last_tick_at": "2026-09-22T06:24:23.296405+00:00",
+  "last_tick_at": "2026-09-22T06:25:31.575418+00:00",
   "races": {
     "202609220101": {
       "eligible_roster": true,
@@ -1598,6 +1598,20 @@
     },
     "202609220102": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-22T06:25:31.575316+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-22T06:25:23.209399+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-22",
       "race_id": "BR:20260922:01:02",
       "race_name": "予選女子",
