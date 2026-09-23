@@ -2,7 +2,7 @@
   "date": "2026-09-24",
   "last_error": null,
   "last_settlement_at": "2026-09-23T23:15:11.854816+00:00",
-  "last_tick_at": "2026-09-23T23:14:46.174218+00:00",
+  "last_tick_at": "2026-09-23T23:15:47.182754+00:00",
   "races": {
     "202609240101": {
       "eligible_roster": true,
@@ -2287,16 +2287,21 @@
     "202609241001": {
       "eligible_roster": true,
       "errors": {
+        "t15": {
+          "at": "2026-09-23T23:15:47.182539+00:00",
+          "reason": "Invalid odds"
+        },
         "t20": {
           "at": "2026-09-23T23:14:46.174100+00:00",
           "reason": "Invalid odds"
         }
       },
       "exhibition_rejections": {
+        "t15": "model_input_incomplete",
         "t20": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-09-23T23:14:35.850083+00:00",
+        "at": "2026-09-23T23:15:35.893434+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
@@ -3668,6 +3673,20 @@
     },
     "202609241801": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-23T23:15:45.166970+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-23T23:15:36.875845+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-24",
       "race_id": "BR:20260924:18:01",
       "race_name": "朝トク予選",
