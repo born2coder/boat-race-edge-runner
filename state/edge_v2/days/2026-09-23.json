@@ -1,7 +1,7 @@
 {
   "date": "2026-09-23",
   "last_error": null,
-  "last_settlement_at": "2026-09-23T05:48:12.822360+00:00",
+  "last_settlement_at": "2026-09-23T05:50:02.570802+00:00",
   "last_tick_at": "2026-09-23T05:49:06.935292+00:00",
   "races": {
     "202609230101": {
@@ -57048,6 +57048,8 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
+      "final_attempt_at": "2026-09-23T05:49:41.670214+00:00",
+      "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-23T05:06:28.851936+00:00",
         "reason": "Official numeric field missing"
@@ -57214,8 +57216,58 @@
         "7c0942f59b80bd5e5f35785aca129a9b300c833d8431cf0ba3a36cec69a9f22f": "2026-09-23T05:06:43.501Z",
         "bf37498ac96f5f3dd83d57415ab80f4495375a68c097e1e75bdc7d20fde3e526": "2026-09-23T05:16:18.530Z"
       },
-      "result_attempt_at": "2026-09-23T05:48:01.217139+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "3-5-4",
+        "evidence": {
+          "obtained_at": "2026-09-23T05:49:29.412773+00:00",
+          "sha256": "7719e270838697ce5490edbcc4561f196b2a86394f409e25350b9e6d0726f5d9",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=08&rno=9&_edge_minute=29835709"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 3,
+            "racer_id": "4786",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 5,
+            "racer_id": "3251",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 4,
+            "racer_id": "4669",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 6,
+            "racer_id": "4438",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 2,
+            "racer_id": "3945",
+            "result_code": null
+          },
+          {
+            "finish_position": null,
+            "lane_no": 1,
+            "racer_id": "5268",
+            "result_code": "F"
+          }
+        ],
+        "payout_per_100_yen": 790,
+        "race_id": "BR:20260923:08:09",
+        "refunded_lanes": [
+          1
+        ]
+      },
+      "result_attempt_at": "2026-09-23T05:49:29.451845+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -73394,6 +73446,7 @@
       "race_name": "予選特賞",
       "race_no": 10,
       "receipts": {
+        "361e6bcda73cdfc44299844c32b6d2d22c1fd3e7fdbc50aa63908357fb95686d": "2026-09-23T05:49:10.626Z",
         "958c8ceeead08f552fde2375a8da0f4751c0abeed4037d5063caf79146e19a8e": "2026-09-23T05:40:31.499Z"
       },
       "roster": [
@@ -74743,8 +74796,8 @@
         "cancelled": false,
         "combination": "1-4-6",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -76323,8 +76376,8 @@
         "cancelled": false,
         "combination": "5-3-1",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -77903,8 +77956,8 @@
         "cancelled": false,
         "combination": "1-2-4",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -79482,8 +79535,8 @@
         "cancelled": false,
         "combination": "1-3-6",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -81061,8 +81114,8 @@
         "cancelled": false,
         "combination": "1-3-6",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -82714,8 +82767,8 @@
         "cancelled": false,
         "combination": "3-4-6",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -84488,8 +84541,8 @@
         "cancelled": false,
         "combination": "1-2-4",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -86262,8 +86315,8 @@
         "cancelled": false,
         "combination": "6-5-2",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -88036,8 +88089,8 @@
         "cancelled": false,
         "combination": "1-2-6",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -89810,8 +89863,8 @@
         "cancelled": false,
         "combination": "1-2-4",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -91584,8 +91637,8 @@
         "cancelled": false,
         "combination": "1-2-3",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -93426,8 +93479,8 @@
         "cancelled": false,
         "combination": "1-5-2",
         "evidence": {
-          "obtained_at": "2026-09-23T05:34:05+00:00",
-          "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
           "source": "official_archive",
           "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
@@ -108653,7 +108706,7 @@
         "db29c8b951d903fb5a725ed1faba4c8ace136f805769f849de4036b0db7b3c87": "2026-09-23T05:13:02.329Z",
         "e4c47ebbb6fa429de364440185da54cae0f169fa02be79337fc2dc9e040b7fe0": "2026-09-23T05:25:50.653Z"
       },
-      "result_attempt_at": "2026-09-23T05:47:59.224161+00:00",
+      "result_attempt_at": "2026-09-23T05:49:29.412514+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -124339,7 +124392,7 @@
         "bde9228d25a3459c6f15267233bf0ce26a59629eb8166b87ad53427c7555a6d8": "2026-09-23T05:31:58.323Z",
         "cb5504dcf224b363c7226545a767dff4628500b14af71c7cb63abfcb89bd34a3": "2026-09-23T05:31:58.323Z"
       },
-      "result_attempt_at": "2026-09-23T05:48:00.168161+00:00",
+      "result_attempt_at": "2026-09-23T05:49:31.433969+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -126104,11 +126157,13 @@
         "aa2f3a6b979f4a8698b45dd233a78f7d3afd3610f32d49bdb9df1c2a9e51dc71": "2026-09-22T23:21:00.138Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-2-4",
         "evidence": {
-          "obtained_at": "2026-09-23T00:03:57.237749+00:00",
-          "sha256": "f76f1f0563eb6acf7ee4374d7d4fec66f08855d9c45c48af0ad0b610f1a35e60",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=1&_edge_minute=29835363"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -127682,11 +127737,13 @@
         "c21a13fbda36012538354d4904af29e41fe733cb9ee3f351a7d7e96d55341331": "2026-09-22T23:54:41.401Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "3-1-2",
         "evidence": {
-          "obtained_at": "2026-09-23T00:28:03.779757+00:00",
-          "sha256": "114026e5282eba1fd138a06929cf69f5d258c6435d7e4d31fa33e37891cc34f9",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=2&_edge_minute=29835387"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -129260,11 +129317,13 @@
         "c5dbc58ecafa4b672e6d1a5399574fd22dcfa53f1e6cd41474fa3cf8461fe1d7": "2026-09-23T00:14:48.472Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-6-4",
         "evidence": {
-          "obtained_at": "2026-09-23T00:55:23.129742+00:00",
-          "sha256": "fe0aba5cbaa48820536ab8c5f99186b59afa99376aa64a7d2fb1adab2f6659da",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=3&_edge_minute=29835415"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -130837,11 +130896,13 @@
         "a976779fc95b8e121dbac6deca898ebe6c6db1f25844d98c7c56715a6c2cc5f3": "2026-09-23T00:51:13.678Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-2-4",
         "evidence": {
-          "obtained_at": "2026-09-23T01:21:31.830452+00:00",
-          "sha256": "36624274071d3f89329ce5d507cefaf0a369dc274bf4fffb6d6f9b9e8ca806fd",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=4&_edge_minute=29835441"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -132415,11 +132476,13 @@
         "fe157ee4af28400794d57e5231803032fe07cddd7f9d1da9c26680c069b042d1": "2026-09-23T01:13:09.654Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-3-4",
         "evidence": {
-          "obtained_at": "2026-09-23T01:51:02.862865+00:00",
-          "sha256": "1fce9c5a0c96288f578ca375cad09ab6b80f6ec7754618d689c99e65d771fbe7",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=5&_edge_minute=29835470"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -133992,11 +134055,13 @@
         "672a2e3e6775ab23a799259c18f1f86fb703caeb9952b1abb70c8ff0f8181e6b": "2026-09-23T01:48:36.137Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "2-3-6",
         "evidence": {
-          "obtained_at": "2026-09-23T02:20:30.401843+00:00",
-          "sha256": "be530a207906da22c3d1d5665197f20bad3eaa98f70cc05cef6f916cd9062230",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=6&_edge_minute=29835500"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -135643,11 +135708,13 @@
         "fae1cce2517a54e9fbb210e51d7807eb42994c24745331e43c8c74d127dadf43": "2026-09-23T02:15:04.292Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-2-5",
         "evidence": {
-          "obtained_at": "2026-09-23T02:58:56.164756+00:00",
-          "sha256": "70b5a7f985711d1efaad34abb3cc3cc8aba6c56a56498aea02f885d257630a99",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=7&_edge_minute=29835538"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -135676,15 +135743,15 @@
           },
           {
             "finish_position": null,
-            "lane_no": 4,
-            "racer_id": "4700",
-            "result_code": "転"
+            "lane_no": 3,
+            "racer_id": "3684",
+            "result_code": "S2"
           },
           {
             "finish_position": null,
-            "lane_no": 3,
-            "racer_id": "3684",
-            "result_code": "妨"
+            "lane_no": 4,
+            "racer_id": "4700",
+            "result_code": "S0"
           }
         ],
         "payout_per_100_yen": 5020,
@@ -137415,11 +137482,13 @@
         "f41a6dab7c99c4c2108910e892a952a7d1e4c8ea82b71266abffd27960b72edd": "2026-09-23T02:42:40.885Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-3-4",
         "evidence": {
-          "obtained_at": "2026-09-23T03:25:35.293618+00:00",
-          "sha256": "f9ad888f6da2f2e9efea65337a518f55e3d409e6302d4c8ef8a85e9d3d2427eb",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=8&_edge_minute=29835565"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -139187,11 +139256,13 @@
         "ee0bfca47d0d37626a21b8c2cdcd6bab1e4fd88465db27e01a7ae581063662df": "2026-09-23T03:22:52.299Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "2-3-5",
         "evidence": {
-          "obtained_at": "2026-09-23T03:58:39.872498+00:00",
-          "sha256": "012d785b5dc313268afd79f9c5dc30785b2ebcf0c9604ba3721c172a98f4c996",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=9&_edge_minute=29835598"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -140959,11 +141030,13 @@
         "c46e3d8efecf807828cdb830b1fe1c5aa6b2c19eec93bc7562f9c66ea6d79e5d": "2026-09-23T03:56:06.314Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-3-6",
         "evidence": {
-          "obtained_at": "2026-09-23T04:31:55.738194+00:00",
-          "sha256": "5997bc7f5027d7d72bab89d9d6f03e1a1eb37863656e677a8893dfaf4453ac65",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=10&_edge_minute=29835631"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -142731,11 +142804,13 @@
         "f94c7c0fe2d0feb940903329d8c416cca3de1613c04ef078cc2d15661787fbf2": "2026-09-23T04:38:29.666Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-5-3",
         "evidence": {
-          "obtained_at": "2026-09-23T05:09:21.636265+00:00",
-          "sha256": "6984a8c62861f474e218514b7bb49a5c5e329931bd7632d7b8e35c1a700dc7dd",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=11&_edge_minute=29835669"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -144503,11 +144578,13 @@
         "d30ce91b347c1becb360af7d71997e8f779d0c82d49b1718255e588b6fe1122a": "2026-09-23T05:09:01.883Z"
       },
       "result": {
+        "cancelled": false,
         "combination": "1-4-3",
         "evidence": {
-          "obtained_at": "2026-09-23T05:40:48.256845+00:00",
-          "sha256": "1d6eebf755c25dc7b531fe4f96ebb2feed0b891be96c6dc9475c0d20418cef2f",
-          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260923&jcd=18&rno=12&_edge_minute=29835700"
+          "obtained_at": "2026-09-23T05:49:19+00:00",
+          "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
+          "source": "official_archive",
+          "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
         },
         "finishers": [
           {
@@ -146141,7 +146218,8 @@
       "race_no": 1,
       "receipts": {
         "0e1fc6a270445cde5a6d69be5786ac243805800c4f795aaf5d77ac7c4189a1b0": "2026-09-23T05:42:36.969Z",
-        "936d1b6085f8ee312a0511ff7352490a6d74178b6a8e6ca9718243e9869b998a": "2026-09-23T05:33:55.098Z"
+        "936d1b6085f8ee312a0511ff7352490a6d74178b6a8e6ca9718243e9869b998a": "2026-09-23T05:33:55.098Z",
+        "d9117231423ffc0a133f2f927a6d04a2322031682292fcc9c373a0bcf6f00c67": "2026-09-23T05:49:10.626Z"
       },
       "roster": [
         {
@@ -158322,7 +158400,7 @@
         "6a07b7bf8972a82147a4769ea015086eb06413c0543b67c1c022351fbfd0a6f2": "2026-09-23T05:25:50.653Z",
         "cf07ee59ec09ff231928c52fa5189cdf857c3f0f63c6c78089db313e52905b67": "2026-09-23T05:18:18.513Z"
       },
-      "result_attempt_at": "2026-09-23T05:48:00.198595+00:00",
+      "result_attempt_at": "2026-09-23T05:49:30.445708+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -159816,8 +159894,8 @@
     }
   },
   "result_archive": {
-    "obtained_at": "2026-09-23T05:34:05+00:00",
-    "sha256": "ba3ccfa28a9e82055ee24c319e1a3b3f7d07b61e1bc4f96e83113e84e3277e52",
+    "obtained_at": "2026-09-23T05:49:19+00:00",
+    "sha256": "4fa32a00a7d5aca46476c78b46e4e7a29624286672593dfa030d4ce9854652c0",
     "source": "official_archive",
     "url": "https://www1.mbrace.or.jp/od2/K/202609/k260923.lzh"
   },
