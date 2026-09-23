@@ -2,7 +2,7 @@
   "date": "2026-09-23",
   "last_error": null,
   "last_settlement_at": "2026-09-23T02:38:28.046174+00:00",
-  "last_tick_at": "2026-09-23T02:37:55.461693+00:00",
+  "last_tick_at": "2026-09-23T02:38:55.085408+00:00",
   "races": {
     "202609230101": {
       "eligible_roster": true,
@@ -16832,6 +16832,20 @@
     },
     "202609230804": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-23T02:38:55.085247+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-23T02:38:44.596464+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-23",
       "race_id": "BR:20260923:08:04",
       "race_name": "予選",
@@ -21532,7 +21546,7 @@
       "eligible_roster": true,
       "errors": {
         "t20": {
-          "at": "2026-09-23T02:37:55.395974+00:00",
+          "at": "2026-09-23T02:38:52.981171+00:00",
           "reason": "Official odds grid was incomplete: 60/120"
         }
       },
@@ -21540,7 +21554,7 @@
         "t20": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-09-23T02:37:43.897155+00:00",
+        "at": "2026-09-23T02:38:44.626076+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
