@@ -2,7 +2,7 @@
   "date": "2026-09-24",
   "last_error": null,
   "last_settlement_at": "2026-09-24T07:38:19.629011+00:00",
-  "last_tick_at": "2026-09-24T07:37:53.896309+00:00",
+  "last_tick_at": "2026-09-24T07:38:52.166516+00:00",
   "races": {
     "202609240101": {
       "eligible_roster": true,
@@ -175120,6 +175120,20 @@
     },
     "202609241905": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-24T07:38:52.166413+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-24T07:38:42.568073+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-24",
       "race_id": "BR:20260924:19:05",
       "race_name": "シーモ戦",
