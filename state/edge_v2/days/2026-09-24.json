@@ -2,7 +2,7 @@
   "date": "2026-09-24",
   "last_error": null,
   "last_settlement_at": "2026-09-24T09:33:32.299135+00:00",
-  "last_tick_at": "2026-09-24T09:32:47.470742+00:00",
+  "last_tick_at": "2026-09-24T09:34:06.209492+00:00",
   "races": {
     "202609240101": {
       "eligible_roster": true,
@@ -11699,6 +11699,10 @@
     "202609240108": {
       "eligible_roster": true,
       "errors": {
+        "t10": {
+          "at": "2026-09-24T09:34:06.209394+00:00",
+          "reason": "Official odds grid was incomplete: 60/120"
+        },
         "t15": {
           "at": "2026-09-24T09:31:53.988745+00:00",
           "reason": "Official odds grid was incomplete: 60/120"
@@ -11709,11 +11713,12 @@
         }
       },
       "exhibition_rejections": {
+        "t10": "model_input_incomplete",
         "t15": "model_input_incomplete",
         "t20": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-09-24T09:31:44.701769+00:00",
+        "at": "2026-09-24T09:33:55.874146+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
