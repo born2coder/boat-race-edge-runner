@@ -2,7 +2,7 @@
   "date": "2026-09-25",
   "last_error": null,
   "last_settlement_at": "2026-09-24T23:06:57.281878+00:00",
-  "last_tick_at": "2026-09-24T23:06:42.273865+00:00",
+  "last_tick_at": "2026-09-24T23:07:59.742260+00:00",
   "races": {
     "202609250101": {
       "eligible_roster": true,
@@ -1830,6 +1830,20 @@
     },
     "202609251001": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-24T23:07:59.742158+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-24T23:07:50.469900+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-25",
       "race_id": "BR:20260925:10:01",
       "race_name": "みくにあさイチ",
