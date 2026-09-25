@@ -2,7 +2,7 @@
   "date": "2026-09-26",
   "last_error": null,
   "last_settlement_at": "2026-09-25T23:45:07.002141+00:00",
-  "last_tick_at": "2026-09-25T23:44:41.516627+00:00",
+  "last_tick_at": "2026-09-25T23:46:01.145203+00:00",
   "races": {
     "202609260201": {
       "eligible_roster": true,
@@ -8560,6 +8560,20 @@
     },
     "202609262102": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-25T23:46:01.145107+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-25T23:45:51.836953+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-26",
       "race_id": "BR:20260926:21:02",
       "race_name": "サンライズＷ戦",
