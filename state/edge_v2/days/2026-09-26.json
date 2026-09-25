@@ -2,7 +2,7 @@
   "date": "2026-09-26",
   "last_error": null,
   "last_settlement_at": "2026-09-25T23:33:25.124429+00:00",
-  "last_tick_at": "2026-09-25T23:33:01.365000+00:00",
+  "last_tick_at": "2026-09-25T23:34:01.460386+00:00",
   "races": {
     "202609260201": {
       "eligible_roster": true,
@@ -5052,6 +5052,20 @@
     },
     "202609261802": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-25T23:34:01.460283+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-25T23:33:51.821315+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-26",
       "race_id": "BR:20260926:18:02",
       "race_name": "狙いトク一般",
