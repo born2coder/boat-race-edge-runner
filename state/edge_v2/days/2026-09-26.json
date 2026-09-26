@@ -2,7 +2,7 @@
   "date": "2026-09-26",
   "last_error": null,
   "last_settlement_at": "2026-09-26T00:24:55.118514+00:00",
-  "last_tick_at": "2026-09-26T00:24:20.300505+00:00",
+  "last_tick_at": "2026-09-26T00:25:17.149415+00:00",
   "races": {
     "202609260201": {
       "eligible_roster": true,
@@ -8207,6 +8207,20 @@
     },
     "202609261804": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-26T00:25:17.149293+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-26T00:25:08.843215+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-26",
       "race_id": "BR:20260926:18:04",
       "race_name": "ガチトク一般",
