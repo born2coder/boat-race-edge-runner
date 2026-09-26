@@ -2,7 +2,7 @@
   "date": "2026-09-26",
   "last_error": null,
   "last_settlement_at": "2026-09-26T09:03:16.394855+00:00",
-  "last_tick_at": "2026-09-26T09:02:24.892032+00:00",
+  "last_tick_at": "2026-09-26T09:03:44.500812+00:00",
   "races": {
     "202609260201": {
       "eligible_roster": true,
@@ -137744,6 +137744,20 @@
     },
     "202609261508": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-26T09:03:44.500730+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-26T09:03:34.190450+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-26",
       "race_id": "BR:20260926:15:08",
       "race_name": "釜揚げ８",
