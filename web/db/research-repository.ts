@@ -19,12 +19,14 @@ const isCurrent = (s:Snapshot, now:number) => now>=Date.parse(s.observed_at) && 
 const id = (race:string, combo:string) => [race,combo,STRATEGY_VERSION].join(":");
 export async function observeResearchDay(date:string) {
   const now = new Date(), at=now.toISOString();
-  const strategyRows=await post<Array<{effective_at:string}>>("research_strategies",
-    [{strategy_version:STRATEGY_VERSION,effective_at:at,settings:SETTINGS}],"strategy_version");
-  // The first write fixes cohort inception; subsequent writes must never move it.
-  const strategy=await read<Array<{effective_at:string}>>("research_strategies",
+  let strategy=await read<Array<{effective_at:string}>>("research_strategies",
     {select:"effective_at",strategy_version:"eq."+STRATEGY_VERSION,limit:1});
-  const inception=Date.parse(strategy[0]?.effective_at ?? strategyRows[0]?.effective_at ?? at);
+  if(!strategy.length) {
+    await post("research_strategies",[{strategy_version:STRATEGY_VERSION,effective_at:at,settings:SETTINGS}],"strategy_version");
+    strategy=await read<Array<{effective_at:string}>>("research_strategies",
+      {select:"effective_at",strategy_version:"eq."+STRATEGY_VERSION,limit:1});
+  }
+  const inception=Date.parse(strategy[0]?.effective_at ?? at);
   const day=await getEdgeV2Day(date);
   if(!day) throw new Error("EDGE observation feed unavailable");
   const previous=await read<Signal[]>("research_signals",{select:"*",strategy_version:"eq."+STRATEGY_VERSION,
@@ -78,7 +80,9 @@ export async function observeResearchDay(date:string) {
       const refunded=race.result.cancelled||race.result.refunded_lanes.some(l=>prior.combination.split("-").includes(String(l)));
       if(refunded) continue;
       const hit=prior.combination===race.result.combination, payout=hit?race.result.payout_per_100_yen:0;
-      await post("research_signals",[{...prior,status:"SETTLED",settled_at:at,payout_yen:payout,hit}],"signal_id");
+      await post("research_signals",[{...prior,status:"SETTLED",settled_at:at,payout_yen:payout,hit,
+        model_version:"edge-full120-v2",edge_version:"edge-full120-v2",
+        strategy_version:STRATEGY_VERSION,cohort:"SHADOW_FORWARD"}],"signal_id");
       await post("research_signal_events",[{event_id:prior.signal_id+":settled",signal_id:prior.signal_id,
         event_at:at,old_status:prior.status,new_status:"SETTLED",reason:"Official result",
         snapshot_id:null}],"event_id");
