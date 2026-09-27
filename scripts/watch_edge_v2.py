@@ -17,6 +17,7 @@ if __package__ in (None, ""):
 
 from scripts import edge_v2 as edge
 from scripts import prepare_forward
+from scripts import publish_research
 from scripts.edge_publication import DataPublisher
 
 POLL_SECONDS = 60
@@ -86,6 +87,10 @@ def main():
                     edge.write_state(state)
                     persist()
                     publisher.acknowledge(edge.confirm_publication(state))
+                    try:
+                        publish_research.publish(date)
+                    except Exception as research_error:
+                        print(json.dumps({"research_publish_error": type(research_error).__name__}), flush=True)
                 observer.settle(state)
                 # Each loop also revisits unfinished recent days (no retrospective forecasts).
                 recovery_days = []
@@ -108,6 +113,12 @@ def main():
                 state["last_settlement_at"] = edge.utcnow().isoformat()
                 edge.write_state(state)
                 persist()
+                try:
+                    publish_research.publish(date)
+                    for previous in recovery_days[:1]:
+                        publish_research.publish(previous["date"])
+                except Exception as research_error:
+                    print(json.dumps({"research_settlement_error": type(research_error).__name__}), flush=True)
                 if not 7 <= now_jst.hour < 22:
                     publisher.acknowledge(edge.confirm_publication(state))
                     edge.write_state(state)

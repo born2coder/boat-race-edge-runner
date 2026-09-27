@@ -881,3 +881,30 @@ svg { width: 1.1rem; height: 1.1rem; }
 .edge-v2-comparison summary { font-weight:700; cursor:pointer; }
 .edge-v2-pagination,.edge-v2-dates { display:flex; flex-wrap:wrap; gap:14px; margin:18px 0; font-size:.85rem; }
 @media(min-width:760px) { .edge-v2-controls { grid-template-columns:1.4fr 1fr 1fr 1fr auto; align-items:end; }.edge-v2-controls button { grid-column:auto; padding:8px 20px; } }
+
+
+/* Research terminal: compact, legible, mobile-first. */
+.research-terminal { max-width: 1100px; margin: 0 auto; padding: 1.2rem 0 5rem; color: #172a32; }
+.research-terminal h1 { font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: -.04em; margin: .3rem 0 1rem; }
+.research-terminal h1 small { font-size: .43em; font-weight: 500; letter-spacing: 0; }
+.research-terminal h2 { font-size: 1.2rem; margin: 1.8rem 0 .8rem; }
+.research-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .55rem; }
+.research-metrics > div, .research-card, .research-hero, .research-health { border: 1px solid #cbd8dc; border-radius: .7rem; padding: .85rem; background: #f9fbfb; }
+.research-metrics span, .research-metrics small { display: block; font-size: .75rem; color: #52626c; }
+.research-metrics strong { display: block; font-size: clamp(1.4rem,4vw,2.2rem); font-variant-numeric: tabular-nums; }
+.research-health { margin: 1rem 0; font-size: .85rem; }
+.research-health.warning { border-color: #ad7246; background: #fff5eb; }
+.research-card { margin: .6rem 0; }
+.research-card h3 { margin: 0 0 .8rem; }
+.research-card summary { cursor: pointer; }
+.research-pick { display: flex; flex-wrap: wrap; gap: .35rem .8rem; border-top: 1px solid #dce4e6; padding: .65rem 0; font-variant-numeric: tabular-nums; font-size: .86rem; }
+.research-pick strong { color: #075b4d; font-size: 1.1rem; }
+.research-pick b { color: #0b6853; }
+.research-pick small { color: #52626c; }
+.research-hero { background: #123a38; color: #fff; }
+.research-hero span, .research-hero strong { display: block; }
+.research-hero strong { font-size: clamp(1.4rem, 5vw, 2.7rem); }
+.research-filters { display: flex; flex-wrap: wrap; gap: .6rem; align-items: end; }
+.research-filters label { display: grid; gap: .2rem; font-size: .8rem; }
+.research-filters input, .research-filters select, .research-filters button { min-height: 2.5rem; border: 1px solid #bccdd2; border-radius: .35rem; padding: .3rem .5rem; }
+@media(min-width:700px){.research-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
