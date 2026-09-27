@@ -1,10 +1,10 @@
-import {getForwardSignals} from "@/db/research-repository";
+import {getForwardSignals,getForwardBuySnapshots} from "@/db/research-repository";
 import Link from "next/link";
 import {getEdgeV2Day, getEdgeV2Index} from "@/db/edge-v2-repository";
 import {daySignals, forwardPerformance, STRATEGY_VERSION} from "@/lib/research-terminal";
 export const dynamic = "force-dynamic";
 export default async function Performance() {
- const [index, forward] = await Promise.all([getEdgeV2Index(),getForwardSignals()]);
+ const [index, forward, buySnapshots] = await Promise.all([getEdgeV2Index(),getForwardSignals(),getForwardBuySnapshots()]);
  const forwardBought=forward.filter(s=>s.buy_at);
  const forwardSettled=forwardBought.filter(s=>s.status==='SETTLED'&&s.payout_yen!==null);
  const fStake=forwardSettled.reduce((n,s)=>n+s.fixed_stake_yen,0);
@@ -22,6 +22,7 @@ export default async function Performance() {
    return {label,count:rows.length,hits:rows.filter(s=>s.hit).length,stake,payout,roi:stake?payout/stake:null};});
  };
  const forwardDays=byPeriod(s=>s.race_id.slice(3,11));
+ const forwardWeeks=byPeriod(s=>{const x=s.race_id.slice(3,11);const d=new Date(Date.UTC(Number(x.slice(0,4)),Number(x.slice(4,6))-1,Number(x.slice(6,8))));d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10);});
  const forwardMonths=byPeriod(s=>s.race_id.slice(3,9));
  const forwardVenues=byPeriod(s=>s.race_id.split(':')[2]??'unknown');
  const edgeBands=[[1,1.1],[1.1,1.2],[1.2,1.3],[1.3,1.5],[1.5,Infinity]].map(([lo,hi])=>{
@@ -30,6 +31,13 @@ export default async function Performance() {
   return {label:hi===Infinity?'1.50+':lo.toFixed(2)+'–'+hi.toFixed(2),count:rows.length,
    meanEv:rows.length?rows.reduce((n,s)=>n+(s.buy_ev??0),0)/rows.length:null,
    hits:rows.filter(s=>s.hit).length,roi:stake?payout/stake:null};
+ });
+ const firstBuy=new Map<string,number>();
+ for(const row of buySnapshots)if(!firstBuy.has(row.signal_id))firstBuy.set(row.signal_id,row.minutes_to_close);
+ const timeBands=[[17,30,"-20m"],[13,17,"-15m"],[8,13,"-10m"],[0,8,"-5m以降"]] as const;
+ const forwardTiming=timeBands.map(([lo,hi,label])=>{const rows=forwardSettled.filter(s=>{const t=firstBuy.get(s.signal_id);return t!==undefined&&t>=lo&&t<hi;});
+  const stake=rows.reduce((n,s)=>n+s.fixed_stake_yen,0),payout=rows.reduce((n,s)=>n+(s.payout_yen??0),0);
+  return {label,count:rows.length,hits:rows.filter(s=>s.hit).length,roi:stake?payout/stake:null};
  });
  const winningDays=forwardDays.filter(d=>d.payout>d.stake).length,losingDays=forwardDays.filter(d=>d.payout<d.stake).length;
  const profitableRaces=byPeriod(s=>s.race_id).filter(r=>r.payout>r.stake).length;
@@ -59,9 +67,10 @@ export default async function Performance() {
   <h2>SHADOW FORWARD · BUY時EVと実現ROI</h2>
   <div className="edge-v2-table"><table><thead><tr><th>BUY EV帯</th><th>件数</th><th>的中</th><th>平均予測EV</th><th>実現ROI</th></tr></thead><tbody>{edgeBands.map(b=><tr key={b.label}><th>{b.label}</th><td>{b.count}</td><td>{b.hits}</td><td>{b.meanEv?.toFixed(2)??"—"}</td><td>{pct(b.roi)}</td></tr>)}</tbody></table></div>
   <h2>SHADOW FORWARD · 日別 / 月別 / 会場別</h2>
-  {([["日別",forwardDays],["月別",forwardMonths],["会場別",forwardVenues]] as const).map(([label,rows])=>
+  {([["日別",forwardDays],["週別",forwardWeeks],["月別",forwardMonths],["会場別",forwardVenues]] as const).map(([label,rows])=>
    <section key={label}><h3>{label}</h3><div className="edge-v2-table"><table><thead><tr><th>区分</th><th>BUY</th><th>的中</th><th>投資</th><th>払戻</th><th>ROI</th></tr></thead>
     <tbody>{rows.map(row=><tr key={row.label}><th>{row.label}</th><td>{row.count}</td><td>{row.hits}</td><td>¥{row.stake}</td><td>¥{row.payout}</td><td>{pct(row.roi)}</td></tr>)}</tbody></table></div></section>)}
+  <h2>SHADOW FORWARD · 初回BUY締切前時間</h2><div className="edge-v2-table"><table><thead><tr><th>時間帯</th><th>件数</th><th>的中</th><th>ROI</th></tr></thead><tbody>{forwardTiming.map(t=><tr key={t.label}><th>{t.label}</th><td>{t.count}</td><td>{t.hits}</td><td>{pct(t.roi)}</td></tr>)}</tbody></table></div>
   <h2>LIVE</h2><p>実購入記録なし。仮想購入をLIVEに計上しません。</p>
   <h2>BACKTEST · BUY時EV帯</h2><div className="edge-v2-table"><table><thead><tr><th>EV</th><th>確定点数</th><th>的中</th><th>ROI</th></tr></thead><tbody>{buckets.map(b=><tr key={b.label}><th>{b.label}</th><td>{b.settled}</td><td>{b.hits}</td><td>{pct(b.roi)}</td></tr>)}</tbody></table></div>
   <h2>BACKTEST · 日別</h2><div className="edge-v2-table"><table><thead><tr><th>日付</th><th>点数</th><th>投資</th><th>払戻</th><th>ROI</th></tr></thead><tbody>{dayRows.map(d=><tr key={d.date}><th><Link href={"/signal-log?date="+d.date}>{d.date}</Link></th><td>{d.settled}</td><td>¥{d.stake}</td><td>¥{d.payout}</td><td>{pct(d.roi)}</td></tr>)}</tbody></table></div>
