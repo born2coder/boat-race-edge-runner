@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { BarChart3, CalendarDays, CircleHelp, History } from "lucide-react";
+import { BarChart3, CalendarDays, CircleHelp, History, Eye } from "lucide-react";
 
 const navigation = [
-  { href: "/", label: "今日の予想", icon: CalendarDays },
-  { href: "/history", label: "過去の予想", icon: History },
-  { href: "/stats", label: "成績", icon: BarChart3 },
-  { href: "/about", label: "このサイトについて", icon: CircleHelp },
+  { href: "/today", label: "TODAY", icon: CalendarDays },
+  { href: "/watch", label: "WATCH", icon: Eye },
+  { href: "/signal-log", label: "SIGNAL LOG", icon: History },
+  { href: "/performance", label: "PERFORMANCE", icon: BarChart3 },
+  { href: "/settings", label: "SETTINGS", icon: CircleHelp },
 ];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <div className="site-shell">
       <header className="site-header">
         <div className="shell-width header-inner">
-          <Link href="/" className="brand" aria-label="舟の理（ふねのことわり）ホーム">
+          <Link href="/today" className="brand" aria-label="舟の理（ふねのことわり）ホーム">
             <Image src="/brand/fune-no-kotowari-transparent.png" alt="舟の理 — 競艇の理をデータで紐解き、予想を導く。" width={2172} height={724} sizes="(max-width: 640px) 208px, 280px" className="brand-logo" priority />
           </Link>
           <nav className="desktop-nav" aria-label="メインナビゲーション">
