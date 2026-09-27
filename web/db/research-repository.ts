@@ -91,8 +91,12 @@ export async function observeResearchDay(date:string) {
       if(race.final?.odds[prior.combination]) await post("research_signal_snapshots",[{snapshot_id:prior.signal_id+":final",
         signal_id:prior.signal_id,captured_at:race.final.observed_at,source_observed_at:race.final.observed_at,
         odds:race.final.odds[prior.combination],implied_probability:1/race.final.odds[prior.combination],
-        raw_probability:null,calibrated_probability:null,conservative_probability:null,
-        raw_ev:null,conservative_ev:null,minimum_buy_odds:null,edge_score:null,snapshot_kind:"FINAL"}],"snapshot_id");
+        raw_probability:prior.buy_ev&&prior.buy_odds?prior.buy_ev/prior.buy_odds/SETTINGS.conservativeFactor:null,
+        calibrated_probability:null,conservative_probability:prior.buy_ev&&prior.buy_odds?prior.buy_ev/prior.buy_odds:null,
+        raw_ev:prior.buy_ev&&prior.buy_odds?prior.buy_ev/prior.buy_odds/SETTINGS.conservativeFactor*race.final.odds[prior.combination]:null,
+        conservative_ev:prior.buy_ev&&prior.buy_odds?prior.buy_ev/prior.buy_odds*race.final.odds[prior.combination]:null,
+        minimum_buy_odds:prior.buy_ev&&prior.buy_odds?minimumOdds(prior.buy_ev/prior.buy_odds):null,
+        edge_score:null,snapshot_kind:"FINAL"}],"snapshot_id");
       settled++;
     }
   }
