@@ -55,6 +55,7 @@ export async function observeResearchDay(date:string) {
         const buy=selected.has(x.combination)&&raw>=SETTINGS.minimumRawEv&&conservative>=SETTINGS.minimumConservativeEv;
         const next:State=buy?"BUY":selected.has(x.combination)?"WATCH":prior?.buy_at?"CANCEL":"PASS";
         const signal:Signal={signal_id:signalId,race_id:race.race_id,combination:x.combination,status:next,
+          model_version:"edge-full120-v2",strategy_version:STRATEGY_VERSION,
           watch_at:prior?.watch_at??(next==="WATCH"?at:null),cancel_at:prior?.cancel_at??(next==="CANCEL"?at:null),
           buy_at:prior?.buy_at??(buy?at:null),buy_odds:prior?.buy_odds??(buy?x.odds:null),
           buy_ev:prior?.buy_ev??(buy?conservative:null),created_at:prior?.created_at??at,
