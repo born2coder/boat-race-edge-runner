@@ -23,7 +23,7 @@ export const minimumOdds = (p: number, ev = SETTINGS.minimumConservativeEv) =>
   finite(p) && p <= 1 ? Math.ceil(ev / p * 10) / 10 : Infinity;
 export const impliedProbability = (odds: number) => finite(odds) ? 1 / odds : null;
 export const rawEv = (p: number, odds: number) => p * odds;
-export function settlementFor(combination: string, result: NonNullable<EdgeRaceV2["result"]>, stakeYen = SETTINGS.stakeYen) {
+export function settlementFor(combination: string, result: NonNullable<EdgeRaceV2["result"]>, stakeYen: number = SETTINGS.stakeYen) {
   const refunded = result.cancelled || result.refunded_lanes.some(lane =>
     combination.split("-").includes(String(lane)));
   if (refunded) return {refunded: true, hit: null, payoutYen: stakeYen};
