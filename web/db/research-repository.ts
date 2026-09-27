@@ -134,13 +134,19 @@ export async function getForwardDetails(date:string) {
  const ids=signals.map(x=>x.signal_id);
  if(!ids.length)return {signals,events:[],snapshots:[]};
  const filter="in.("+ids.map(x=>'"'+x.replaceAll('"','')+'"').join(",")+")";
+ const paginate=async<T>(table:string,select:string,order:string)=>{
+   const all:T[]=[];
+   for(let offset=0;offset<20000;offset+=1000){
+     const rows=await read<T[]>(table,{select,signal_id:filter,order,offset,limit:1000});
+     all.push(...rows);if(rows.length<1000)break;
+   }
+   return all;
+ };
  const [events,snapshots]=await Promise.all([
-   read<Array<{signal_id:string;event_at:string;old_status:string;new_status:string;reason:string}>>(
-     "research_signal_events",{select:"signal_id,event_at,old_status,new_status,reason",signal_id:filter,
-       order:"event_at.asc",limit:1000}),
-   read<Array<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>>(
-     "research_signal_snapshots",{select:"signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind",
-       signal_id:filter,order:"captured_at.asc",limit:1000}),
+   paginate<{signal_id:string;event_at:string;old_status:string;new_status:string;reason:string}>(
+     "research_signal_events","signal_id,event_at,old_status,new_status,reason","event_at.asc"),
+   paginate<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>(
+     "research_signal_snapshots","signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind","captured_at.asc"),
  ]);
  return {signals,events,snapshots};
 }
