@@ -24,9 +24,10 @@ export async function proxy(request:NextRequest) {
      /^[a-f0-9]{64}$/.test(mac??"") && equal(mac,await sign(issued,secret)))
    return NextResponse.next();
  }
+ if(pathname.startsWith("/api/"))return new Response("Unauthorized",{status:401,headers:{"Cache-Control":"private, no-store"}});
  const url=request.nextUrl.clone();url.pathname="/unlock";url.search="";
  const response=NextResponse.redirect(url);
  response.headers.set("Cache-Control","private, no-store");
  return response;
 }
-export const config={matcher:["/((?!api/|_next/|favicon.ico|robots.txt|sitemap.xml|brand/).*)"]};
+export const config={matcher:["/((?!_next/|favicon.ico|robots.txt|sitemap.xml|brand/).*)"]};
