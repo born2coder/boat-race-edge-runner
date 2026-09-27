@@ -1,11 +1,8 @@
 {
   "date": "2026-09-28",
-  "last_error": {
-    "at": "2026-09-27T23:06:56.334238+00:00",
-    "kind": "HTTPError"
-  },
+  "last_error": null,
   "last_settlement_at": "2026-09-27T21:59:43.030413+00:00",
-  "last_tick_at": "2026-09-27T23:06:53.673810+00:00",
+  "last_tick_at": "2026-09-27T23:08:05.328512+00:00",
   "races": {
     "202609280201": {
       "eligible_roster": true,
@@ -2745,6 +2742,20 @@
     },
     "202609281401": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-27T23:08:05.328111+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-27T23:07:55.905023+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-28",
       "race_id": "BR:20260928:14:01",
       "race_name": "とるならなると",
