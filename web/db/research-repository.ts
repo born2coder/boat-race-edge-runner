@@ -1,8 +1,8 @@
 import "server-only";
 import { supabaseRequest, queryString } from "@/db/supabase";
 import { getEdgeV2Day } from "@/db/edge-v2-repository";
-import { isPublicBeforeDeadline, type EdgeRaceV2, type Snapshot } from "@/lib/edge-v2";
-import { SETTINGS, STRATEGY_VERSION, minimumOdds } from "@/lib/research-terminal";
+import { isPublicBeforeDeadline, type EdgeDayV2, type EdgeRaceV2, type Snapshot } from "@/lib/edge-v2";
+import { SETTINGS, STRATEGY_VERSION, minimumOdds, type ResearchSignal } from "@/lib/research-terminal";
 
 type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
 export type Signal = { signal_id:string; race_id:string; combination:string; status:State; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
@@ -119,9 +119,31 @@ export async function getForwardDetails(date:string) {
    read<Array<{signal_id:string;event_at:string;old_status:string;new_status:string;reason:string}>>(
      "research_signal_events",{select:"signal_id,event_at,old_status,new_status,reason",signal_id:filter,
        order:"event_at.asc",limit:1000}),
-   read<Array<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>>(
-     "research_signal_snapshots",{select:"signal_id,captured_at,source_observed_at,odds,conservative_ev,minimum_buy_odds,snapshot_kind",
+   read<Array<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>>(
+     "research_signal_snapshots",{select:"signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind",
        signal_id:filter,order:"captured_at.asc",limit:1000}),
  ]);
  return {signals,events,snapshots};
+}
+
+export type ForwardDetails=Awaited<ReturnType<typeof getForwardDetails>>;
+export function committedCandidates(day:EdgeDayV2|null, ledger:ForwardDetails, now=Date.now()):ResearchSignal[] {
+ if(!day)return [];
+ return ledger.signals.flatMap(s=>{
+  const race=day.races[s.race_id];
+  const latest=ledger.snapshots.filter(x=>x.signal_id===s.signal_id&&x.snapshot_kind!=="FINAL").at(-1);
+  if(!race||!latest||!["BUY","WATCH"].includes(s.status)||
+    Date.parse(race.start_at)<=now||!isCurrent({observed_at:latest.source_observed_at} as Snapshot,now))
+    return [];
+  return [{id:s.signal_id,race,combination:s.combination,probability:latest.raw_probability,
+    conservativeProbability:latest.conservative_probability,odds:latest.odds,rawEv:latest.raw_ev,
+    conservativeEv:latest.conservative_ev,minimumOdds:latest.minimum_buy_odds,status:s.status,
+    observedAt:latest.source_observed_at,
+    events:ledger.events.filter(e=>e.signal_id===s.signal_id).map(e=>({
+      status:e.new_status as ResearchSignal["status"],at:e.event_at,reason:e.reason,
+      odds:latest.odds,ev:latest.conservative_ev})),
+    buyAt:s.buy_at??undefined,buyOdds:s.buy_odds??undefined,buyEv:s.buy_ev??undefined,
+    payoutYen:s.payout_yen??undefined,hit:s.hit??undefined,stakeYen:s.buy_at?s.fixed_stake_yen:undefined
+  } as ResearchSignal];
+ });
 }
