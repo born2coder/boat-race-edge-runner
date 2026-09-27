@@ -152,3 +152,15 @@ export function committedCandidates(day:EdgeDayV2|null, ledger:ForwardDetails, n
   } as ResearchSignal];
  });
 }
+
+export async function getForwardBuySnapshots() {
+ const result:Array<{signal_id:string;captured_at:string;minutes_to_close:number;source_observed_at:string}>=[];
+ for(let offset=0;offset<200000;offset+=1000) {
+  const rows=await read<typeof result>("research_signal_snapshots",{
+    select:"signal_id,captured_at,minutes_to_close,source_observed_at",snapshot_kind:"eq.BUY",
+    order:"captured_at.asc",offset,limit:1000});
+  result.push(...rows);
+  if(rows.length<1000)break;
+ }
+ return result;
+}
