@@ -100,6 +100,20 @@ export async function observeResearchDay(date:string) {
         edge_score:null,snapshot_kind:"FINAL"}],"snapshot_id");
       settled++;
     }
+    if(race.final) for(const prior of old.filter(x=>x.buy_at && x.status==="SETTLED")) {
+      const finalOdds=race.final.odds[prior.combination];
+      if(!valid(finalOdds)) continue;
+      const frozenProbability=prior.buy_ev && prior.buy_odds ? prior.buy_ev/prior.buy_odds : null;
+      await postIgnore("research_signal_snapshots",[{snapshot_id:prior.signal_id+":final",
+        signal_id:prior.signal_id,captured_at:race.final.observed_at,source_observed_at:race.final.observed_at,
+        odds:finalOdds,implied_probability:1/finalOdds,
+        raw_probability:frozenProbability?frozenProbability/SETTINGS.conservativeFactor:null,
+        calibrated_probability:null,conservative_probability:frozenProbability,
+        raw_ev:frozenProbability?frozenProbability/SETTINGS.conservativeFactor*finalOdds:null,
+        conservative_ev:frozenProbability?frozenProbability*finalOdds:null,
+        minimum_buy_odds:frozenProbability?minimumOdds(frozenProbability):null,
+        edge_score:null,snapshot_kind:"FINAL"}],"snapshot_id");
+    }
   }
   return {created,changed,settled,observed_at:at};
 }
