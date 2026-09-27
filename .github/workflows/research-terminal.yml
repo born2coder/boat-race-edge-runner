@@ -1,7 +1,7 @@
 name: Validate research terminal
 on:
   push:
-    branches: [main, feature/research-terminal-phase2, feature/research-owner-access]
+    branches: [main, feature/research-terminal-phase2, feature/research-owner-access, feature/research-refunds]
     paths: ["web/**", ".github/workflows/research-terminal.yml"]
   workflow_dispatch:
 permissions:
