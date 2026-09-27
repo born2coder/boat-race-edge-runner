@@ -1,5 +1,5 @@
 -- Research Terminal Phase 2: additive schema only.
--- Apply only after a verified production database backup and row-count baseline.
+-- Applied to Supabase production on 2026-09-27 UTC after seven-table SQL export and schema inventory.
 -- Existing races, predictions, results and edge_candidates are untouched.
 create table if not exists public.research_strategies (
   strategy_version text primary key,
