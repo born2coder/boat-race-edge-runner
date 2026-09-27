@@ -133,8 +133,12 @@ export async function getForwardDetails(date:string) {
  const signals=await getForwardSignals(date);
  const ids=signals.map(x=>x.signal_id);
  if(!ids.length)return {signals,events:[],snapshots:[]};
- const filter="in.("+ids.map(x=>'"'+x.replaceAll('"','')+'"').join(",")+")";
- const paginate=async<T>(table:string,select:string,order:string)=>{
+ type Event={signal_id:string;event_at:string;old_status:string;new_status:string;reason:string};
+ type Odds={signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;
+   conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string};
+ const groups=Array.from({length:Math.ceil(ids.length/40)},(_,i)=>ids.slice(i*40,i*40+40));
+ const paginate=async<T>(table:string,select:string,order:string,group:string[])=>{
+   const filter="in.("+group.map(x=>'"'+x.replaceAll('"','')+'"').join(",")+")";
    const all:T[]=[];
    for(let offset=0;offset<20000;offset+=1000){
      const rows=await read<T[]>(table,{select,signal_id:filter,order,offset,limit:1000});
@@ -142,13 +146,11 @@ export async function getForwardDetails(date:string) {
    }
    return all;
  };
- const [events,snapshots]=await Promise.all([
-   paginate<{signal_id:string;event_at:string;old_status:string;new_status:string;reason:string}>(
-     "research_signal_events","signal_id,event_at,old_status,new_status,reason","event_at.asc"),
-   paginate<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>(
-     "research_signal_snapshots","signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind","captured_at.asc"),
- ]);
- return {signals,events,snapshots};
+ const batch=await Promise.all(groups.map(async group=>Promise.all([
+   paginate<Event>("research_signal_events","signal_id,event_at,old_status,new_status,reason","event_at.asc",group),
+   paginate<Odds>("research_signal_snapshots","signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind","captured_at.asc",group),
+ ])));
+ return {signals,events:batch.flatMap(x=>x[0]),snapshots:batch.flatMap(x=>x[1])};
 }
 
 export type ForwardDetails=Awaited<ReturnType<typeof getForwardDetails>>;
