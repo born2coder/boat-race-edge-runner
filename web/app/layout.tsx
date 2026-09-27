@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   openGraph: {
     type: "website", locale: "ja_JP", siteName: SITE_NAME,
-    title: "舟の理｜データ分析で導く無料競艇予想", description: SITE_DESCRIPTION,
+    title: "BOAT RACE EDGE｜Research Terminal", description: SITE_DESCRIPTION,
     images: [{ url: "/brand/fune-no-kotowari-logo.png", width: 2172, height: 724, alt: "舟の理" }],
   },
   icons: {
