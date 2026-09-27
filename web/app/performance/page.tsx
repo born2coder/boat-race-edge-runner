@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 export default async function Performance() {
  const [index, forward, buySnapshots] = await Promise.all([getEdgeV2Index(),getForwardSignals(),getForwardBuySnapshots()]);
  const forwardBought=forward.filter(s=>s.buy_at);
- const forwardSettled=forwardBought.filter(s=>s.status==='SETTLED'&&s.payout_yen!==null);
+ const forwardRefunded=forwardBought.filter(s=>s.status==='SETTLED'&&s.refunded);
+ const forwardSettled=forwardBought.filter(s=>s.status==='SETTLED'&&!s.refunded&&s.payout_yen!==null);
  const fStake=forwardSettled.reduce((n,s)=>n+s.fixed_stake_yen,0);
  const fPayout=forwardSettled.reduce((n,s)=>n+(s.payout_yen??0),0);
  const fRoi=fStake?fPayout/fStake:null;
@@ -56,9 +57,9 @@ export default async function Performance() {
  return <div className="research-terminal"><p className="section-kicker">SHADOW FORWARD · {STRATEGY_VERSION}</p><h1>PERFORMANCE</h1>
   <section className="research-hero"><span>FORWARD ROI</span><strong>{forwardSettled.length < 100 ? "INSUFFICIENT SAMPLE" : pct(fRoi)}</strong>
    <p>確定 {forwardSettled.length}点 · 暫定ROI {pct(fRoi)} · 投資 ¥{fStake.toLocaleString()} · 払戻 ¥{fPayout.toLocaleString()} · 的中 {fHits}</p></section>
-  <p>この集計は既存の締切前観測を用いた研究用再計算です。新strategyの運用開始前に作られた観測はBACKTESTに相当し、正式なSHADOW FORWARDには含められません。</p>
+  <p>新strategyの運用開始前に作られた観測は下段のBACKTESTに分離しています。取消・返還は投資額とROIの計算から除きます。</p>
   <h2>BACKTEST / 既存観測の再計算</h2><div className="research-metrics"><div><span>BUY候補</span><strong>{perf.buys}</strong></div><div><span>精算済み</span><strong>{perf.settled}</strong></div><div><span>的中率</span><strong>{pct(perf.settled ? perf.hits/perf.settled : null)}</strong></div><div><span>ROI</span><strong>{pct(perf.roi)}</strong></div></div>
-  <h2>SHADOW FORWARD</h2><p>将来に向けて永続化したBUYイベントだけを計上します。BUY {forwardBought.length}点、精算 {forwardSettled.length}点。標本が100点未満の場合は参考値です。</p>
+  <h2>SHADOW FORWARD</h2><p>将来に向けて永続化したBUYイベントだけを計上します。BUY {forwardBought.length}点、精算 {forwardSettled.length}点、返還 {forwardRefunded.length}点。標本が100点未満の場合は参考値です。</p>
   <div className="research-metrics"><div><span>的中率</span><strong>{pct(forwardSettled.length?fHits/forwardSettled.length:null)}</strong></div>
    <div><span>プラス収支レース</span><strong>{profitableRaces}</strong></div>
    <div><span>最大DD</span><strong>¥{maxDrawdown.toLocaleString()}</strong></div>

@@ -2,10 +2,10 @@ import "server-only";
 import { supabaseRequest, queryString } from "@/db/supabase";
 import { getEdgeV2Day } from "@/db/edge-v2-repository";
 import { isPublicBeforeDeadline, type EdgeDayV2, type EdgeRaceV2, type Snapshot } from "@/lib/edge-v2";
-import { SETTINGS, STRATEGY_VERSION, minimumOdds, type ResearchSignal } from "@/lib/research-terminal";
+import { SETTINGS, STRATEGY_VERSION, minimumOdds, settlementFor, type ResearchSignal } from "@/lib/research-terminal";
 
 type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
-export type Signal = { signal_id:string; race_id:string; combination:string; model_version:string; strategy_version:string; status:State; watch_at:string|null; cancel_at:string|null; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
+export type Signal = { signal_id:string; race_id:string; combination:string; model_version:string; strategy_version:string; status:State; watch_at:string|null; cancel_at:string|null; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null; refunded:boolean }
 const post = <T>(table:string, body:unknown, conflict:string) =>
   supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=representation"},body:JSON.stringify(body)},"service");
 const postIgnore = <T>(table:string, body:unknown, conflict:string) =>
@@ -59,7 +59,7 @@ export async function observeResearchDay(date:string) {
           watch_at:prior?.watch_at??(next==="WATCH"?at:null),cancel_at:prior?.cancel_at??(next==="CANCEL"?at:null),
           buy_at:prior?.buy_at??(buy?at:null),buy_odds:prior?.buy_odds??(buy?x.odds:null),
           buy_ev:prior?.buy_ev??(buy?conservative:null),created_at:prior?.created_at??at,
-          fixed_stake_yen:100,payout_yen:prior?.payout_yen??null,hit:prior?.hit??null};
+          fixed_stake_yen:100,payout_yen:prior?.payout_yen??null,hit:prior?.hit??null,refunded:prior?.refunded??false};
         await post("research_signals",[{...signal,model_version:"edge-full120-v2",edge_version:"edge-full120-v2",
           strategy_version:STRATEGY_VERSION,cohort:"SHADOW_FORWARD"}],
           "signal_id");
@@ -80,10 +80,18 @@ export async function observeResearchDay(date:string) {
     }
     if(race.result) for(const prior of old) {
       if(prior.status==="SETTLED"||!prior.buy_at) continue;
-      const refunded=race.result.cancelled||race.result.refunded_lanes.some(l=>prior.combination.split("-").includes(String(l)));
-      if(refunded) continue;
-      const hit=prior.combination===race.result.combination, payout=hit?race.result.payout_per_100_yen:0;
-      await post("research_signals",[{...prior,status:"SETTLED",settled_at:at,payout_yen:payout,hit,
+      const outcome=settlementFor(prior.combination,race.result,prior.fixed_stake_yen);
+      if(outcome.refunded) {
+        await post("research_signals",[{...prior,status:"SETTLED",settled_at:at,
+          payout_yen:outcome.payoutYen,hit:outcome.hit,refunded:true,
+          edge_version:"edge-full120-v2",cohort:"SHADOW_FORWARD"}],"signal_id");
+        await postIgnore("research_signal_events",[{event_id:prior.signal_id+":refunded",
+          signal_id:prior.signal_id,event_at:at,old_status:prior.status,new_status:"SETTLED",
+          reason:"Official cancellation or lane refund",snapshot_id:null}],"event_id");
+        settled++;
+        continue;
+      }
+      await post("research_signals",[{...prior,status:"SETTLED",settled_at:at,payout_yen:outcome.payoutYen,hit:outcome.hit,refunded:false,
         model_version:"edge-full120-v2",edge_version:"edge-full120-v2",
         strategy_version:STRATEGY_VERSION,cohort:"SHADOW_FORWARD"}],"signal_id");
       await post("research_signal_events",[{event_id:prior.signal_id+":settled",signal_id:prior.signal_id,
@@ -100,7 +108,7 @@ export async function observeResearchDay(date:string) {
         edge_score:null,snapshot_kind:"FINAL"}],"snapshot_id");
       settled++;
     }
-    if(race.final) for(const prior of old.filter(x=>x.buy_at && x.status==="SETTLED")) {
+    if(race.final) for(const prior of old.filter(x=>x.buy_at && x.status==="SETTLED" && !x.refunded)) {
       const finalOdds=race.final.odds[prior.combination];
       if(!valid(finalOdds)) continue;
       const frozenProbability=prior.buy_ev && prior.buy_odds ? prior.buy_ev/prior.buy_odds : null;
