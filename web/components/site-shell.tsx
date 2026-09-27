@@ -16,7 +16,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <header className="site-header">
         <div className="shell-width header-inner">
           <Link href="/today" className="brand" aria-label="舟の理（ふねのことわり）ホーム">
-            <Image src="/brand/fune-no-kotowari-transparent.png" alt="舟の理 — 競艇の理をデータで紐解き、予想を導く。" width={2172} height={724} sizes="(max-width: 640px) 208px, 280px" className="brand-logo" priority />
+            <Image src="/brand/fune-no-kotowari-transparent.png" alt="BOAT RACE EDGE — Research Terminal" width={2172} height={724} sizes="(max-width: 640px) 208px, 280px" className="brand-logo" priority />
           </Link>
           <nav className="desktop-nav" aria-label="メインナビゲーション">
             {navigation.map((item) => (
@@ -31,11 +31,11 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <div className="shell-width footer-grid">
           <div>
             <strong>舟の理 — 競艇の理をデータで紐解き、予想を導く。</strong>
-            <p>出した買い目は後から変えず、的中・不的中をすべて残します。</p>
+            <p>締切前の観測、状態遷移、確定結果を記録し、Shadow Forwardで検証します。</p>
           </div>
           <p>
             本サイトは非公式です。BOAT RACE振興会、日本モーターボート競走会、各施行者・ボートレース場とは関係ありません。
-            予想結果や利益を保証しません。舟券の購入は20歳以上が対象です。無理のない範囲でお楽しみください。
+            利益を保証しません。舟券の購入は20歳以上が対象です。
           </p>
         </div>
       </footer>
