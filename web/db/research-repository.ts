@@ -5,7 +5,7 @@ import { isPublicBeforeDeadline, type EdgeDayV2, type EdgeRaceV2, type Snapshot 
 import { SETTINGS, STRATEGY_VERSION, minimumOdds, type ResearchSignal } from "@/lib/research-terminal";
 
 type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
-export type Signal = { signal_id:string; race_id:string; combination:string; status:State; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
+export type Signal = { signal_id:string; race_id:string; combination:string; status:State; watch_at:string|null; cancel_at:string|null; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
 const post = <T>(table:string, body:unknown, conflict:string) =>
   supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=representation"},body:JSON.stringify(body)},"service");
 const postIgnore = <T>(table:string, body:unknown, conflict:string) =>
@@ -55,12 +55,12 @@ export async function observeResearchDay(date:string) {
         const buy=selected.has(x.combination)&&raw>=SETTINGS.minimumRawEv&&conservative>=SETTINGS.minimumConservativeEv;
         const next:State=buy?"BUY":selected.has(x.combination)?"WATCH":prior?.buy_at?"CANCEL":"PASS";
         const signal:Signal={signal_id:signalId,race_id:race.race_id,combination:x.combination,status:next,
+          watch_at:prior?.watch_at??(next==="WATCH"?at:null),cancel_at:prior?.cancel_at??(next==="CANCEL"?at:null),
           buy_at:prior?.buy_at??(buy?at:null),buy_odds:prior?.buy_odds??(buy?x.odds:null),
           buy_ev:prior?.buy_ev??(buy?conservative:null),created_at:prior?.created_at??at,
           fixed_stake_yen:100,payout_yen:prior?.payout_yen??null,hit:prior?.hit??null};
         await post("research_signals",[{...signal,model_version:"edge-full120-v2",edge_version:"edge-full120-v2",
-          strategy_version:STRATEGY_VERSION,cohort:"SHADOW_FORWARD",
-          watch_at:prior?undefined:next==="WATCH"?at:null,cancel_at:next==="CANCEL"?at:null}],
+          strategy_version:STRATEGY_VERSION,cohort:"SHADOW_FORWARD"}],
           "signal_id");
         if(!prior) created++; if(prior?.status!==next) changed++;
         byId.set(signalId,signal);
