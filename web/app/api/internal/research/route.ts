@@ -27,7 +27,7 @@ export async function POST(request:Request) {
  try{value=JSON.parse(body);}catch{return Response.json({status:"invalid_json"},{status:400});}
  const date=(value as {date?:unknown})?.date;
  if(typeof date!=="string"||!/^20\d{2}-\d{2}-\d{2}$/.test(date)||
-   Math.abs(Date.now()-Date.parse(date))>3*86400000)
+   Math.abs(Date.now()-Date.parse(date))>8*86400000)
   return Response.json({status:"invalid_date"},{status:400});
  try{return Response.json(await observeResearchDay(date),{headers:{"Cache-Control":"no-store"}});}
  catch(error){console.error("Research observation failed",error instanceof Error?error.message:"unknown");
