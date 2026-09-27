@@ -7,7 +7,9 @@ export const dynamic = "force-dynamic";
 export default async function SignalLog({searchParams}: {searchParams: Promise<Record<string,string|undefined>>}) {
  const q = await searchParams, date = q.date && validDate(q.date) ? q.date : todayJst();
  const [day,index,ledger] = await Promise.all([getEdgeV2Day(date),getEdgeV2Index(),getForwardDetails(date)]);
- const committed=ledger.signals.filter(s=>(!q.status||q.status==='ALL'||s.status===q.status||(q.status==='BUY'&&!!s.buy_at))&&(!q.result||(q.result==='HIT'?s.hit===true:s.hit===false)));
+ const committed=ledger.signals.filter(s=>(!q.status||q.status==='ALL'||s.status===q.status||(q.status==='BUY'&&!!s.buy_at))&&(!q.result||(q.result==='HIT'?s.hit===true:s.hit===false))&&
+  (!q.venue||day?.races[s.race_id]?.venue===q.venue)&&(!q.model_version||s.model_version===q.model_version)&&
+  (!q.ev||((s.buy_ev??0)>=Number(q.ev))));
  const clock=(value:string)=>new Date(value).toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'});
  const all = daySignals(day), filtered = all.filter(s =>
   (!q.status || q.status === "ALL" || s.status === q.status || (q.status === "BUY" && Boolean(s.buyAt))) &&
@@ -19,6 +21,8 @@ export default async function SignalLog({searchParams}: {searchParams: Promise<R
   <form className="research-filters" action="/signal-log"><label>日付 <input type="date" name="date" defaultValue={date}/></label>
    <label>状態 <select name="status" defaultValue={q.status ?? "ALL"}>{["ALL","BUY","WATCH","CANCEL","PASS","SETTLED"].map(v=><option key={v}>{v}</option>)}</select></label>
    <label>会場 <select name="venue" defaultValue={q.venue ?? ""}><option value="">全会場</option>{venues.map(v=><option key={v}>{v}</option>)}</select></label>
+   <label>モデル <select name="model_version" defaultValue={q.model_version??""}><option value="">全モデル</option><option>edge-full120-v2</option></select></label>
+   <label>BUY EV下限 <input type="number" name="ev" step="0.05" min="0" defaultValue={q.ev??""}/></label>
    <label>結果 <select name="result" defaultValue={q.result ?? ""}><option value="">すべて</option><option>HIT</option><option>MISS</option></select></label><button type="submit">絞り込む</button></form>
   <h2>SHADOW FORWARD · {committed.length}件</h2>
   {committed.map(s=>{const snaps=ledger.snapshots.filter(x=>x.signal_id===s.signal_id),events=ledger.events.filter(x=>x.signal_id===s.signal_id);
@@ -26,8 +30,8 @@ export default async function SignalLog({searchParams}: {searchParams: Promise<R
    return <details className="research-card" key={s.signal_id}><summary><b>{s.race_id}</b> · {s.combination} · {s.status} · {s.hit===null?"結果待ち":s.hit?"HIT":"MISS"}</summary>
     <div className="research-pick"><span>初回 {clock(s.created_at)}</span><span>BUY {s.buy_at?clock(s.buy_at):"—"}</span>
     <span>BUY Odds {s.buy_odds??"—"}</span><span>BUY EV {s.buy_ev?.toFixed(2)??"—"}</span>
-    <span>最低 {buy?.minimum_buy_odds?.toFixed(1)??"—"}</span><span>確定 Odds {final?.odds??"未取得"}</span>
-    <span>投資 ¥{s.buy_at?s.fixed_stake_yen:0}</span><span>払戻 ¥{s.payout_yen??"未確定"}</span></div>
+    <span>最低 {buy?.minimum_buy_odds?.toFixed(1)??"—"}</span><span>確定 Odds {final?.odds??"未取得"}</span><span>確定 EV {final?.conservative_ev?.toFixed(2)??"—"}</span>
+    <span>投資 ¥{s.buy_at?s.fixed_stake_yen:0}</span><span>払戻 ¥{s.payout_yen??"未確定"}</span><span>収支 {s.payout_yen===null?"—":"¥"+(s.payout_yen-(s.buy_at?s.fixed_stake_yen:0))}</span><span>{s.model_version}</span></div>
     <p>{events.map(e=>clock(e.event_at)+" "+e.new_status).join(" → ")}</p>
     <p>{snaps.map(x=>clock(x.source_observed_at)+" "+(x.odds??"—")+"倍 / EV "+(x.conservative_ev?.toFixed(2)??"—")).join(" → ")}</p>
    </details>})}
