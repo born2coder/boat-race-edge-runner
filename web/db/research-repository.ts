@@ -97,10 +97,15 @@ export async function observeResearchDay(date:string) {
   return {created,changed,settled,observed_at:at};
 }
 export async function getForwardSignals(date?:string) {
- const rows=await read<Signal[]>("research_signals",{select:"*",strategy_version:"eq."+STRATEGY_VERSION,
-   cohort:"eq.SHADOW_FORWARD",race_id:date?"like.BR:"+date.replaceAll("-","")+":*":undefined,
-   order:"created_at.desc",limit:1000});
- return rows;
+ const result:Signal[]=[];
+ for(let offset=0;offset<200000;offset+=1000) {
+   const rows=await read<Signal[]>("research_signals",{select:"*",strategy_version:"eq."+STRATEGY_VERSION,
+     cohort:"eq.SHADOW_FORWARD",race_id:date?"like.BR:"+date.replaceAll("-","")+":*":undefined,
+     order:"created_at.desc",offset,limit:1000});
+   result.push(...rows);
+   if(rows.length<1000)break;
+ }
+ return result;
 }
 
 export async function getForwardDetails(date:string) {
