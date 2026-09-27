@@ -9,7 +9,7 @@ const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.Common
 const exports={};
 new Function("exports","require",js)(exports,name=>name==="@/lib/edge-v2"?
  {isPublicBeforeDeadline:(race,s)=>Date.parse(race.receipts?.[s.snapshot_id]??"")<Date.parse(race.start_at)}:require(name));
-const {raceSignals,minimumOdds,isFresh,forwardPerformance}=exports;
+const {raceSignals,minimumOdds,isFresh,forwardPerformance,settlementFor}=exports;
 const close=Date.parse("2026-09-29T10:00:00Z");
 const combinations=[];
 for(let a=1;a<=6;a++)for(let b=1;b<=6;b++)for(let c=1;c<=6;c++)
@@ -43,4 +43,13 @@ test("minimum purchase odds and feed freshness fail closed",()=>{
 test("late result and no payout are excluded from realized ROI",()=>{
  const p=forwardPerformance([{buyAt:"t",stakeYen:100,payoutYen:180,hit:true},{buyAt:"t",stakeYen:100,payoutYen:0,hit:false},{buyAt:"t"}]);
  assert.equal(p.settled,2);assert.equal(p.roi,.9);assert.equal(p.hits,1);
+});
+
+test("race cancellation and lane refund return the stake without a hit or loss",()=>{
+ const result={cancelled:true,refunded_lanes:[],combination:"1-2-3",payout_per_100_yen:480};
+ assert.deepEqual(settlementFor("1-2-3",result),{refunded:true,hit:null,payoutYen:100});
+ assert.deepEqual(settlementFor("1-2-3",{...result,cancelled:false,refunded_lanes:[2]}),
+  {refunded:true,hit:null,payoutYen:100});
+ assert.deepEqual(settlementFor("1-2-3",{...result,cancelled:false}),
+  {refunded:false,hit:true,payoutYen:480});
 });
