@@ -2,6 +2,7 @@ import { claimIngestionNonce } from "@/db/ingest-repository";
 import { observeResearchDay } from "@/db/research-repository";
 export const dynamic="force-dynamic";
 export const preferredRegion="hnd1";
+export const maxDuration=60;
 function hex(buffer:ArrayBuffer){return Array.from(new Uint8Array(buffer),b=>b.toString(16).padStart(2,"0")).join("");}
 export async function POST(request:Request) {
  const secret=process.env.INGEST_SECRET;
