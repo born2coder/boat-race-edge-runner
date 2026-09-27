@@ -4,7 +4,8 @@ import test from "node:test";
 
 test("uses finished Japanese metadata and removes the starter preview marker", async () => {
   const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
-  assert.match(layout, /舟の理｜データ分析で導く無料競艇予想/);
+  assert.match(layout, /BOAT RACE EDGE｜Research Terminal/);
+  assert.match(layout, /index: false, follow: false/);
   assert.match(layout, /<html lang="ja">/);
   assert.doesNotMatch(layout, /codex-preview|Starter Project/);
 });
