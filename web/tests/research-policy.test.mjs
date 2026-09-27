@@ -30,7 +30,7 @@ test("WATCH to BUY to CANCEL keeps original first BUY odds and event times",()=>
  assert.ok(s);
  assert.deepEqual(s.events.map(x=>x.status),["WATCH","BUY","CANCEL"]);
  assert.equal(s.buyOdds,17);
- assert.equal(s.buyEv,1.36);
+ assert.ok(Math.abs(s.buyEv-1.36)<1e-9);
  assert.equal(s.status,"PASS");
  assert.equal(s.minimumOdds,15);
 });
