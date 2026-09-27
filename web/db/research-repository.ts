@@ -5,7 +5,7 @@ import { isPublicBeforeDeadline, type EdgeRaceV2, type Snapshot } from "@/lib/ed
 import { SETTINGS, STRATEGY_VERSION, minimumOdds } from "@/lib/research-terminal";
 
 type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
-type Signal = { signal_id:string; race_id:string; combination:string; status:State; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
+export type Signal = { signal_id:string; race_id:string; combination:string; status:State; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
 const post = <T>(table:string, body:unknown, conflict:string) =>
   supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=representation"},body:JSON.stringify(body)},"service");
 const read = <T>(table:string, query:Record<string,string|number|undefined>) =>
@@ -101,4 +101,20 @@ export async function getForwardSignals(date?:string) {
    cohort:"eq.SHADOW_FORWARD",race_id:date?"like.BR:"+date.replaceAll("-","")+":*":undefined,
    order:"created_at.desc",limit:1000});
  return rows;
+}
+
+export async function getForwardDetails(date:string) {
+ const signals=await getForwardSignals(date);
+ const ids=signals.map(x=>x.signal_id);
+ if(!ids.length)return {signals,events:[],snapshots:[]};
+ const filter="in.("+ids.map(x=>'"'+x.replaceAll('"','')+'"').join(",")+")";
+ const [events,snapshots]=await Promise.all([
+   read<Array<{signal_id:string;event_at:string;old_status:string;new_status:string;reason:string}>>(
+     "research_signal_events",{select:"signal_id,event_at,old_status,new_status,reason",signal_id:filter,
+       order:"event_at.asc",limit:1000}),
+   read<Array<{signal_id:string;captured_at:string;source_observed_at:string;odds:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string}>>(
+     "research_signal_snapshots",{select:"signal_id,captured_at,source_observed_at,odds,conservative_ev,minimum_buy_odds,snapshot_kind",
+       signal_id:filter,order:"captured_at.asc",limit:1000}),
+ ]);
+ return {signals,events,snapshots};
 }
