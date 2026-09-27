@@ -186,3 +186,8 @@ export async function getForwardBuySnapshots() {
  }
  return result;
 }
+
+export function getResearchStrategies() {
+ return read<Array<{strategy_version:string;effective_at:string;settings:Record<string,unknown>}>>(
+  "research_strategies",{select:"strategy_version,effective_at,settings",order:"effective_at.desc",limit:100});
+}
