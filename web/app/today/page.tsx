@@ -28,7 +28,7 @@ export default async function TodayTerminal() {
         {group.map(s => <div className="research-pick" key={s.id}><strong>{s.combination}</strong><span>HIT確率 {(s.probability*100).toFixed(2)}%</span><span>現在 {s.odds.toFixed(1)}倍</span><span>市場確率 {(100/s.odds).toFixed(2)}%</span><span>Raw EV {s.rawEv.toFixed(2)}</span><span>保守EV {s.conservativeEv.toFixed(2)}</span><b>最低 {s.minimumOdds.toFixed(1)}倍</b><small>取得 {time(s.observedAt)}</small></div>)}</article>)}
     </section>
     <section><h2>WATCH · {safeWatch.length}点</h2><p>必要オッズと現在値は <Link href="/watch">WATCH</Link> で確認できます。</p></section>
-    <section className="research-health"><h2>DATA HEALTH</h2><p>Race Feed {races.length ? "OK" : "NO DATA"} · Odds Feed {feedFresh && progress?.checked ? "OK" : "STALE"} · Prediction {active.length ? "OBSERVED" : "NO SIGNAL"} · Results {progress?.result_error ? "ERROR" : "確認中"}</p>
+    <section className="research-health"><h2>DATA HEALTH</h2><p>Race Feed {races.length ? "OK" : "NO DATA"} · Odds Feed {feedFresh && progress?.checked ? "OK" : "STALE"} · Prediction {active.length ? "OBSERVED" : "NO SIGNAL"} · Results {progress?.result_error ? "ERROR" : (progress?.results ?? 0)>0 ? "OK" : "WAITING"}</p>
       <p>20分前 {progress?.phases.t20 ?? 0}R · 15分前 {progress?.phases.t15 ?? 0}R · 10分前 {progress?.phases.t10 ?? 0}R · 確定オッズ {progress?.final_grids ?? 0}R</p></section>
     <p><Link href="/edge">既存EDGE検証</Link> · <Link href="/legacy">旧サイト</Link> · 記録対象日 {index?.days.length ?? 0}日</p>
   </div>;
