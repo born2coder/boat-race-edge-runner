@@ -8,6 +8,8 @@ type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
 export type Signal = { signal_id:string; race_id:string; combination:string; status:State; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
 const post = <T>(table:string, body:unknown, conflict:string) =>
   supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=representation"},body:JSON.stringify(body)},"service");
+const postIgnore = <T>(table:string, body:unknown, conflict:string) =>
+  supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=ignore-duplicates,return=minimal"},body:JSON.stringify(body)},"service");
 const read = <T>(table:string, query:Record<string,string|number|undefined>) =>
   supabaseRequest<T>(table+"?"+queryString(query),{},"service");
 const valid = (n:number) => Number.isFinite(n) && n>0;
@@ -51,7 +53,7 @@ export async function observeResearchDay(date:string) {
         const good=valid(x.p)&&x.p<=1&&valid(x.odds);
         const raw=good?x.p*x.odds:0, conservative=raw*SETTINGS.conservativeFactor;
         const buy=selected.has(x.combination)&&raw>=SETTINGS.minimumRawEv&&conservative>=SETTINGS.minimumConservativeEv;
-        const next:State=buy?"BUY":selected.has(x.combination)?"WATCH":prior?.status==="BUY"?"CANCEL":"PASS";
+        const next:State=buy?"BUY":selected.has(x.combination)?"WATCH":prior?.buy_at?"CANCEL":"PASS";
         const signal:Signal={signal_id:signalId,race_id:race.race_id,combination:x.combination,status:next,
           buy_at:prior?.buy_at??(buy?at:null),buy_odds:prior?.buy_odds??(buy?x.odds:null),
           buy_ev:prior?.buy_ev??(buy?conservative:null),created_at:prior?.created_at??at,
@@ -63,14 +65,14 @@ export async function observeResearchDay(date:string) {
         if(!prior) created++; if(prior?.status!==next) changed++;
         byId.set(signalId,signal);
         const snapshotId=signalId+":"+latest.snapshot_id;
-        await post("research_signal_snapshots",[{snapshot_id:snapshotId,signal_id:signalId,captured_at:at,
+        await postIgnore("research_signal_snapshots",[{snapshot_id:snapshotId,signal_id:signalId,captured_at:at,
           source_observed_at:latest.observed_at,minutes_to_close:(Date.parse(race.start_at)-Date.parse(latest.observed_at))/60000,
           raw_probability:good?x.p:null,calibrated_probability:null,
           conservative_probability:good?x.p*SETTINGS.conservativeFactor:null,odds:valid(x.odds)?x.odds:null,
           implied_probability:valid(x.odds)?1/x.odds:null,raw_ev:good?raw:null,conservative_ev:good?conservative:null,
           minimum_buy_odds:good?minimumOdds(x.p*SETTINGS.conservativeFactor):null,
           edge_score:good?conservative-1:null,snapshot_kind:next==="BUY"?"BUY":"OBSERVED"}],"snapshot_id");
-        if(prior?.status!==next) await post("research_signal_events",[{event_id:signalId+":"+latest.snapshot_id+":"+next,
+        if(prior?.status!==next) await postIgnore("research_signal_events",[{event_id:signalId+":"+latest.snapshot_id+":"+next,
           signal_id:signalId,event_at:at,old_status:prior?.status??"UNSEEN",new_status:next,
           reason:prior?.status==="BUY"?"Odds threshold lost":"Observed eligible odds",snapshot_id:snapshotId}],"event_id");
       }
