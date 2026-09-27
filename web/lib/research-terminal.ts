@@ -75,7 +75,6 @@ export function raceSignals(race: EdgeRaceV2, now = Date.now()): ResearchSignal[
     }
     // Never advertise a stale or expired observation as actionable.
     if (Date.parse(race.start_at) <= now || !isFresh(lastAt, now)) {
-      if (status === "BUY") events.push({status: "CANCEL", at: new Date(now).toISOString(), reason: "expired or stale", odds: lastOdds, ev: v.p * SETTINGS.conservativeFactor * lastOdds});
       status = "PASS";
     }
     const result = race.result;
