@@ -5,7 +5,7 @@ import { isPublicBeforeDeadline, type EdgeDayV2, type EdgeRaceV2, type Snapshot 
 import { SETTINGS, STRATEGY_VERSION, minimumOdds, type ResearchSignal } from "@/lib/research-terminal";
 
 type State = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
-export type Signal = { signal_id:string; race_id:string; combination:string; status:State; watch_at:string|null; cancel_at:string|null; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
+export type Signal = { signal_id:string; race_id:string; combination:string; model_version:string; strategy_version:string; status:State; watch_at:string|null; cancel_at:string|null; buy_at:string|null; buy_odds:number|null; buy_ev:number|null; created_at:string; fixed_stake_yen:number; payout_yen:number|null; hit:boolean|null };
 const post = <T>(table:string, body:unknown, conflict:string) =>
   supabaseRequest<T>(table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=representation"},body:JSON.stringify(body)},"service");
 const postIgnore = <T>(table:string, body:unknown, conflict:string) =>
