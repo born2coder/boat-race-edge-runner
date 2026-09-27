@@ -27,12 +27,12 @@ export default async function SignalLog({searchParams}: {searchParams: Promise<R
   <h2>SHADOW FORWARD · {committed.length}件</h2>
   {committed.map(s=>{const snaps=ledger.snapshots.filter(x=>x.signal_id===s.signal_id),events=ledger.events.filter(x=>x.signal_id===s.signal_id);
    const buy=snaps.find(x=>x.snapshot_kind==='BUY'),final=snaps.find(x=>x.snapshot_kind==='FINAL');
-   return <details className="research-card" key={s.signal_id}><summary><b>{s.race_id}</b> · {s.combination} · {s.status} · {s.hit===null?"結果待ち":s.hit?"HIT":"MISS"}</summary>
+   return <details className="research-card" key={s.signal_id}><summary><b>{s.race_id}</b> · {s.combination} · {s.status} · {s.refunded?"REFUNDED":s.hit===null?"結果待ち":s.hit?"HIT":"MISS"}</summary>
     <div className="research-pick"><span>初回 {clock(s.created_at)}</span><span>BUY {s.buy_at?clock(s.buy_at):"—"}</span>
     <span>BUY Odds {s.buy_odds??"—"}</span><span>BUY EV {s.buy_ev?.toFixed(2)??"—"}</span>
     <span>最低 {buy?.minimum_buy_odds?.toFixed(1)??"—"}</span><span>確定 Odds {final?.odds??"未取得"}</span><span>確定 EV {final?.conservative_ev?.toFixed(2)??"—"}</span>
     <span>投資 ¥{s.buy_at?s.fixed_stake_yen:0}</span><span>払戻 ¥{s.payout_yen??"未確定"}</span><span>収支 {s.payout_yen===null?"—":"¥"+(s.payout_yen-(s.buy_at?s.fixed_stake_yen:0))}</span><span>{s.model_version}</span></div>
-    <p>{events.map(e=>clock(e.event_at)+" "+e.new_status).join(" → ")}</p>
+    <p>{events.map(e=>clock(e.event_at)+" "+e.new_status+(e.reason.includes("refund")?" 返還":"")).join(" → ")}</p>
     <p>{snaps.map(x=>clock(x.source_observed_at)+" "+(x.odds??"—")+"倍 / EV "+(x.conservative_ev?.toFixed(2)??"—")).join(" → ")}</p>
    </details>})}
   <h2>BACKTEST · 既存観測の再計算</h2><p>{date} · {filtered.length}件 / 全{all.length}件</p>
