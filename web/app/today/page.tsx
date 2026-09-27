@@ -1,21 +1,17 @@
-import {getForwardDetails} from "@/db/research-repository";
+import {getForwardDetails,committedCandidates} from "@/db/research-repository";
 import Link from "next/link";
 import { getEdgeV2Day, getEdgeV2Index } from "@/db/edge-v2-repository";
 import { todayJst } from "@/db/live-repository";
 import { dayProgress } from "@/lib/edge-v2";
-import { daySignals, isFresh, SETTINGS, STRATEGY_VERSION } from "@/lib/research-terminal";
+import { isFresh, STRATEGY_VERSION } from "@/lib/research-terminal";
 export const dynamic = "force-dynamic";
 const time = (s: string) => new Date(s).toLocaleTimeString("ja-JP", {timeZone:"Asia/Tokyo", hour:"2-digit", minute:"2-digit", second:"2-digit"});
 export default async function TodayTerminal() {
   const date = todayJst(), now = Date.now();
   const [day, index, ledger] = await Promise.all([getEdgeV2Day(date), getEdgeV2Index(), getForwardDetails(date)]);
-  const signals = daySignals(day, now);
+  const signals = committedCandidates(day, ledger, now);
   const progress = day ? dayProgress(day, now) : null;
-  const state=new Map(ledger.signals.map(x=>[x.signal_id,x]));
-  const snapshot=new Map(ledger.signals.map(x=>[x.signal_id,ledger.snapshots.filter(v=>v.signal_id===x.signal_id).at(-1)]));
-  const active = signals.filter(s => Date.parse(s.race.start_at)>now &&
-    state.get(s.id)?.status===s.status && !!snapshot.get(s.id) &&
-    isFresh(snapshot.get(s.id)!.source_observed_at,now));
+  const active = signals;
   const buy = active.filter(s => s.status === "BUY"), watch = active.filter(s => s.status === "WATCH");
   const races = Object.values(day?.races ?? {});
   const grouped = new Map<string, typeof signals>();
