@@ -30,7 +30,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <footer className="site-footer">
         <div className="shell-width footer-grid">
           <div>
-            <strong>舟の理 — 競艇の理をデータで紐解き、予想を導く。</strong>
+            <strong>BOAT RACE EDGE · Research Terminal</strong>
             <p>締切前の観測、状態遷移、確定結果を記録し、Shadow Forwardで検証します。</p>
           </div>
           <p>
