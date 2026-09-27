@@ -59,7 +59,7 @@ export default async function Performance() {
   <h2>SHADOW FORWARD · BUY時EVと実現ROI</h2>
   <div className="edge-v2-table"><table><thead><tr><th>BUY EV帯</th><th>件数</th><th>的中</th><th>平均予測EV</th><th>実現ROI</th></tr></thead><tbody>{edgeBands.map(b=><tr key={b.label}><th>{b.label}</th><td>{b.count}</td><td>{b.hits}</td><td>{b.meanEv?.toFixed(2)??"—"}</td><td>{pct(b.roi)}</td></tr>)}</tbody></table></div>
   <h2>SHADOW FORWARD · 日別 / 月別 / 会場別</h2>
-  {[["日別",forwardDays],["月別",forwardMonths],["会場別",forwardVenues]] as const).map(([label,rows])=>
+  {([["日別",forwardDays],["月別",forwardMonths],["会場別",forwardVenues]] as const).map(([label,rows])=>
    <section key={label}><h3>{label}</h3><div className="edge-v2-table"><table><thead><tr><th>区分</th><th>BUY</th><th>的中</th><th>投資</th><th>払戻</th><th>ROI</th></tr></thead>
     <tbody>{rows.map(row=><tr key={row.label}><th>{row.label}</th><td>{row.count}</td><td>{row.hits}</td><td>¥{row.stake}</td><td>¥{row.payout}</td><td>{pct(row.roi)}</td></tr>)}</tbody></table></div></section>)}
   <h2>LIVE</h2><p>実購入記録なし。仮想購入をLIVEに計上しません。</p>
