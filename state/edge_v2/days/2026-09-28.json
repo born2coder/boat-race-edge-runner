@@ -1,11 +1,8 @@
 {
   "date": "2026-09-28",
-  "last_error": {
-    "at": "2026-09-28T03:37:04.117242+00:00",
-    "kind": "HTTPError"
-  },
+  "last_error": null,
   "last_settlement_at": "2026-09-27T21:59:43.030413+00:00",
-  "last_tick_at": "2026-09-28T03:37:00.950440+00:00",
+  "last_tick_at": "2026-09-28T03:37:57.796245+00:00",
   "races": {
     "202609280201": {
       "eligible_roster": true,
@@ -12994,6 +12991,20 @@
     },
     "202609280305": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-28T03:37:57.796148+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-28T03:37:49.443519+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-28",
       "race_id": "BR:20260928:03:05",
       "race_name": "予選",
