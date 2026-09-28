@@ -1,0 +1,41 @@
+name: Recover EDGE publication receipts
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Service date (YYYY-MM-DD)
+        required: true
+        default: "2026-09-28"
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: Fetch observation branch
+        run: git fetch origin edge-data
+      - name: Recover only receipts proven by main commit times
+        env:
+          SERVICE_DATE: ${{ inputs.date }}
+        run: |
+          git show "origin/edge-data:state/edge_v2/days/$SERVICE_DATE.json" > /tmp/day.json
+          python scripts/recover_edge_receipts.py "$SERVICE_DATE" /tmp/day.json /tmp/recovered.json
+      - name: Persist recovered receipts
+        env:
+          SERVICE_DATE: ${{ inputs.date }}
+        run: |
+          git config user.name boat-race-edge-recovery
+          git config user.email actions@users.noreply.github.com
+          git switch --detach origin/edge-data
+          cp /tmp/recovered.json "state/edge_v2/days/$SERVICE_DATE.json"
+          git add "state/edge_v2/days/$SERVICE_DATE.json"
+          git commit -m "Recover $SERVICE_DATE publication receipts from commit proof"
+          git push origin HEAD:edge-data
