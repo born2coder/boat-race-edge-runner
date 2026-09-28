@@ -81,6 +81,12 @@ def main():
                 state = json.loads(path.read_text()) if path.exists() else {
                     "version": edge.VERSION, "date": date, "races": {}, "started_at": edge.utcnow().isoformat()}
             try:
+                # A previous persist makes observations readable. Confirm that
+                # publication before starting network work so a feed failure
+                # cannot discard the receipt on the next process restart.
+                publisher.acknowledge(edge.confirm_publication(state))
+                edge.write_state(state)
+                persist()
                 # Carry the previous tick's successful receipt into the next durable write.
                 if 7 <= now_jst.hour < 22:
                     observer.tick(state)
