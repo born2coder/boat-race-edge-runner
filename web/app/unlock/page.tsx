@@ -1,12 +1,15 @@
-export const dynamic="force-dynamic";
+export const dynamic = "force-dynamic";
+
 export default function Unlock() {
- return <main style={{maxWidth:440,margin:"12vh auto",padding:24,fontFamily:"system-ui"}}>
-  <h1>BOAT RACE EDGE</h1><p>Research Terminal · Owner Access</p>
+ return <section className="owner-unlock" aria-labelledby="owner-unlock-title">
+  <p className="owner-unlock-kicker">PRIVATE RESEARCH TERMINAL</p>
+  <h1 id="owner-unlock-title">BOAT RACE EDGE</h1>
+  <p className="owner-unlock-description">所有者アクセスキーを入力してください。</p>
   <form action="/api/owner/session" method="post">
-   <label htmlFor="key">Access key</label>
-   <input id="key" name="key" type="password" autoComplete="current-password" required
-    style={{display:"block",width:"100%",padding:12,margin:"12px 0"}}/>
-   <button type="submit" style={{padding:"12px 24px"}}>OPEN TERMINAL</button>
+   <label htmlFor="key">アクセスキー</label>
+   <input id="key" name="key" type="password" autoComplete="current-password" required />
+   <button type="submit">Research Terminalを開く</button>
   </form>
- </main>;
+  <p className="owner-unlock-note">キーは共有せず、安全な場所に保管してください。</p>
+ </section>;
 }
