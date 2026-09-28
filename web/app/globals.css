@@ -908,3 +908,24 @@ svg { width: 1.1rem; height: 1.1rem; }
 .research-filters label { display: grid; gap: .2rem; font-size: .8rem; }
 .research-filters input, .research-filters select, .research-filters button { min-height: 2.5rem; border: 1px solid #bccdd2; border-radius: .35rem; padding: .3rem .5rem; }
 @media(min-width:700px){.research-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+
+/* Owner gate: show the access form without terminal controls until authenticated. */
+body:has(.owner-unlock) .desktop-nav,
+body:has(.owner-unlock) .mobile-nav,
+body:has(.owner-unlock) .live-refresh,
+body:has(.owner-unlock) .site-footer,
+body:has(.owner-unlock) .age-chip { display: none; }
+body:has(.owner-unlock) .site-header { border-bottom: 0; }
+body:has(.owner-unlock) .main-content { min-height: calc(100dvh - 110px); display: grid; place-items: center; padding: 24px; }
+.owner-unlock { width: min(100%, 440px); padding: clamp(24px, 5vw, 38px); background: #fffdf8; color: #092c43; border: 1px solid #c9d3d8; border-radius: 16px; box-shadow: 0 14px 48px rgb(5 34 53 / 9%); }
+.owner-unlock-kicker { margin: 0 0 12px; color: #4b6575; font: 700 12px/1.4 system-ui, sans-serif; letter-spacing: .12em; }
+.owner-unlock h1 { margin: 0; font: 700 clamp(24px, 5vw, 32px)/1.2 system-ui, sans-serif; }
+.owner-unlock-description { margin: 14px 0 28px; font-size: 15px; line-height: 1.6; }
+.owner-unlock form { display: grid; gap: 10px; }
+.owner-unlock label { font-size: 14px; font-weight: 700; }
+.owner-unlock input { display: block; box-sizing: border-box; width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid #8199a8; border-radius: 8px; background: #fff; color: #092c43; font-size: 16px; }
+.owner-unlock input:focus-visible, .owner-unlock button:focus-visible { outline: 3px solid #638ca5; outline-offset: 2px; }
+.owner-unlock button { min-height: 48px; margin-top: 10px; padding: 11px 16px; border: 1px solid #092c43; border-radius: 8px; background: #092c43; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+.owner-unlock button:hover { background: #164663; }
+.owner-unlock-note { margin: 20px 0 0; color: #526b79; font-size: 12px; line-height: 1.5; }
