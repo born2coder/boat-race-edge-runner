@@ -1,0 +1,37 @@
+name: Prebuilt production deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install application dependencies
+        working-directory: web
+        run: npm ci
+      - name: Pull production configuration
+        working-directory: web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_HOTFIX_TOKEN }}
+        run: npx vercel@60.1.3 pull --yes --environment=production --scope=born2coder1 --token="$VERCEL_TOKEN"
+      - name: Build locally
+        working-directory: web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_HOTFIX_TOKEN }}
+        run: npx vercel@60.1.3 build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy prebuilt output
+        working-directory: web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_HOTFIX_TOKEN }}
+        run: npx vercel@60.1.3 deploy --prebuilt --prod --scope=born2coder1 --token="$VERCEL_TOKEN"
