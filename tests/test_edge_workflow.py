@@ -16,6 +16,10 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'push' }}", workflow)
         self.assertIn("watch_edge_v2.py", workflow)
         self.assertIn("actions: write", workflow)
+        watcher = (ROOT / "scripts" / "watch_edge_v2.py").read_text(encoding="utf-8")
+        confirmation = watcher.index("publisher.acknowledge(edge.confirm_publication(state))")
+        observation = watcher.index("observer.tick(state)")
+        self.assertLess(confirmation, observation)
 
     def test_results_workflow_recovers_a_missing_edge_observer(self):
         workflow = (ROOT / ".github" / "workflows" / "results.yml").read_text(encoding="utf-8")
