@@ -1,11 +1,8 @@
 {
   "date": "2026-09-28",
-  "last_error": {
-    "at": "2026-09-28T00:10:34.794561+00:00",
-    "kind": "HTTPError"
-  },
+  "last_error": null,
   "last_settlement_at": "2026-09-27T21:59:43.030413+00:00",
-  "last_tick_at": "2026-09-28T00:10:32.055137+00:00",
+  "last_tick_at": "2026-09-28T00:11:40.785138+00:00",
   "races": {
     "202609280201": {
       "eligible_roster": true,
@@ -10158,6 +10155,20 @@
     },
     "202609282103": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-28T00:11:40.784999+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-28T00:11:32.376786+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-28",
       "race_id": "BR:20260928:21:03",
       "race_name": "サンライズＸ戦",
