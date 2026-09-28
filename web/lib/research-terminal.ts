@@ -34,20 +34,21 @@ export const isFresh = (observed: string, now: number) =>
   Number.isFinite(Date.parse(observed)) && now >= Date.parse(observed) &&
   now - Date.parse(observed) <= SETTINGS.maxOddsAgeMinutes * 60_000;
 
-function observations(race: EdgeRaceV2) {
+function observations(race: EdgeRaceV2, requirePublicationReceipt = true) {
   return phases.flatMap(phase => race.snapshots[phase] ? [race.snapshots[phase]!] : [])
     .filter(s => s.combinations.length === 120 && s.odds.length === 120 &&
       s.morning.length === 120 && s.exhibition?.length === 120 &&
       Number.isFinite(Date.parse(s.observed_at)) &&
-      isPublicBeforeDeadline(race, s))
+      Date.parse(s.observed_at) < Date.parse(race.start_at) &&
+      (!requirePublicationReceipt || isPublicBeforeDeadline(race, s)))
     .sort((a, b) => Date.parse(a.observed_at) - Date.parse(b.observed_at));
 }
 function probability(s: Snapshot, i: number) {
   const p = s.exhibition?.[i];
   return p != null && finite(p) && p <= 1 ? p : null;
 }
-export function raceSignals(race: EdgeRaceV2, now = Date.now()): ResearchSignal[] {
-  const snapshots = observations(race);
+export function raceSignals(race: EdgeRaceV2, now = Date.now(), requirePublicationReceipt = true): ResearchSignal[] {
+  const snapshots = observations(race, requirePublicationReceipt);
   if (!snapshots.length) return [];
   const first = snapshots[0];
   const ranked = first.combinations.map((combination, i) => ({
@@ -102,6 +103,12 @@ export function raceSignals(race: EdgeRaceV2, now = Date.now()): ResearchSignal[
 }
 export function daySignals(day: EdgeDayV2 | null, now = Date.now()) {
   return Object.values(day?.races ?? {}).flatMap(r => raceSignals(r, now));
+}
+// Historical inspection may reconstruct candidates from immutable pre-deadline
+// observations even when a publication receipt was lost. These records stay in
+// BACKTEST and must never enter the SHADOW FORWARD ledger or actionable screens.
+export function historicalDaySignals(day: EdgeDayV2 | null, now = Date.now()) {
+  return Object.values(day?.races ?? {}).flatMap(r => raceSignals(r, now, false));
 }
 export function forwardPerformance(signals: ResearchSignal[]) {
   const settled = signals.filter(s => s.stakeYen != null && s.payoutYen != null);

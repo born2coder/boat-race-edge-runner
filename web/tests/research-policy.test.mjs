@@ -9,7 +9,7 @@ const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.Common
 const exports={};
 new Function("exports","require",js)(exports,name=>name==="@/lib/edge-v2"?
  {isPublicBeforeDeadline:(race,s)=>Date.parse(race.receipts?.[s.snapshot_id]??"")<Date.parse(race.start_at)}:require(name));
-const {raceSignals,minimumOdds,isFresh,forwardPerformance,settlementFor}=exports;
+const {raceSignals,historicalDaySignals,minimumOdds,isFresh,forwardPerformance,settlementFor}=exports;
 const close=Date.parse("2026-09-29T10:00:00Z");
 const combinations=[];
 for(let a=1;a<=6;a++)for(let b=1;b<=6;b++)for(let c=1;c<=6;c++)
@@ -39,6 +39,11 @@ test("minimum purchase odds and feed freshness fail closed",()=>{
  assert.equal(minimumOdds(0),Infinity);
  assert.equal(isFresh("invalid",close),false);
  assert.equal(isFresh(new Date(close-6*60000).toISOString(),close),false);
+});
+test("historical log reconstructs pre-deadline observations without promoting them to forward signals",()=>{
+ const withoutReceipts={...race,receipts:{}};
+ assert.equal(raceSignals(withoutReceipts,close).length,0);
+ assert.ok(historicalDaySignals({races:{[race.race_id]:withoutReceipts}},close).length>0);
 });
 test("late result and no payout are excluded from realized ROI",()=>{
  const p=forwardPerformance([{buyAt:"t",stakeYen:100,payoutYen:180,hit:true},{buyAt:"t",stakeYen:100,payoutYen:0,hit:false},{buyAt:"t"}]);
