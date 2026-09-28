@@ -1,11 +1,8 @@
 {
   "date": "2026-09-28",
-  "last_error": {
-    "at": "2026-09-28T00:24:26.431988+00:00",
-    "kind": "HTTPError"
-  },
+  "last_error": null,
   "last_settlement_at": "2026-09-27T21:59:43.030413+00:00",
-  "last_tick_at": "2026-09-28T00:24:22.846260+00:00",
+  "last_tick_at": "2026-09-28T00:25:18.781473+00:00",
   "races": {
     "202609280201": {
       "eligible_roster": true,
@@ -6243,6 +6240,20 @@
     },
     "202609281404": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-28T00:25:18.781370+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-28T00:25:10.404127+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-28",
       "race_id": "BR:20260928:14:04",
       "race_name": "とにかくなると",
