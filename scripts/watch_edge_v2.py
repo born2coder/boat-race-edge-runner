@@ -84,7 +84,7 @@ def main():
                 # A previous persist makes observations readable. Confirm that
                 # publication before starting network work so a feed failure
                 # cannot discard the receipt on the next process restart.
-                publisher.acknowledge(edge.confirm_publication(state))
+                publisher.acknowledge(edge.confirm_publication(state, publisher.revision))
                 edge.write_state(state)
                 persist()
                 # Carry the previous tick's successful receipt into the next durable write.
@@ -92,7 +92,7 @@ def main():
                     observer.tick(state)
                     edge.write_state(state)
                     persist()
-                    publisher.acknowledge(edge.confirm_publication(state))
+                    publisher.acknowledge(edge.confirm_publication(state, publisher.revision))
                     try:
                         publish_research.publish(date)
                     except Exception as research_error:
@@ -126,7 +126,7 @@ def main():
                 except Exception as research_error:
                     print(json.dumps({"research_settlement_error": type(research_error).__name__}), flush=True)
                 if not 7 <= now_jst.hour < 22:
-                    publisher.acknowledge(edge.confirm_publication(state))
+                    publisher.acknowledge(edge.confirm_publication(state, publisher.revision))
                     edge.write_state(state)
                     persist()
                 failures = 0
