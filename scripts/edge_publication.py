@@ -21,6 +21,7 @@ class DataPublisher:
             self.git(root, "worktree", "add", "--detach", str(folder), "FETCH_HEAD")
         else:
             self.git(root, "worktree", "add", "--detach", str(folder), "HEAD")
+        self.revision = self.git(folder, "rev-parse", "HEAD").stdout.strip()
         if exists and (folder / "state/edge_v2").exists():
             shutil.copytree(folder / "state/edge_v2", root / "state/edge_v2", dirs_exist_ok=True)
         # Vercel evaluates this branch's configuration before creating a build.
@@ -42,6 +43,7 @@ class DataPublisher:
         if self.git(self.folder, "diff", "--cached", "--quiet", check=False).returncode == 1:
             self.git(self.folder, "commit", "-m", "Record EDGE observations without deploying the application")
             self.git(self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}")
+        self.revision = self.git(self.folder, "rev-parse", "HEAD").stdout.strip()
         # Keep the old production UI alive until its receipt endpoint positively
         # acknowledges the new branch. This is a one-way, compatible handover.
         if not self.ready:
