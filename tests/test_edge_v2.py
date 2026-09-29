@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import copy
+import io
+import json
 import math
 import unittest
 from datetime import datetime, timezone
 from itertools import permutations
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 
-from scripts.edge_v2 import capture, final_grid, phase_due, progress, raw_id
+from scripts.edge_v2 import capture, confirm_publication, final_grid, phase_due, progress, raw_id
+from scripts.edge_v2_metrics import VERSION
 from scripts.edge_v2_metrics import picks, summarize, aggregate_days, comparison, snapshot_hash
 from scripts.edge_v2_model import validate_distribution, predict_full
 
@@ -29,6 +33,30 @@ def fixture():
 
 
 class EdgeV2Tests(unittest.TestCase):
+    def test_public_readback_receipts_only_visible_snapshot_ids(self):
+        first = fixture()
+        second = copy.deepcopy(first)
+        second["race_id"] = "BR:20260914:01:02"
+        second["snapshots"]["t20"]["snapshot_id"] = "not-yet-published"
+        first["receipts"] = second["receipts"] = {}
+        state = {"date": "2026-09-14", "races": {"1": first, "2": second}}
+        public = {"version": VERSION, "date": state["date"],
+                  "races": {"1": {"snapshots": first["snapshots"]}}}
+        with patch("scripts.edge_v2.urllib.request.urlopen", return_value=io.BytesIO(json.dumps(public).encode())) as fetch:
+            receipt = confirm_publication(state)
+        self.assertIn("raw.githubusercontent.com", fetch.call_args.args[0].full_url)
+        self.assertEqual(receipt["storage_branch"], "edge-data")
+        self.assertEqual(set(first["receipts"]), {"s1"})
+        self.assertEqual(second["receipts"], {})
+
+    def test_public_readback_failure_never_creates_receipt(self):
+        race = fixture();race["receipts"] = {}
+        state = {"date": "2026-09-14", "races": {"1": race}}
+        with patch("scripts.edge_v2.urllib.request.urlopen", return_value=io.BytesIO(b'{}')):
+            with self.assertRaises(ValueError):
+                confirm_publication(state)
+        self.assertEqual(race["receipts"], {})
+
     def test_exhibition_rejects_future_source_and_reports_the_reason(self):
         probabilities = np.array([[1/120] * 120])
         model = SimpleNamespace(predict_trifecta=lambda frame: probabilities)
