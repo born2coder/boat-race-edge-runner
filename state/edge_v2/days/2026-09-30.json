@@ -2,7 +2,7 @@
   "date": "2026-09-30",
   "last_error": null,
   "last_settlement_at": "2026-09-29T23:33:25.746961+00:00",
-  "last_tick_at": "2026-09-29T23:32:51.842798+00:00",
+  "last_tick_at": "2026-09-29T23:33:54.200213+00:00",
   "races": {
     "202609300201": {
       "eligible_roster": true,
@@ -3914,6 +3914,20 @@
     },
     "202609301402": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-29T23:33:54.200153+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-29T23:33:45.642961+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-30",
       "race_id": "BR:20260930:14:02",
       "race_name": "どーなるなると",
