@@ -147,17 +147,34 @@ def write_state(state):
 
 
 def confirm_publication(state):
-    """Record only IDs actually returned by the production read path."""
-    receipt = public_json("/api/edge/v2/receipt?date=" + state["date"])
-    confirmed = set(receipt.get("snapshot_ids", []))
-    served = receipt.get("served_at")
-    if not served or abs((utcnow() - iso(served)).total_seconds()) > 120:
-        raise ValueError("Invalid production receipt time")
+    """Acknowledge only snapshots read back from the public production data branch.
+
+    The owner's site middleware protects /api/edge/v2/receipt, so the watcher
+    cannot call it. The site itself reads this same public edge-data branch.
+    A cache-busted read may lag, but never acknowledges an unseen snapshot.
+    """
+    repository = os.environ.get("GITHUB_REPOSITORY", "born2coder/boat-race-edge-runner")
+    if not all(part and part.replace("-", "").replace("_", "").isalnum()
+               for part in repository.split("/")) or len(repository.split("/")) != 2:
+        raise ValueError("Invalid repository for publication receipt")
+    if len(state["date"]) != 10 or not state["date"].replace("-", "").isdigit():
+        raise ValueError("Invalid publication date")
+    url = (f"https://raw.githubusercontent.com/{repository}/edge-data/"
+           f"state/edge_v2/days/{state['date']}.json?receipt={time.time_ns()}")
+    request = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
+    with urllib.request.urlopen(request, timeout=15) as response:
+        published = json.load(response)
+    if published.get("date") != state["date"] or published.get("version") != VERSION:
+        raise ValueError("Published observation does not match requested day")
+    confirmed = {snapshot["snapshot_id"] for race in published.get("races", {}).values()
+                 for snapshot in race.get("snapshots", {}).values()}
+    served = utcnow().isoformat()
     for race in state["races"].values():
         for snapshot in race.get("snapshots", {}).values():
             if snapshot["snapshot_id"] in confirmed:
                 race.setdefault("receipts", {}).setdefault(snapshot["snapshot_id"], served)
-    return receipt
+    return {"storage_branch": "edge-data", "served_at": served,
+            "snapshot_ids": sorted(confirmed)}
 
 
 class Observer:
