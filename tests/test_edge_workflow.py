@@ -17,7 +17,7 @@ class EdgeWorkflowScheduleTest(unittest.TestCase):
         self.assertIn("watch_edge_v2.py", workflow)
         self.assertIn("actions: write", workflow)
         watcher = (ROOT / "scripts" / "watch_edge_v2.py").read_text(encoding="utf-8")
-        confirmation = watcher.index("publisher.acknowledge(edge.confirm_publication(state))")
+        confirmation = watcher.index("publisher.acknowledge(edge.confirm_publication(state, publisher.revision))")
         observation = watcher.index("observer.tick(state)")
         self.assertLess(confirmation, observation)
 

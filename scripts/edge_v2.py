@@ -146,12 +146,13 @@ def write_state(state):
     return path
 
 
-def confirm_publication(state):
+def confirm_publication(state, revision):
     """Acknowledge only snapshots read back from the public production data branch.
 
     The owner's site middleware protects /api/edge/v2/receipt, so the watcher
     cannot call it. The site itself reads this same public edge-data branch.
-    A cache-busted read may lag, but never acknowledges an unseen snapshot.
+    Use the immutable commit just pushed to the branch, as the site does after
+    resolving its branch revision. Never use a mutable CDN branch alias here.
     """
     repository = os.environ.get("GITHUB_REPOSITORY", "born2coder/boat-race-edge-runner")
     if not all(part and part.replace("-", "").replace("_", "").isalnum()
@@ -159,7 +160,9 @@ def confirm_publication(state):
         raise ValueError("Invalid repository for publication receipt")
     if len(state["date"]) != 10 or not state["date"].replace("-", "").isdigit():
         raise ValueError("Invalid publication date")
-    url = (f"https://raw.githubusercontent.com/{repository}/edge-data/"
+    if len(revision) != 40 or any(c not in "0123456789abcdef" for c in revision):
+        raise ValueError("Invalid published revision")
+    url = (f"https://raw.githubusercontent.com/{repository}/{revision}/"
            f"state/edge_v2/days/{state['date']}.json?receipt={time.time_ns()}")
     request = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
     with urllib.request.urlopen(request, timeout=15) as response:
