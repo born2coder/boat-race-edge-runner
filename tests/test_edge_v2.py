@@ -44,8 +44,9 @@ class EdgeV2Tests(unittest.TestCase):
         public = {"version": VERSION, "date": state["date"],
                   "races": {"1": {"snapshots": first["snapshots"]}}}
         with patch("scripts.edge_v2.urllib.request.urlopen", return_value=io.BytesIO(json.dumps(public).encode())) as fetch:
-            receipt = confirm_publication(state)
+            receipt = confirm_publication(state, "a" * 40)
         self.assertIn("raw.githubusercontent.com", fetch.call_args.args[0].full_url)
+        self.assertIn("/" + "a" * 40 + "/", fetch.call_args.args[0].full_url)
         self.assertEqual(receipt["storage_branch"], "edge-data")
         self.assertEqual(set(first["receipts"]), {"s1"})
         self.assertEqual(second["receipts"], {})
@@ -55,7 +56,7 @@ class EdgeV2Tests(unittest.TestCase):
         state = {"date": "2026-09-14", "races": {"1": race}}
         with patch("scripts.edge_v2.urllib.request.urlopen", return_value=io.BytesIO(b'{}')):
             with self.assertRaises(ValueError):
-                confirm_publication(state)
+                confirm_publication(state, "a" * 40)
         self.assertEqual(race["receipts"], {})
 
     def test_exhibition_rejects_future_source_and_reports_the_reason(self):
