@@ -38,7 +38,8 @@ class EdgeV2Tests(unittest.TestCase):
         second = copy.deepcopy(first)
         second["race_id"] = "BR:20260914:01:02"
         second["snapshots"]["t20"]["snapshot_id"] = "not-yet-published"
-        first["receipts"] = second["receipts"] = {}
+        first["receipts"] = {}
+        second["receipts"] = {}
         state = {"date": "2026-09-14", "races": {"1": first, "2": second}}
         public = {"version": VERSION, "date": state["date"],
                   "races": {"1": {"snapshots": first["snapshots"]}}}
