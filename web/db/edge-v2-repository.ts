@@ -33,7 +33,14 @@ async function read<T>(path: string): Promise<T | null> {
 }
 
 export function getEdgeV2Index() { return read<EdgeIndexV2>("index.json"); }
-export function getEdgeV2Day(date: string) { return validDate(date) ? read<EdgeDayV2>(`days/${date}.json`) : Promise.resolve(null); }
+export async function getEdgeV2Day(date: string) {
+  if (!validDate(date)) return null;
+  const day = await read<EdgeDayV2>(`days/${date}.json`);
+  if (!day) return null;
+  // The runner's file keys are compact official IDs; the research ledger uses
+  // race.race_id. Normalize the read boundary so every consumer joins by that ID.
+  return {...day, races: Object.fromEntries(Object.values(day.races).map(race => [race.race_id, race]))};
+}
 export function getEdgeV2Summary(date: string) { return validDate(date) ? read<{version: string; comparison: Comparison[]}>(`summaries/${date}.json`) : Promise.resolve(null); }
 
 export async function getDayResults(date: string) {

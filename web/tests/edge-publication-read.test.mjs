@@ -28,3 +28,13 @@ test('invalid dates do not issue network requests',async()=>{
   const repo=repository(()=>{throw new Error('unexpected network');});
   assert.equal(await repo.getEdgeV2Day('../secrets'),null);
 });
+test('compact observation keys join the canonical research race ID without losing snapshots', async()=>{
+  const race={race_id:'BR:20260930:06:08',venue:'浜名湖',race_no:8,snapshots:{t10:{snapshot_id:'source-10'}},receipts:{'source-10':'2026-09-30T05:34:00Z'}};
+  const day={version:'edge-full120-v2',date:'2026-09-30',races:{'202609300608':race}};
+  const repo=repository(async url=>({ok:true,json:async()=>url.includes('/git/ref/')?{object:{sha:'b'.repeat(40)}}:day}));
+  const normalized=await repo.getEdgeV2Day('2026-09-30');
+  assert.deepEqual(Object.keys(normalized.races),[race.race_id]);
+  assert.equal(normalized.races[race.race_id],race);
+  assert.deepEqual(normalized.races[race.race_id].snapshots,race.snapshots);
+  assert.ok(day.races['202609300608']);
+});
