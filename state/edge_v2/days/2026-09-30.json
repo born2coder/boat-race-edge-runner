@@ -2,7 +2,7 @@
   "date": "2026-09-30",
   "last_error": null,
   "last_settlement_at": "2026-09-30T00:37:00.712869+00:00",
-  "last_tick_at": "2026-09-30T00:36:15.667983+00:00",
+  "last_tick_at": "2026-09-30T00:37:35.170660+00:00",
   "races": {
     "202609300201": {
       "eligible_roster": true,
@@ -13656,6 +13656,20 @@
     },
     "202609302304": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-30T00:37:35.170590+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-30T00:37:25.870628+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-30",
       "race_id": "BR:20260930:23:04",
       "race_name": "おは４戦",
