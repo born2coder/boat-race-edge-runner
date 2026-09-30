@@ -2,7 +2,7 @@
   "date": "2026-10-01",
   "last_error": null,
   "last_settlement_at": "2026-09-30T23:37:55.610800+00:00",
-  "last_tick_at": "2026-09-30T23:37:12.570413+00:00",
+  "last_tick_at": "2026-09-30T23:38:23.055025+00:00",
   "races": {
     "202610010301": {
       "eligible_roster": true,
@@ -8547,6 +8547,20 @@
     },
     "202610012302": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-09-30T23:38:23.054926+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-30T23:38:12.694333+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-01",
       "race_id": "BR:20261001:23:02",
       "race_name": "モー２ング戦",
