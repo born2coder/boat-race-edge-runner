@@ -2,7 +2,7 @@
   "date": "2026-09-30",
   "last_error": null,
   "last_settlement_at": "2026-09-30T01:03:04.278883+00:00",
-  "last_tick_at": "2026-09-30T01:02:30.122590+00:00",
+  "last_tick_at": "2026-09-30T01:03:48.909927+00:00",
   "races": {
     "202609300201": {
       "eligible_roster": true,
@@ -16773,6 +16773,20 @@
     },
     "202609302305": {
       "eligible_roster": true,
+      "errors": {
+        "t20": {
+          "at": "2026-09-30T01:03:48.909858+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t20": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-09-30T01:03:39.466157+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-09-30",
       "race_id": "BR:20260930:23:05",
       "race_name": "レッツ５特賞",
