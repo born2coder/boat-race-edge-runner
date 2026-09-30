@@ -7,7 +7,7 @@ export default async function Settings({searchParams}:{searchParams:Promise<Reco
  const fields=[
   ["minimumRawEv","Minimum raw EV",1,10,.05],
   ["minimumConservativeEv","Minimum conservative EV",1,10,.05],
-  ["watchEv","WATCH raw EV",.01,10,.05],
+  ["watchEv","WATCH raw EV",.01,10,.01],
   ["maxCombinationsPerRace","Maximum combinations per race",1,120,1],
   ["maxOddsAgeMinutes","Odds freshness limit (minutes)",1,10,1],
   ["conservativeFactor","Provisional conservative factor",.01,1,.01],
