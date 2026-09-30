@@ -8,7 +8,7 @@ export const metadata = { title: "EDGE｜全120通りの期待値検証", descri
 const yen = (n: number) => `¥${n.toLocaleString("ja-JP")}`;
 const percent = (n: number | null | undefined) => n == null ? "—" : `${n.toFixed(1)}%`;
 const time = (value: string) => new Date(value).toLocaleTimeString("ja-JP", {timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-const phaseLabels: Record<Phase, string> = {t20: "20分前", t15: "15分前", t10: "10分前"};
+const phaseLabels: Record<Phase, string> = {t30:"30分前",t20: "20分前", t15: "15分前", t10: "10分前",t5:"5分前"};
 const modelLabels = {morning: "朝の確率", exhibition: "展示後の確率"};
 
 function ComparisonTable({rows, paired = false}: {rows: Comparison[]; paired?: boolean}) {
@@ -46,7 +46,7 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
   const query = await searchParams;
   const today = todayJst();
   const date = typeof query.date === "string" && validDate(query.date) ? query.date : today;
-  const phase: Phase = query.phase === "t15" || query.phase === "t10" ? query.phase : "t20";
+  const phase: Phase = query.phase === "t30" || query.phase === "t15" || query.phase === "t10" || query.phase === "t5" ? query.phase : "t20";
   const model: Model = query.model === "exhibition" ? "exhibition" : "morning";
   const threshold = thresholds.find((t) => String(t) === query.threshold) ?? 150;
   const page = Math.max(1, Math.min(100, Number(query.page) || 1));

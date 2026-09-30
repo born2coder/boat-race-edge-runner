@@ -1,6 +1,6 @@
 export const EDGE_VERSION = "edge-full120-v2";
 export const thresholds = [150, 175, 200, 300] as const;
-export type Phase = "t20" | "t15" | "t10";
+export type Phase = "t30" | "t20" | "t15" | "t10" | "t5";
 export type Model = "morning" | "exhibition";
 export type Snapshot = {
   snapshot_id: string; version: string; phase: Phase; observed_at: string; computed_at: string;
@@ -35,8 +35,8 @@ export type EdgeDayV2 = { version: string; date: string; races: Record<string, E
 
 export function dayProgress(day: EdgeDayV2, now = Date.now()): ProgressV2 {
   const races = Object.values(day.races);
-  const phases = ["t20", "t15", "t10"] as const;
-  const windowEnd = {t20: 17, t15: 13, t10: 8};
+  const phases = ["t30", "t20", "t15", "t10", "t5"] as const;
+  const windowEnd = {t30:27,t20: 17, t15: 13, t10: 8,t5:2};
   const counts = (predicate: (race: EdgeRaceV2, phase: Phase) => boolean) =>
     Object.fromEntries(phases.map((phase) => [phase, races.filter((race) => predicate(race, phase)).length])) as Record<Phase, number>;
   return {
