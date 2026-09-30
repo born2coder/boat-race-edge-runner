@@ -1,7 +1,7 @@
 {
   "date": "2026-09-30",
   "last_error": null,
-  "last_settlement_at": "2026-09-30T07:41:48.511333+00:00",
+  "last_settlement_at": "2026-09-30T07:43:33.360851+00:00",
   "last_tick_at": "2026-09-30T07:42:19.093150+00:00",
   "races": {
     "202609300201": {
@@ -19501,6 +19501,8 @@
       "exhibition_rejections": {
         "t20": "model_input_incomplete"
       },
+      "final_attempt_at": "2026-09-30T07:43:00.896454+00:00",
+      "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-30T07:06:06.732649+00:00",
         "reason": "Official numeric field missing"
@@ -19667,8 +19669,58 @@
         "a479f92e43c292f67aa9937b4757ba697f7014ec261dafe7a4be45e88200a368": "2026-09-30T07:06:20.890581+00:00",
         "d3d873b3d9e8747989cd8902d73a8ec4a37c75d8ad0379abc230ff1566967a5f": "2026-09-30T07:14:41.676693+00:00"
       },
-      "result_attempt_at": "2026-09-30T07:41:14.281305+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "6-5-4",
+        "evidence": {
+          "obtained_at": "2026-09-30T07:42:52.623629+00:00",
+          "sha256": "b6c6fe75b45e33f370eb58d433845445b6770185dc4a71533f35b703122e9981",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20260930&jcd=02&rno=12&_edge_minute=29845902"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 6,
+            "racer_id": "3737",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 5,
+            "racer_id": "4876",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 4,
+            "racer_id": "4356",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 3,
+            "racer_id": "4012",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 2,
+            "racer_id": "5246",
+            "result_code": null
+          },
+          {
+            "finish_position": null,
+            "lane_no": 1,
+            "racer_id": "4500",
+            "result_code": "F"
+          }
+        ],
+        "payout_per_100_yen": 11350,
+        "race_id": "BR:20260930:02:12",
+        "refunded_lanes": [
+          1
+        ]
+      },
+      "result_attempt_at": "2026-09-30T07:42:52.662014+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -44553,7 +44605,7 @@
         "t15": "model_input_incomplete",
         "t20": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-09-30T07:41:24.552596+00:00",
+      "final_attempt_at": "2026-09-30T07:43:01.875473+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-09-30T03:06:22.681949+00:00",
@@ -58185,7 +58237,7 @@
         "65a89c7c7558fe9218bd54a290970a3233e05f7d20d1989cbfdf5dae6a90cf82": "2026-09-30T07:14:41.676693+00:00",
         "6fd5754767a53a9ab1c7ef57ac4188511d6b4aeac242f50fd7e76d9e97bcdb7f": "2026-09-30T07:22:32.060864+00:00"
       },
-      "result_attempt_at": "2026-09-30T07:41:15.294831+00:00",
+      "result_attempt_at": "2026-09-30T07:42:51.669799+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -152441,7 +152493,7 @@
         "60b2537a518e25e3f611dfca3d326e7fe4f56405b0bb9a15ae67a4fba11c6ab7": "2026-09-30T07:09:39.755679+00:00",
         "9db1d7c25ecbc638d03dbc9efe7140b13ff587bc1f65be31880e0f12466df509": "2026-09-30T07:22:32.060864+00:00"
       },
-      "result_attempt_at": "2026-09-30T07:41:16.303673+00:00",
+      "result_attempt_at": "2026-09-30T07:42:50.654285+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
