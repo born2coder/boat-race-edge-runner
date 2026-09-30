@@ -34,7 +34,9 @@ export async function observeResearchDay(date:string) {
  let created=0,changed=0,settled=0;
  for(const race of Object.values(day.races)) {
   const old=previous.filter(s=>s.race_id===race.race_id),close=Date.parse(race.start_at);
-  const source=phases.flatMap(p=>race.snapshots[p]?[race.snapshots[p]!]:[])
+  const observed=phases.flatMap(p=>race.snapshots[p]?[race.snapshots[p]!]:[]);
+  const newestObserved=Math.max(...observed.map(s=>Date.parse(s.observed_at)));
+  const source=observed
    .filter(s=>s.combinations.length===120 && new Set(s.combinations).size===120 && s.odds.length===120 &&
     s.exhibition?.length===120 && s.exhibition.every(p=>Number.isFinite(p)&&p>=0&&p<=1) &&
     Math.abs(s.exhibition.reduce((n,p)=>n+p,0)-1)<0.01 &&
@@ -42,6 +44,7 @@ export async function observeResearchDay(date:string) {
     isPublicBeforeDeadline(race,s)).sort((a,b)=>Date.parse(a.observed_at)-Date.parse(b.observed_at));
   const latest=source.at(-1);
   const fresh=feedFresh && !race.result && Number.isFinite(close) && close>now && !!latest &&
+   Date.parse(latest.observed_at)===newestObserved &&
    now>=Date.parse(latest.observed_at) && now-Date.parse(latest.observed_at)<=settings.maxOddsAgeMinutes*60000 &&
    Date.parse(latest.observed_at)>=Date.parse(strategy.effective_at);
   if(fresh && latest) {

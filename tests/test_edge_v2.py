@@ -142,6 +142,15 @@ class EdgeV2Tests(unittest.TestCase):
         self.assertEqual(race["snapshots"]["t20"]["snapshot_id"],first["snapshot_id"])
         self.assertEqual(race["snapshots"]["t20"]["odds"][8],200.)
 
+    def test_each_acquisition_window_and_deadline_boundary(self):
+        race = fixture(); race["snapshots"] = {}
+        for clock, expected in [("00:59", "t30"), ("01:10", "t20"),
+                                ("01:15", "t15"), ("01:20", "t10"), ("01:25", "t5")]:
+            with self.subTest(clock=clock):
+                self.assertEqual(phase_due(race, datetime.fromisoformat("2026-09-14T" + clock + ":00+00:00")), expected)
+        self.assertIsNone(phase_due(race, datetime.fromisoformat("2026-09-14T01:29:00+00:00")))
+        self.assertIsNone(phase_due(race, datetime.fromisoformat("2026-09-14T01:30:00+00:00")))
+
     def test_official_single_digit_morning_hour_is_accepted(self):
         model = {"combinations": COMBOS, "probabilities": [1/120]*120}
         for hour in (8, 9, 10):
