@@ -19,7 +19,9 @@ const candidates = (race:EdgeRaceV2) => phaseOrder.flatMap(p=>race.snapshots[p]?
     isPublicBeforeDeadline(race,s)).sort((a,b)=>Date.parse(a.observed_at)-Date.parse(b.observed_at));
 const isCurrent = (s:Snapshot, now:number) => now>=Date.parse(s.observed_at) && now-Date.parse(s.observed_at)<=SETTINGS.maxOddsAgeMinutes*60000;
 const id = (race:string, combo:string) => [race,combo,STRATEGY_VERSION].join(":");
-export async function observeResearchDay(date:string) {
+// Frozen original implementation retained as a baseline for historical comparison.
+// Scheduled ingestion uses the atomic Phase 2 engine exported below.
+export async function observeLegacyResearchBaseline(date:string) {
   const now = new Date(), at=now.toISOString();
   let strategy=await read<Array<{effective_at:string}>>("research_strategies",
     {select:"effective_at",strategy_version:"eq."+STRATEGY_VERSION,limit:1});
@@ -125,10 +127,10 @@ export async function observeResearchDay(date:string) {
   }
   return {created,changed,settled,observed_at:at};
 }
-export async function getForwardSignals(date?:string) {
+export async function getForwardSignals(date?:string,strategyVersion?:string) {
  const result:Signal[]=[];
  for(let offset=0;offset<200000;offset+=1000) {
-   const rows=await read<Signal[]>("research_signals",{select:"*",strategy_version:"eq."+STRATEGY_VERSION,
+   const rows=await read<Signal[]>("research_signals",{select:"*",strategy_version:strategyVersion?"eq."+strategyVersion:undefined,
      cohort:"eq.SHADOW_FORWARD",race_id:date?"like.BR:"+date.replaceAll("-","")+":*":undefined,
      order:"created_at.desc",offset,limit:1000});
    result.push(...rows);
@@ -142,7 +144,7 @@ export async function getForwardDetails(date:string) {
  const ids=signals.map(x=>x.signal_id);
  if(!ids.length)return {signals,events:[],snapshots:[]};
  type Event={signal_id:string;event_at:string;old_status:string;new_status:string;reason:string};
- type Odds={signal_id:string;captured_at:string;source_observed_at:string;odds:number;raw_probability:number;
+ type Odds={signal_id:string;captured_at:string;source_observed_at:string;minutes_to_close:number;odds:number;raw_probability:number;
    conservative_probability:number;raw_ev:number;conservative_ev:number;minimum_buy_odds:number;snapshot_kind:string};
  const groups=Array.from({length:Math.ceil(ids.length/40)},(_,i)=>ids.slice(i*40,i*40+40));
  const paginate=async<T>(table:string,select:string,order:string,group:string[])=>{
@@ -156,19 +158,21 @@ export async function getForwardDetails(date:string) {
  };
  const batch=await Promise.all(groups.map(async group=>Promise.all([
    paginate<Event>("research_signal_events","signal_id,event_at,old_status,new_status,reason","event_at.asc",group),
-   paginate<Odds>("research_signal_snapshots","signal_id,captured_at,source_observed_at,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind","captured_at.asc",group),
+   paginate<Odds>("research_signal_snapshots","signal_id,captured_at,source_observed_at,minutes_to_close,odds,raw_probability,conservative_probability,raw_ev,conservative_ev,minimum_buy_odds,snapshot_kind","source_observed_at.asc",group),
  ])));
  return {signals,events:batch.flatMap(x=>x[0]),snapshots:batch.flatMap(x=>x[1])};
 }
 
 export type ForwardDetails=Awaited<ReturnType<typeof getForwardDetails>>;
-export function committedCandidates(day:EdgeDayV2|null, ledger:ForwardDetails, now=Date.now()):ResearchSignal[] {
- if(!day)return [];
+export function committedCandidates(day:EdgeDayV2|null, ledger:ForwardDetails, now=Date.now(),
+ strategyVersion?:string,settings:import("@/lib/research-terminal").ResearchSettings=SETTINGS):ResearchSignal[] {
+ if(!day || day.last_error || !Number.isFinite(Date.parse(day.last_tick_at??"")) || now<Date.parse(day.last_tick_at!) || now-Date.parse(day.last_tick_at!)>settings.maxOddsAgeMinutes*60000)return [];
  return ledger.signals.flatMap(s=>{
   const race=day.races[s.race_id];
   const latest=ledger.snapshots.filter(x=>x.signal_id===s.signal_id&&x.snapshot_kind!=="FINAL").at(-1);
-  if(!race||!latest||!["BUY","WATCH"].includes(s.status)||
-    Date.parse(race.start_at)<=now||!isCurrent({observed_at:latest.source_observed_at} as Snapshot,now))
+  if(!race||!latest||!["BUY","WATCH"].includes(s.status)|| (strategyVersion&&s.strategy_version!==strategyVersion)||
+    !Number.isFinite(Date.parse(race.start_at))||Date.parse(race.start_at)<=now||
+    !Number.isFinite(Date.parse(latest.source_observed_at))||now<Date.parse(latest.source_observed_at)||now-Date.parse(latest.source_observed_at)>settings.maxOddsAgeMinutes*60000)
     return [];
   return [{id:s.signal_id,race,combination:s.combination,probability:latest.raw_probability,
     conservativeProbability:latest.conservative_probability,odds:latest.odds,rawEv:latest.raw_ev,
@@ -199,3 +203,4 @@ export function getResearchStrategies() {
  return read<Array<{strategy_version:string;effective_at:string;settings:Record<string,unknown>}>>(
   "research_strategies",{select:"strategy_version,effective_at,settings",order:"effective_at.desc",limit:100});
 }
+export {observeResearchDay} from "@/db/research-engine";

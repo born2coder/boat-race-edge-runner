@@ -8,7 +8,28 @@ export const SETTINGS = Object.freeze({
   // This is an explicit provisional discount, not empirical probability calibration.
   conservativeFactor: 0.8,
 });
-export type ResearchStatus = "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
+export type ResearchSettings = { minimumRawEv:number; minimumConservativeEv:number; watchEv:number;
+  maxCombinationsPerRace:number; maxOddsAgeMinutes:number; stakeYen:number; conservativeFactor:number };
+export function validateResearchSettings(value:Record<string,unknown>):ResearchSettings {
+  const s={...SETTINGS,...value} as ResearchSettings;
+  for(const key of Object.keys(SETTINGS) as Array<keyof ResearchSettings>)
+    if(typeof s[key]!=="number" || !Number.isFinite(s[key]) || s[key]<=0) throw new Error("Invalid setting: "+key);
+  if(s.minimumRawEv<1 || s.minimumRawEv>10 || s.minimumConservativeEv<1 || s.minimumConservativeEv>10 ||
+    s.watchEv>s.minimumRawEv || s.conservativeFactor>1 || s.maxOddsAgeMinutes>10 ||
+    !Number.isInteger(s.maxCombinationsPerRace) || s.maxCombinationsPerRace>120 || s.stakeYen!==100)
+    throw new Error("設定値が研究運用の許容範囲外です。固定仮想投資は100円です。");
+  return s;
+}
+export function requiredBuyOdds(p:number,s:ResearchSettings=SETTINGS) {
+  return finite(p)&&p<=1 ? Math.ceil(Math.max(s.minimumRawEv/p,
+    s.minimumConservativeEv/(p*s.conservativeFactor))*10-1e-9)/10 : Infinity;
+}
+export function assessCombination(p:number,odds:number,s:ResearchSettings=SETTINGS) {
+  if(!finite(p)||p>1||!finite(odds))return "PASS" as const;
+  return p*odds>=s.minimumRawEv && p*s.conservativeFactor*odds>=s.minimumConservativeEv ? "BUY" as const :
+    p*odds>=s.watchEv ? "WATCH" as const : "PASS" as const;
+}
+export type ResearchStatus = "UNSEEN" | "WATCH" | "BUY" | "CANCEL" | "PASS" | "SETTLED";
 export type SignalEvent = { status: ResearchStatus; at: string; reason: string; odds: number; ev: number };
 export type ResearchSignal = {
   id: string; race: EdgeRaceV2; combination: string; probability: number;
@@ -17,7 +38,7 @@ export type ResearchSignal = {
   events: SignalEvent[]; buyAt?: string; buyOdds?: number; buyEv?: number;
   finalOdds?: number; payoutYen?: number; hit?: boolean; stakeYen?: number;
 };
-const phases: Phase[] = ["t20", "t15", "t10"];
+const phases: Phase[] = ["t30", "t20", "t15", "t10", "t5"];
 const finite = (n: number) => Number.isFinite(n) && n > 0;
 export const minimumOdds = (p: number, ev = SETTINGS.minimumConservativeEv) =>
   finite(p) && p <= 1 ? Math.ceil(ev / p * 10) / 10 : Infinity;

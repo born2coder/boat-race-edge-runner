@@ -8,7 +8,7 @@ from datetime import datetime
 
 VERSION = "edge-full120-v2"
 THRESHOLDS = (150, 175, 200, 300)
-PHASES = ("t20", "t15", "t10")
+PHASES = ("t30", "t20", "t15", "t10", "t5")
 MODEL_KINDS = ("morning", "exhibition")
 
 

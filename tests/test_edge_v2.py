@@ -130,7 +130,7 @@ class EdgeV2Tests(unittest.TestCase):
         self.assertEqual(phase_due(race, datetime.fromisoformat("2026-09-14T01:15:00+00:00")), "t15")
         race["snapshots"] = {}
         self.assertEqual(phase_due(race, datetime.fromisoformat("2026-09-14T01:20:00+00:00")), "t10")
-        self.assertIsNone(phase_due(race, datetime.fromisoformat("2026-09-14T01:23:00+00:00")))
+        self.assertEqual(phase_due(race, datetime.fromisoformat("2026-09-14T01:23:00+00:00")), "t5")
 
     def test_initial_snapshot_survives_later_odds_and_retry(self):
         race = fixture();race["snapshots"] = {}
@@ -167,7 +167,7 @@ class EdgeV2Tests(unittest.TestCase):
     def test_missing_observation_is_not_zero_candidates(self):
         race=fixture();race["snapshots"]={}
         p=progress({"races":{"id":race}},datetime.fromisoformat("2026-09-14T01:31:00+00:00"))
-        self.assertEqual(p["checked"],0);self.assertEqual(p["missed"],{"t20":1,"t15":1,"t10":1})
+        self.assertEqual(p["checked"],0);self.assertEqual(p["missed"],{"t30":1,"t20":1,"t15":1,"t10":1,"t5":1})
 
 
 if __name__ == "__main__": unittest.main()

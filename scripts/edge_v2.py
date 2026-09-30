@@ -22,7 +22,7 @@ from scripts.edge_v2_metrics import VERSION, PHASES, comparison, aggregate_days,
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / "state" / "edge_v2"
 SITE = "https://boat-race-edge-runner.vercel.app"
-WINDOWS = {"t20": (25, 17), "t15": (17, 13), "t10": (12, 8)}
+WINDOWS = {"t30": (35, 27), "t20": (25, 17), "t15": (17, 13), "t10": (12, 8), "t5": (7, 2)}
 
 
 def utcnow():
