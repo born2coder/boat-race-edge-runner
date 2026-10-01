@@ -2,7 +2,7 @@
   "date": "2026-10-01",
   "last_error": null,
   "last_settlement_at": "2026-10-01T00:04:15.651507+00:00",
-  "last_tick_at": "2026-10-01T00:03:42.978644+00:00",
+  "last_tick_at": "2026-10-01T00:04:41.439763+00:00",
   "races": {
     "202610010301": {
       "eligible_roster": true,
@@ -13213,6 +13213,20 @@
     },
     "202610012303": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-01T00:04:41.439647+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-01T00:04:32.060782+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-01",
       "race_id": "BR:20261001:23:03",
       "race_name": "３ライズ戦",
