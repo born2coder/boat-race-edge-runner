@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "last_error": null,
   "last_settlement_at": "2026-10-01T23:10:12.021782+00:00",
-  "last_tick_at": "2026-10-01T23:09:57.961996+00:00",
+  "last_tick_at": "2026-10-01T23:10:57.865380+00:00",
   "races": {
     "202610020401": {
       "eligible_roster": true,
@@ -2743,16 +2743,21 @@
     "202610021401": {
       "eligible_roster": true,
       "errors": {
+        "t20": {
+          "at": "2026-10-01T23:10:57.848556+00:00",
+          "reason": "Invalid odds"
+        },
         "t30": {
           "at": "2026-10-01T23:07:57.011040+00:00",
           "reason": "Invalid odds"
         }
       },
       "exhibition_rejections": {
+        "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-10-01T23:07:47.704042+00:00",
+        "at": "2026-10-01T23:10:48.549613+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
@@ -5494,7 +5499,7 @@
       "eligible_roster": true,
       "errors": {
         "t30": {
-          "at": "2026-10-01T23:09:57.961874+00:00",
+          "at": "2026-10-01T23:10:57.865219+00:00",
           "reason": "Invalid odds"
         }
       },
@@ -5502,7 +5507,7 @@
         "t30": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-10-01T23:09:47.642096+00:00",
+        "at": "2026-10-01T23:10:49.525280+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
