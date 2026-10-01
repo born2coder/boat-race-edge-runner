@@ -2,7 +2,7 @@
   "date": "2026-10-01",
   "last_error": null,
   "last_settlement_at": "2026-10-01T02:06:37.329446+00:00",
-  "last_tick_at": "2026-10-01T02:05:58.804738+00:00",
+  "last_tick_at": "2026-10-01T02:07:05.043877+00:00",
   "races": {
     "202610010301": {
       "eligible_roster": true,
@@ -1787,6 +1787,20 @@
     },
     "202610010302": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-01T02:07:05.043678+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-01T02:06:53.732454+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-01",
       "race_id": "BR:20261001:03:02",
       "race_name": "一般",
@@ -7748,7 +7762,7 @@
       "eligible_roster": true,
       "errors": {
         "t30": {
-          "at": "2026-10-01T02:05:58.804487+00:00",
+          "at": "2026-10-01T02:07:03.049271+00:00",
           "reason": "Official odds are stale or from the future"
         }
       },
@@ -7756,7 +7770,7 @@
         "t30": "model_input_incomplete"
       },
       "preview_error": {
-        "at": "2026-10-01T02:05:47.354775+00:00",
+        "at": "2026-10-01T02:06:54.708976+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
