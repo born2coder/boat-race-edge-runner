@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "last_error": null,
   "last_settlement_at": "2026-10-01T23:08:20.485062+00:00",
-  "last_tick_at": "2026-10-01T23:07:57.011156+00:00",
+  "last_tick_at": "2026-10-01T23:08:58.983212+00:00",
   "races": {
     "202610020401": {
       "eligible_roster": true,
@@ -5492,6 +5492,20 @@
     },
     "202610022301": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-01T23:08:58.983094+00:00",
+          "reason": "Invalid odds"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-01T23:08:48.656472+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-02",
       "race_id": "BR:20261002:23:01",
       "race_name": "朝１戦",
