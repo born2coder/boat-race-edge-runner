@@ -2,7 +2,7 @@
   "date": "2026-10-01",
   "last_error": null,
   "last_settlement_at": "2026-10-01T11:50:01.785190+00:00",
-  "last_tick_at": "2026-10-01T11:48:56.135088+00:00",
+  "last_tick_at": "2026-10-01T11:50:37.875571+00:00",
   "races": {
     "202610010301": {
       "eligible_roster": true,
@@ -418703,6 +418703,20 @@
     },
     "202610012409": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-01T11:50:37.875459+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-01T11:50:27.576389+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-01",
       "race_id": "BR:20261001:24:09",
       "race_name": "準優勝戦",
