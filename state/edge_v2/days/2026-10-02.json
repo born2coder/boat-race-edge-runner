@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "last_error": null,
   "last_settlement_at": "2026-10-02T03:28:42.457174+00:00",
-  "last_tick_at": "2026-10-02T03:27:49.818156+00:00",
+  "last_tick_at": "2026-10-02T03:29:08.433020+00:00",
   "races": {
     "202610020401": {
       "eligible_roster": true,
@@ -45246,6 +45246,20 @@
     },
     "202610021306": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-02T03:29:08.432910+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-02T03:28:59.071393+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-02",
       "race_id": "BR:20261002:13:06",
       "race_name": "昼どきピンクル",
