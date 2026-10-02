@@ -1,7 +1,7 @@
 {
   "date": "2026-10-02",
   "last_error": null,
-  "last_settlement_at": "2026-10-02T12:38:36.180570+00:00",
+  "last_settlement_at": "2026-10-02T12:39:46.854672+00:00",
   "last_tick_at": "2026-10-02T12:38:49.377027+00:00",
   "races": {
     "202610020401": {
@@ -32080,7 +32080,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:12.273446+00:00",
+      "final_attempt_at": "2026-10-02T12:39:23.422954+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T01:57:39.687795+00:00",
@@ -117642,7 +117642,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:01.877524+00:00",
+      "final_attempt_at": "2026-10-02T12:39:15.093717+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T06:11:00.138027+00:00",
@@ -137498,7 +137498,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:02.877223+00:00",
+      "final_attempt_at": "2026-10-02T12:39:13.071092+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T08:36:12.422669+00:00",
@@ -169070,7 +169070,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:11.647637+00:00",
+      "final_attempt_at": "2026-10-02T12:39:23.385112+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T04:14:35.123733+00:00",
@@ -187548,7 +187548,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:02.923214+00:00",
+      "final_attempt_at": "2026-10-02T12:39:14.063530+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-01T23:44:17.857466+00:00",
@@ -249597,7 +249597,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:10.177639+00:00",
+      "final_attempt_at": "2026-10-02T12:39:23.419232+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T02:19:15.598079+00:00",
@@ -320324,7 +320324,7 @@
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
-      "final_attempt_at": "2026-10-02T12:38:02.906939+00:00",
+      "final_attempt_at": "2026-10-02T12:39:15.073851+00:00",
       "final_error": "Closing grid does not match official winning payout",
       "preview_error": {
         "at": "2026-10-02T08:22:16.611359+00:00",
@@ -421602,8 +421602,58 @@
       "race_id": "BR:20261002:24:09",
       "race_name": "一般特選",
       "race_no": 9,
-      "result_attempt_at": "2026-10-02T12:37:52.567046+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "1-2-6",
+        "evidence": {
+          "obtained_at": "2026-10-02T12:39:04.719115+00:00",
+          "sha256": "74191c1d8da3ff59c8974648f91999ce751b8cb3ed698df96aaba10c22a25754",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20261002&jcd=24&rno=9&_edge_minute=29849078"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 1,
+            "racer_id": "4680",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 2,
+            "racer_id": "3509",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 6,
+            "racer_id": "5192",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 4,
+            "racer_id": "3528",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 3,
+            "racer_id": "4408",
+            "result_code": null
+          },
+          {
+            "finish_position": null,
+            "lane_no": 5,
+            "racer_id": "5446",
+            "result_code": "欠"
+          }
+        ],
+        "payout_per_100_yen": 1730,
+        "race_id": "BR:20261002:24:09",
+        "refunded_lanes": [
+          5
+        ]
+      },
+      "result_attempt_at": "2026-10-02T12:39:04.748516+00:00",
       "roster": [
         {
           "lane_no": 1,
