@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "last_error": null,
   "last_settlement_at": "2026-10-02T00:08:05.738339+00:00",
-  "last_tick_at": "2026-10-02T00:07:32.582807+00:00",
+  "last_tick_at": "2026-10-02T00:08:49.456046+00:00",
   "races": {
     "202610020401": {
       "eligible_roster": true,
@@ -12348,6 +12348,20 @@
     },
     "202610021803": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-02T00:08:49.455942+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "preview_error": {
+        "at": "2026-10-02T00:08:41.125222+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-02",
       "race_id": "BR:20261002:18:03",
       "race_name": "決めトク特賞",
