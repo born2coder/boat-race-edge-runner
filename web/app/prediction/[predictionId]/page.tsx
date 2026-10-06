@@ -36,7 +36,7 @@ export default async function PredictionDetailPage({ params }: { params: Promise
 
   return (
     <article className="page-section detail-page">
-      <Link href="/history" className="back-link"><ArrowLeft aria-hidden="true" /> 過去の予想へ</Link>
+      <Link prefetch={false} href="/history" className="back-link"><ArrowLeft aria-hidden="true" /> 過去の予想へ</Link>
 
       <header className="detail-header">
         <div>

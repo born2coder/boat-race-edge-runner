@@ -15,12 +15,12 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <div className="site-shell">
       <header className="site-header">
         <div className="shell-width header-inner">
-          <Link href="/today" className="brand" aria-label="舟の理（ふねのことわり）ホーム">
+          <Link href="/today" prefetch={false} className="brand" aria-label="舟の理（ふねのことわり）ホーム">
             <Image src="/brand/fune-no-kotowari-transparent.png" alt="BOAT RACE EDGE — Research Terminal" width={2172} height={724} sizes="(max-width: 640px) 208px, 280px" className="brand-logo" priority />
           </Link>
           <nav className="desktop-nav" aria-label="メインナビゲーション">
             {navigation.map((item) => (
-              <Link key={item.href} href={item.href}>{item.label}</Link>
+              <Link key={item.href} href={item.href} prefetch={false}>{item.label}</Link>
             ))}
           </nav>
           <span className="age-chip">20歳未満の舟券購入禁止</span>
@@ -43,7 +43,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         {navigation.map((item) => {
           const Icon = item.icon;
           return (
-            <Link key={item.href} href={item.href}>
+            <Link key={item.href} href={item.href} prefetch={false}>
               <Icon aria-hidden="true" />
               <span>{item.label}</span>
             </Link>

@@ -69,10 +69,10 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
   const currentPage = Math.min(page, pages);
   const pageLink = (p: number) => `/edge?${new URLSearchParams({date, phase, model, threshold: String(threshold), page: String(p)})}#edge-history`;
   return <div className="edge-v2">
-    <Link className="back-link" href="/">今日のHIT予想へ</Link>
+    <Link prefetch={false} className="back-link" href="/">今日のHIT予想へ</Link>
     <p className="section-kicker">EDGE / FULL 120</p><h1>全120通りから、<br/>市場とのずれを探す。</h1>
     <p className="edge-v2-lead">朝・展示後の予測確率と、20・15・10分前のオッズを比較します。新方式は前向き検証中です。</p>
-    <p><Link href="/edge/legacy">旧方式（上位8点限定）の履歴を見る →</Link></p>
+    <p><Link prefetch={false} href="/edge/legacy">旧方式（上位8点限定）の履歴を見る →</Link></p>
     <form className="edge-v2-controls" action="/edge">
       <label>開催日<input type="date" name="date" defaultValue={date}/></label>
       <label>確率<select name="model" defaultValue={model}><option value="morning">朝</option><option value="exhibition">展示後</option></select></label>
@@ -102,8 +102,8 @@ export default async function EdgePage({searchParams}: {searchParams: Promise<Re
     <section id="edge-history"><h2>{date}の履歴 <small>{past.length}R</small></h2><p>候補を後から消さず、観測時点ごとに残します。別の時点で基準割れしても元の記録は維持します。</p>
       {!past.length && <p className="edge-v2-empty">選択条件の履歴はありません。</p>}
       {past.slice((currentPage-1)*20, currentPage*20).map((race) => <RaceCard key={race.race_id} race={race} snapshot={race.snapshots[phase]!} {...{phase,model,threshold}}/>)}
-      {pages > 1 && <nav className="edge-v2-pagination" aria-label="履歴ページ">{currentPage > 1 && <Link href={pageLink(currentPage-1)}>前へ</Link>}<span>{currentPage} / {pages}</span>{currentPage < pages && <Link href={pageLink(currentPage+1)}>次へ</Link>}</nav>}
-      <nav className="edge-v2-dates" aria-label="記録済みの日付">{index?.days.map((d) => <Link key={d.date} href={`/edge?${new URLSearchParams({date:d.date,phase,model,threshold:String(threshold)})}`}>{d.date}</Link>)}</nav>
+      {pages > 1 && <nav className="edge-v2-pagination" aria-label="履歴ページ">{currentPage > 1 && <Link prefetch={false} href={pageLink(currentPage-1)}>前へ</Link>}<span>{currentPage} / {pages}</span>{currentPage < pages && <Link prefetch={false} href={pageLink(currentPage+1)}>次へ</Link>}</nav>}
+      <nav className="edge-v2-dates" aria-label="記録済みの日付">{index?.days.map((d) => <Link prefetch={false} key={d.date} href={`/edge?${new URLSearchParams({date:d.date,phase,model,threshold:String(threshold)})}`}>{d.date}</Link>)}</nav>
     </section>
     <aside className="edge-disclaimer"><strong>表示期待値は、利益や信頼度の保証ではありません。</strong><p>予測確率×観測時オッズ×100で計算します。確率の誤差と締切までのオッズ変動は未補正です。300%以上も強い予想とは扱いません。未確定は回収率から除き、返還は投資額から除外します。HITと旧EDGEの成績には合算しません。</p></aside>
   </div>;

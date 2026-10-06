@@ -72,7 +72,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
 
     <section className="official-empty stats-explanation">
       <ShieldCheck aria-hidden="true" />
-      <div><span>集計ルール</span><h2>1レース3点・各100円で固定</h2><p>的中率＝的中数÷結果確定数。回収率＝払戻額÷購入額。締切前に公開できた予想のみ集計し、外れた予想も残します。結果がない期間の割合は「—」で表示します。</p><Link href="/history">公開した予想の全記録を見る →</Link></div>
+      <div><span>集計ルール</span><h2>1レース3点・各100円で固定</h2><p>的中率＝的中数÷結果確定数。回収率＝払戻額÷購入額。締切前に公開できた予想のみ集計し、外れた予想も残します。結果がない期間の割合は「—」で表示します。</p><Link prefetch={false} href="/history">公開した予想の全記録を見る →</Link></div>
     </section>
   </section>;
 }

@@ -63,7 +63,7 @@ export default async function Home() {
           <span className="status-label"><CheckCircle2 aria-hidden="true" /> {isWaiting ? "予想を準備中" : `締切前 ${upcomingCount}R`}</span>
         </div>
 
-        {(current.excluded_prediction_count ?? 0) > 0 && <p role="note">公開が締切に間に合わなかった{current.excluded_prediction_count}件は、おすすめと成績集計から除外しています。記録は<Link href="/history">過去の予想</Link>に残しています。</p>}
+        {(current.excluded_prediction_count ?? 0) > 0 && <p role="note">公開が締切に間に合わなかった{current.excluded_prediction_count}件は、おすすめと成績集計から除外しています。記録は<Link prefetch={false} href="/history">過去の予想</Link>に残しています。</p>}
 
         {isPassDay && current.venues.length > 0 ? (
           <details className="venue-disclosure">
@@ -87,7 +87,7 @@ export default async function Home() {
             <h2 id="yesterday-title">昨日のおすすめと結果</h2>
             <p>{resultDateLabel}に実際に公開したおすすめを、的中・不的中ともそのまま掲載します。</p>
           </div>
-          {yesterdayPredictions.length > 0 && <Link href="/history" className="text-link">昨日の全予想を見る <ArrowRight aria-hidden="true" /></Link>}
+          {yesterdayPredictions.length > 0 && <Link prefetch={false} href="/history" className="text-link">昨日の全予想を見る <ArrowRight aria-hidden="true" /></Link>}
         </div>
         {yesterdayPredictions.length === 0 ? (
           <div className="official-empty yesterday-empty">
@@ -112,7 +112,7 @@ export default async function Home() {
       <section className="summary-section performance-section" aria-labelledby="performance-title">
         <div className="section-heading split">
           <div><p className="section-kicker">HIT RATE</p><h2 id="performance-title">公開予想の的中率</h2><p>実際に公開した3連単3点予想を、結果が確定したレースだけで集計します。</p></div>
-          <Link href="/stats" className="text-link">日別の成績・収支を見る <ArrowRight aria-hidden="true" /></Link>
+          <Link prefetch={false} href="/stats" className="text-link">日別の成績・収支を見る <ArrowRight aria-hidden="true" /></Link>
         </div>
         <div className="metric-grid period-metrics">
           {performancePeriods.map((period) => (
@@ -136,8 +136,8 @@ export default async function Home() {
         </div>
       </section>
       <section className="verification-links" aria-label="検証中のモデル">
-        <article className="edge-banner" aria-labelledby="edge-banner-title"><div><p className="section-kicker">EDGE VERIFICATION / ODDS × DATA</p><h2 id="edge-banner-title">オッズと予測を照らし合わせる、EDGE検証</h2><p>締切20分前前後のオッズから、割安かもしれない買い目を検証しています。</p></div><Link href="/edge" className="edge-banner-link">EDGE検証ページを見る <ArrowRight aria-hidden="true" /></Link></article>
-        <article className="edge-banner type-g-banner" aria-labelledby="type-g-banner-title"><div><p className="section-kicker">TYPE-G / PARALLEL TEST</p><h2 id="type-g-banner-title">現行HITと同条件で並走する、type-G検証</h2><p>朝の同じデータから最大10レースを選び、同じ購入点数で結果を比較します。</p></div><Link href="/hit-type-g" className="edge-banner-link">type-G検証ページを見る <ArrowRight aria-hidden="true" /></Link></article>
+        <article className="edge-banner" aria-labelledby="edge-banner-title"><div><p className="section-kicker">EDGE VERIFICATION / ODDS × DATA</p><h2 id="edge-banner-title">オッズと予測を照らし合わせる、EDGE検証</h2><p>締切20分前前後のオッズから、割安かもしれない買い目を検証しています。</p></div><Link prefetch={false} href="/edge" className="edge-banner-link">EDGE検証ページを見る <ArrowRight aria-hidden="true" /></Link></article>
+        <article className="edge-banner type-g-banner" aria-labelledby="type-g-banner-title"><div><p className="section-kicker">TYPE-G / PARALLEL TEST</p><h2 id="type-g-banner-title">現行HITと同条件で並走する、type-G検証</h2><p>朝の同じデータから最大10レースを選び、同じ購入点数で結果を比較します。</p></div><Link prefetch={false} href="/hit-type-g" className="edge-banner-link">type-G検証ページを見る <ArrowRight aria-hidden="true" /></Link></article>
       </section>
     </>
   );

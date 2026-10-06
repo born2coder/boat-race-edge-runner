@@ -1,12 +1,17 @@
 import {getForwardSignals,getForwardBuySnapshots} from "@/db/research-repository";
 import Link from "next/link";
-import {getEdgeV2Day, getEdgeV2Index} from "@/db/edge-v2-repository";
-import {daySignals, forwardPerformance, STRATEGY_VERSION} from "@/lib/research-terminal";
+import {getEdgeV2Day, validDate} from "@/db/edge-v2-repository";
+import {daySignals, forwardPerformance} from "@/lib/research-terminal";
 import {activeResearchStrategy,researchStrategies} from "@/db/research-strategies";
 import {venueNames} from "@/lib/poc";
 export const dynamic = "force-dynamic";
 export default async function Performance({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}) {
- const [index, allForward, buySnapshots,active,strategies,q] = await Promise.all([getEdgeV2Index(),getForwardSignals(),getForwardBuySnapshots(),activeResearchStrategy(),researchStrategies(),searchParams]);
+ const q = await searchParams;
+ const backtestDate = q.backtest_date && validDate(q.backtest_date) ? q.backtest_date : null;
+ const [allForward, buySnapshots,active,strategies,backtestDay] = await Promise.all([
+   getForwardSignals(),getForwardBuySnapshots(),activeResearchStrategy(),researchStrategies(),
+   backtestDate ? getEdgeV2Day(backtestDate) : Promise.resolve(null),
+ ]);
  const strategyVersion=strategies.some(s=>s.strategy_version===q.strategy_version)?q.strategy_version!:active.strategy_version;
  const forward=allForward.filter(s=>s.strategy_version===strategyVersion);
  const forwardBought=forward.filter(s=>s.buy_at);
@@ -50,8 +55,9 @@ export default async function Performance({searchParams}:{searchParams:Promise<R
  const settledRaces=byPeriod(s=>s.race_id);
  const profitableRaces=settledRaces.filter(r=>r.payout>r.stake).length;
 
- const dates = index?.days.map(d=>d.date) ?? [];
- const days = await Promise.all(dates.map(getEdgeV2Day));
+ // Whole-history raw observation scans are disabled; a researcher may select one day.
+ const dates = backtestDate && backtestDay ? [backtestDate] : [];
+ const days = backtestDay ? [backtestDay] : [];
  const signals = days.flatMap(day => daySignals(day));
  const perf = forwardPerformance(signals);
  const settled = signals.filter(s=>s.stakeYen != null && s.payoutYen != null);
@@ -65,8 +71,8 @@ export default async function Performance({searchParams}:{searchParams:Promise<R
   <form className="research-filters"><label>戦略ごとに独立集計<select name="strategy_version" defaultValue={strategyVersion}>{strategies.map(s=><option key={s.strategy_version}>{s.strategy_version}</option>)}</select></label><button type="submit">表示</button></form>
   <section className="research-hero"><span>FORWARD ROI</span><strong>{forwardSettled.length < 100 ? "INSUFFICIENT SAMPLE" : pct(fRoi)}</strong>
    <p>確定 {forwardSettled.length}点 · 暫定ROI {pct(fRoi)} · 投資 ¥{fStake.toLocaleString()} · 払戻 ¥{fPayout.toLocaleString()} · 的中 {fHits}</p></section>
-  <p>新strategyの運用開始前に作られた観測は下段のBACKTESTに分離しています。取消・返還は投資額とROIの計算から除きます。</p>
-  <h2>BACKTEST / 既存観測の再計算</h2><div className="research-metrics"><div><span>BUY候補</span><strong>{perf.buys}</strong></div><div><span>精算済み</span><strong>{perf.settled}</strong></div><div><span>的中率</span><strong>{pct(perf.settled ? perf.hits/perf.settled : null)}</strong></div><div><span>ROI</span><strong>{pct(perf.roi)}</strong></div></div>
+  <p>保存済みのSHADOW FORWARDを集計します。取消・返還は投資額とROIの計算から除きます。</p>
+
   <h2>SHADOW FORWARD</h2><p>将来に向けて永続化したBUYイベントだけを計上します。BUY {forwardBought.length}点、精算 {forwardSettled.length}点、返還 {forwardRefunded.length}点。標本が100点未満の場合は参考値です。</p>
   <div className="research-metrics"><div><span>Signals / BUY Signals</span><strong>{forward.length} / {forwardBought.length}</strong></div>
    <div><span>HIT / MISS</span><strong>{fHits} / {forwardSettled.length-fHits}</strong></div>
@@ -83,8 +89,16 @@ export default async function Performance({searchParams}:{searchParams:Promise<R
     <tbody>{rows.map(row=><tr key={row.label}><th>{row.label}</th><td>{row.count}</td><td>{row.hits} ({pct(row.count?row.hits/row.count:null)})</td><td>¥{row.stake}</td><td>¥{row.payout}</td><td>{pct(row.roi)}</td></tr>)}</tbody></table></div></section>)}
   <h2>SHADOW FORWARD · 初回BUY締切前時間</h2><div className="edge-v2-table"><table><thead><tr><th>時間帯</th><th>件数</th><th>的中</th><th>ROI</th></tr></thead><tbody>{forwardTiming.map(t=><tr key={t.label}><th>{t.label}</th><td>{t.count}</td><td>{t.hits}</td><td>{pct(t.roi)}</td></tr>)}</tbody></table></div>
   <h2>LIVE</h2><p>実購入記録なし。仮想購入をLIVEに計上しません。</p>
+  <section><h2>BACKTEST · 指定した1日だけ確認</h2>
+  <p>全期間の観測データは読み込みません。日付を指定して「1日分を確認」を押した場合だけ再計算します。</p>
+  <form className="research-filters" action="/performance"><input type="hidden" name="strategy_version" value={strategyVersion}/>
+    <label>確認する日付 <input type="date" name="backtest_date" required defaultValue={backtestDate ?? ""}/></label><button type="submit">1日分を確認</button></form>
+  {backtestDate && !backtestDay && <p>この日の保存済み観測データを取得できませんでした。</p>}
+  {backtestDay && <><h3>{backtestDate} · 既存観測の再計算</h3><div className="research-metrics"><div><span>BUY候補</span><strong>{perf.buys}</strong></div><div><span>精算済み</span><strong>{perf.settled}</strong></div><div><span>的中率</span><strong>{pct(perf.settled ? perf.hits/perf.settled : null)}</strong></div><div><span>ROI</span><strong>{pct(perf.roi)}</strong></div></div>
   <h2>BACKTEST · BUY時EV帯</h2><div className="edge-v2-table"><table><thead><tr><th>EV</th><th>確定点数</th><th>的中</th><th>ROI</th></tr></thead><tbody>{buckets.map(b=><tr key={b.label}><th>{b.label}</th><td>{b.settled}</td><td>{b.hits}</td><td>{pct(b.roi)}</td></tr>)}</tbody></table></div>
-  <h2>BACKTEST · 日別</h2><div className="edge-v2-table"><table><thead><tr><th>日付</th><th>点数</th><th>投資</th><th>払戻</th><th>ROI</th></tr></thead><tbody>{dayRows.map(d=><tr key={d.date}><th><Link href={"/signal-log?date="+d.date}>{d.date}</Link></th><td>{d.settled}</td><td>¥{d.stake}</td><td>¥{d.payout}</td><td>{pct(d.roi)}</td></tr>)}</tbody></table></div>
+  <h2>BACKTEST · 日別</h2><div className="edge-v2-table"><table><thead><tr><th>日付</th><th>点数</th><th>投資</th><th>払戻</th><th>ROI</th></tr></thead><tbody>{dayRows.map(d=><tr key={d.date}><th><Link href={"/signal-log?date="+d.date} prefetch={false}>{d.date}</Link></th><td>{d.settled}</td><td>¥{d.stake}</td><td>¥{d.payout}</td><td>{pct(d.roi)}</td></tr>)}</tbody></table></div>
   <h2>BACKTEST · 会場別</h2><div className="edge-v2-table"><table><thead><tr><th>会場</th><th>点数</th><th>的中</th><th>ROI</th></tr></thead><tbody>{grouped.map(g=><tr key={g.venue}><th>{g.venue}</th><td>{g.settled}</td><td>{g.hits}</td><td>{pct(g.roi)}</td></tr>)}</tbody></table></div>
-  <p><Link href="/edge">従来のEDGE検証値</Link>は異なる条件として保存しています。</p></div>;
+  </>}
+  </section>
+  <p><Link href="/edge" prefetch={false}>従来のEDGE検証値</Link>は異なる条件として保存しています。</p></div>;
 }
