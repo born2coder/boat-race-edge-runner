@@ -1,8 +1,6 @@
 import { claimIngestionNonce, ingestLivePayload } from "@/db/ingest-repository";
 import { ingestPayloadSchema } from "@/lib/ingest-schema";
-import { recoverPublishedResults } from "@/db/live-repository";
 import { SupabaseError } from "@/db/supabase";
-import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const preferredRegion = "hnd1";
@@ -65,10 +63,6 @@ export async function POST(request: Request) {
   const bodyHash = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody)));
   try {
     const result = await ingestLivePayload(parsed.data, bodyHash);
-    after(async () => {
-      try { await recoverPublishedResults(parsed.data.service_date); }
-      catch { console.error("Published result recovery failed", parsed.data.service_date); }
-    });
     return Response.json(result, {
       headers: { "Cache-Control": "no-store" },
     });

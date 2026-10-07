@@ -58,7 +58,7 @@ test("preserves legacy EDGE verification progress, candidates, and history", asy
   assert.match(ledger, /払戻/);
   assert.match(repository, /expected_value_percent: "gte\.150"/);
   assert.match(repository, /edge_shadow\/index\.json/);
-  assert.match(repository, /getOfficialResult/);
-  assert.match(repository, /pendingRaceIds/);
+  assert.doesNotMatch(repository, /getOfficialResult|pendingRaceIds/);
+  assert.match(repository, /Missing results remain pending/);
   assert.match(repository, /candidate\.race_date < date \|\| candidate\.status === "settled"/);
 });

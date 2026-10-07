@@ -19,7 +19,7 @@ export default async function SignalLog({searchParams}: {searchParams: Promise<R
   (!q.ev||(s.buyEv??0)>=Number(q.ev))&&(!q.model_version||q.model_version==="edge-full120-v2"));
  const venues = [...new Set(all.map(s => s.race.venue))].sort();
  return <div className="research-terminal"><p className="section-kicker">IMMUTABLE SOURCE SNAPSHOTS</p><h1>SIGNAL LOG</h1>
-  <p>未来に記録したSHADOW FORWARDを先に表示します。既存のHIT・EDGE履歴は<Link href="/history">旧履歴</Link>にも残しています。</p>
+  <p>未来に記録したSHADOW FORWARDを先に表示します。既存のHIT・EDGE履歴は<Link prefetch={false} href="/history">旧履歴</Link>にも残しています。</p>
   <form className="research-filters" action="/signal-log"><label>日付 <input type="date" name="date" defaultValue={date}/></label>
    <label>状態 <select name="status" defaultValue={q.status ?? "ALL"}>{["ALL","BUY","WATCH","CANCEL","PASS","SETTLED"].map(v=><option key={v}>{v}</option>)}</select></label>
    <label>会場 <select name="venue" defaultValue={q.venue ?? ""}><option value="">全会場</option>{venues.map(v=><option key={v}>{v}</option>)}</select></label>
@@ -51,5 +51,5 @@ export default async function SignalLog({searchParams}: {searchParams: Promise<R
      <span>投資 ¥{s.stakeYen ?? 0}</span><span>払戻 ¥{s.payoutYen ?? "未確定"}</span></div>
     <p>{s.events.map(e => new Date(e.at).toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"})+" "+e.status+" "+e.odds.toFixed(1)+"倍").join(" → ")}</p>
    </details>)}
-  <nav className="edge-v2-dates">{index?.days.slice(0,30).map(d=><Link href={"/signal-log?date="+d.date} key={d.date}>{d.date}</Link>)}</nav></div>;
+  <nav className="edge-v2-dates">{index?.days.slice(0,30).map(d=><Link prefetch={false} href={"/signal-log?date="+d.date} key={d.date}>{d.date}</Link>)}</nav></div>;
 }

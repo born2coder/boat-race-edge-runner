@@ -65,15 +65,14 @@ test("refunds, dead heats, unknown finish codes and mismatched payouts remain pe
   assert.equal(parseOfficialResult(sample().replace("６</td>", "５</td>"), id, roster, observed), null);
 });
 
-test("result recovery never alters predictions, is bounded, and writes insert-only", async () => {
+test("official persistence is insert-only and public readers do not acquire missing results", async () => {
   const service = await readFile(new URL("../db/official-results.ts", import.meta.url), "utf8");
   const reader = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
   assert.match(service, /resolution=ignore-duplicates/);
   assert.match(service, /revalidate: 60/);
   assert.match(service, /AbortSignal.timeout\(5000\)/);
   assert.doesNotMatch(service, /supabaseRequest\("predictions/);
-  assert.match(reader, /slice\(0, 20\)/);
-  assert.match(reader, /age >= 0/);
+  assert.doesNotMatch(reader, /getOfficialResult|after\(/);
 });
 
 test("UI separates closed races and displays original tickets next to actual result", async () => {
@@ -86,9 +85,8 @@ test("UI separates closed races and displays original tickets next to actual res
   assert.match(today, /実際の結果/);
   assert.match(today, /結果確認中/);
   assert.match(badge, /cutoffReached \? "展示判定なし"/);
-  assert.match(refresh, /setInterval\(refresh, 60_000\)/);
-  assert.match(refresh, /visibilityState === "visible"/);
-  assert.match(refresh, /clearInterval/);
+  assert.doesNotMatch(refresh, /setInterval|visibilitychange/);
+  assert.match(refresh, /保存済みデータを再読込/);
 });
 
 test("rendered daily board keeps Biwako's miss out of upcoming and preserves the original three tickets", async () => {
@@ -146,7 +144,7 @@ test("non-refunded accidents settle when the winning three and payout agree", ()
   }
 });
 
-test("public history returns stored rows before slow recovery and sees persisted results next refresh", async () => {
+test("public history stays read-only while pending and sees separately imported results on refresh", async () => {
   const source = await readFile(new URL("../db/live-repository.ts", import.meta.url), "utf8");
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   const tasks = [];
@@ -177,9 +175,13 @@ test("public history returns stored rows before slow recovery and sees persisted
   assert.equal(first.length, 1);
   assert.equal(first[0].result, null);
   assert.equal(calls, 0);
-  assert.equal(tasks.length, 1);
-  await tasks[0]();
+  assert.equal(tasks.length, 0);
+  await exports.getDisplayPredictions();
+  assert.equal(calls, 0);
+  assert.equal(rows[0].race.result, null);
+  // An explicit external import supplies the result; viewing never supplies it.
+  rows[0].race.result = parseOfficialResult(sample(), id, roster, observed);
   const next = await exports.getDisplayPredictions();
   assert.equal(next[0].result.combination, "1-3-6");
-  assert.equal(calls, 1);
+  assert.equal(calls, 0);
 });

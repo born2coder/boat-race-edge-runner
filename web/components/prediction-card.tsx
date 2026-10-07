@@ -123,7 +123,7 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
         </div>
       </CardContent>
       <CardFooter className="prediction-card-footer">
-        <Link href={`/prediction/${prediction.prediction_id}`}>
+        <Link prefetch={false} href={`/prediction/${prediction.prediction_id}`}>
           このレースの詳細記録を見る <ArrowRight aria-hidden="true" />
         </Link>
       </CardFooter>

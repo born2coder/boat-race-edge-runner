@@ -20,5 +20,5 @@ export default async function Watch() {
    <p>Odds trend {ledger.snapshots.filter(x=>x.signal_id===s.id&&x.snapshot_kind!=="FINAL").map(x=>
     new Date(x.source_observed_at).toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"})+" "+x.odds.toFixed(1)+"倍").join(" → ")}</p>
    <p>{s.events.map(e => new Date(e.at).toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit"})+" "+e.status).join(" → ")}</p></article>)}
-  <Link href="/today">TODAYへ戻る</Link></div>;
+  <Link prefetch={false} href="/today">TODAYへ戻る</Link></div>;
 }

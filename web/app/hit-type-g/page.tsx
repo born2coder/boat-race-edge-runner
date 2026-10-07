@@ -33,7 +33,7 @@ export default async function TypeGPage() {
   const { live, history, summary, topK } = await getTypeGDashboard();
   return <>
     <div className="type-g-page-head">
-      <Link href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
+      <Link prefetch={false} href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
       <div className="type-g-title-line"><div><p className="section-kicker">HIT MODEL / PARALLEL TEST</p><h1>HIT type-G検証</h1></div><span><Beaker aria-hidden="true" />検証中</span></div>
       <p>現行HITを変えず、同じ朝データ・同じ購入点数でtype-Gを並走させています。通常予想と公式成績には加算しません。</p>
     </div>
@@ -60,6 +60,6 @@ export default async function TypeGPage() {
     </section>
 
     <aside className="type-g-note"><ShieldCheck aria-hidden="true" /><div><strong>検証期間中のモデルです</strong><p>type-Gの買い目は検証用です。現行HITの公開予想・成績、EDGEの検証結果とは完全に分けて集計します。オッズと払戻は予測に使用しません。</p></div></aside>
-    <Link href="/edge" className="type-g-edge-link">EDGE期待値検証を見る <ArrowRight aria-hidden="true" /></Link>
+    <Link prefetch={false} href="/edge" className="type-g-edge-link">EDGE期待値検証を見る <ArrowRight aria-hidden="true" /></Link>
   </>;
 }

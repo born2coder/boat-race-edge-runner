@@ -117,9 +117,9 @@ export default async function EdgePage() {
 
   return <>
     <div className="edge-page-head compact">
-      <Link href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
+      <Link prefetch={false} href="/" className="back-link"><ArrowLeft aria-hidden="true" /> 今日の予想へ</Link>
       <p className="section-kicker">LIVE EDGE / {dateLabel(now)}</p>
-      <h1>旧方式のEDGE履歴</h1><p><Link href="/edge">全120通りの新方式へ</Link></p>
+      <h1>旧方式のEDGE履歴</h1><p><Link prefetch={false} href="/edge">全120通りの新方式へ</Link></p>
       <p className="edge-lead">約20分前に候補を公開し、15分前・10分前のオッズ変化も追跡します。終了したレースは下の検証履歴へ移動します。</p>
     </div>
 

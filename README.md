@@ -48,3 +48,34 @@ runner or paid scheduling service is enabled.
 The `web` directory contains the Vercel-hosted Next.js site. Predictions and
 results are stored in Supabase. The frozen model remains in the separate
 private repository and is never shipped to Vercel or browser clients.
+
+## Research archive mode
+
+The website defaults to manual reading: it has no refresh timer or tab-focus
+refresh, and website links do not prefetch unselected pages. Use the
+refresh button to reread records already published by the runner; it does not
+acquire official race results or write to the database.
+
+PERFORMANCE keeps the stored SHADOW FORWARD ledger separate from BACKTEST.
+Opening it no longer downloads every historical observation file. A researcher
+can explicitly select one date to inspect that day's reconstructed BACKTEST.
+Whole-history raw-data recalculation is not available in the web page.
+
+Public prediction/history readers leave missing results pending. Signed
+ingestion stores only the submitted payload and does not launch extra official
+result recovery. Run the existing results importer explicitly when results need
+to be added; no saved prediction or observation is removed by archive mode.
+
+EDGE watcher ticks skip the Vercel research-publication API by default. The
+repository variable `EDGE_RESEARCH_AUTO_PUBLISH=1` is an explicit opt-in to
+automatic research publication. The existing signed
+`scripts.publish_research.publish(date)` function remains available for a
+deliberate manual publication, with the ingestion endpoint and signing secret
+provided in its environment. A manual run after the deadline does not create a
+retrospective prospective BUY: the existing freshness/publication rules remain
+in force.
+
+Archive mode does not enable GitHub Actions or unblock Vercel. Keep repository
+Actions disabled until collection is deliberately resumed. Capturing new
+pre-deadline odds still requires a bounded observation run during those windows;
+viewing existing records does not require continuous website polling.

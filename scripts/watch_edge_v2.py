@@ -53,6 +53,14 @@ def continue_observer():
             raise RuntimeError("Observer continuation not accepted")
 
 
+def publish_automatic_research(date):
+    # Archive mode does not repeatedly call Vercel to rebuild a research ledger.
+    # Explicit manual publish_research.publish(date) remains available.
+    if os.environ.get("EDGE_RESEARCH_AUTO_PUBLISH") != "1":
+        return {"status": "skipped", "reason": "manual_research_mode"}
+    return publish_research.publish(date)
+
+
 def main():
     global publisher
     if os.environ.get("EDGE_REPOSITORY_VISIBILITY") != "public":
@@ -94,7 +102,7 @@ def main():
                     persist()
                     publisher.acknowledge(edge.confirm_publication(state, publisher.revision))
                     try:
-                        publish_research.publish(date)
+                        publish_automatic_research(date)
                     except Exception as research_error:
                         print(json.dumps({"research_publish_error": type(research_error).__name__}), flush=True)
                 observer.settle(state)
@@ -120,9 +128,9 @@ def main():
                 edge.write_state(state)
                 persist()
                 try:
-                    publish_research.publish(date)
+                    publish_automatic_research(date)
                     for previous in recovery_days[:1]:
-                        publish_research.publish(previous["date"])
+                        publish_automatic_research(previous["date"])
                 except Exception as research_error:
                     print(json.dumps({"research_settlement_error": type(research_error).__name__}), flush=True)
                 if not 7 <= now_jst.hour < 22:

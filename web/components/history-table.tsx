@@ -63,7 +63,7 @@ export function HistoryTable({ predictions }: { predictions: Prediction[] }) {
                     {settlement ? formatYen(settlement.profit_yen) : "—"}
                   </td>
                   <td data-label="詳細">
-                    <Link href={`/prediction/${prediction.prediction_id}`} aria-label={`${prediction.race.venue}${prediction.race.race_no}Rの詳細`}>
+                    <Link prefetch={false} href={`/prediction/${prediction.prediction_id}`} aria-label={`${prediction.race.venue}${prediction.race.race_no}Rの詳細`}>
                       <ArrowUpRight aria-hidden="true" />
                     </Link>
                   </td>

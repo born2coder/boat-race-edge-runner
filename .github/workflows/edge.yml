@@ -65,6 +65,7 @@ jobs:
           EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
           EDGE_SITE_INGEST_ENDPOINT: ${{ secrets.EDGE_SITE_INGEST_ENDPOINT }}
           EDGE_SITE_INGEST_SECRET: ${{ secrets.EDGE_SITE_INGEST_SECRET }}
+          EDGE_RESEARCH_AUTO_PUBLISH: ${{ vars.EDGE_RESEARCH_AUTO_PUBLISH }}
           GH_TOKEN: ${{ github.token }}
           OMP_NUM_THREADS: "1"
         run: python scripts/watch_edge_v2.py
