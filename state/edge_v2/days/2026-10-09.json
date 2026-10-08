@@ -1,6 +1,12 @@
 {
   "date": "2026-10-09",
+  "forward_last_send_completed_at": "2026-10-08T23:43:53.111748+00:00",
   "forward_observations_ignored": [],
+  "forward_observations_sent": [
+    "b7cf6ad9eb355c1ebffea66649c85293f06fd61b0baabd1dbb04ac671f24e3bd",
+    "ce962f2f2b4847036f1d48c433fc681b5ed76f676cca8093ad8aea41beec7189"
+  ],
+  "forward_results_sent": [],
   "last_error": null,
   "last_tick_at": "2026-10-08T23:43:46.439375+00:00",
   "races": {
@@ -3202,6 +3208,8 @@
       "race_id": "BR:20261009:14:01",
       "race_name": "一般",
       "race_no": 1,
+      "result_attempt_at": "2026-10-08T23:44:12.219510+00:00",
+      "result_error": "Official result table missing",
       "roster": [
         {
           "lane_no": 1,
@@ -3248,6 +3256,9 @@
       "race_id": "BR:20261009:14:02",
       "race_name": "一般",
       "race_no": 2,
+      "receipts": {
+        "ce962f2f2b4847036f1d48c433fc681b5ed76f676cca8093ad8aea41beec7189": "2026-10-08T23:43:49.239801+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
@@ -5042,6 +5053,9 @@
       "race_id": "BR:20261009:23:01",
       "race_name": "朝１戦",
       "race_no": 1,
+      "receipts": {
+        "b7cf6ad9eb355c1ebffea66649c85293f06fd61b0baabd1dbb04ac671f24e3bd": "2026-10-08T23:43:49.239801+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
@@ -6352,6 +6366,13 @@
       "venue_code": "24"
     }
   },
+  "result_archive": {
+    "obtained_at": "2026-10-08T23:44:03+00:00",
+    "sha256": "e57bf25b29697f42d82bc96dfd8fdad691abfc6797499383925f7a7ed5c17ad1",
+    "source": "official_archive",
+    "url": "https://www1.mbrace.or.jp/od2/K/202610/k261009.lzh"
+  },
+  "result_error": null,
   "started_at": "2026-10-08T23:43:21.662604+00:00",
   "version": "edge-full120-v2"
 }
