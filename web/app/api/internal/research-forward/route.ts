@@ -50,7 +50,14 @@ export async function POST(request: Request) {
       throw error;
     }
     const admission = await rpc<string>("four_page_flow_begin", { p_lease: lease });
-    if (admission!=="accepted") return Response.json({ status: admission }, { status: admission==="paused" ? 503 : 429 });
+    if (admission!=="accepted") {
+      console.warn(JSON.stringify({ event: "research_forward_admission_rejected", status: admission,
+        observationCount: parsed.data.observations.length, resultCount: parsed.data.results.length }));
+      return Response.json({ status: admission }, {
+        status: admission==="paused" ? 503 : 429,
+        headers: admission==="rate_limited" ? { "Retry-After": "40" } : undefined,
+      });
+    }
     admitted = true; let entries = 0, settled = 0;
     const observations = parsed.data.observations;
     for (let i=0; i<observations.length; i+=4) {
