@@ -6,6 +6,7 @@ import {
   loadRules,
   isolatedFixture,
   requestNow,
+  loadRecordingState,
 } from "@/db/four-page-repository";
 import {
   PageTitle,
@@ -19,9 +20,10 @@ import {
 import { RuleDraftForm } from "@/components/rule-draft-form";
 export const dynamic = "force-dynamic";
 export default async function SettingsPage() {
-  const [{ drafts, error }, rules] = await Promise.all([
+  const [{ drafts, error }, rules, recording] = await Promise.all([
     loadDrafts(),
     loadRules(),
+    loadRecordingState(),
   ]);
   const future = new Date((await requestNow()) + 10 * 3600000)
     .toISOString()
@@ -34,9 +36,9 @@ export default async function SettingsPage() {
         test={isolatedFixture()}
       />
       <div className="fp-notice">
-        <strong>取得停止中・自動更新オフ</strong>
+        <strong>{recording ? "観測・仮想記録中・画面自動更新オフ" : "取得停止中・自動更新オフ"}</strong>
         <p>
-          設定保存で収集・監視・本番処理は開始しません。新ルールの事前記録は未開始です。
+          設定保存で運転状態は変更しません。{recording ? "承認日時以降の新しい観測だけを記録します。" : "新しい観測の記録は停止中です。"}
         </p>
       </div>
       <ProbabilityNote />
@@ -49,7 +51,7 @@ export default async function SettingsPage() {
           </div>
           <div>
             <span>自動更新</span>
-            <strong>オフ（停止指示を維持）</strong>
+            <strong>オフ（表示は手動更新）</strong>
           </div>
           <div>
             <span>オッズ有効時間</span>
@@ -70,7 +72,7 @@ export default async function SettingsPage() {
           モデル版：edge-full120-v2。保守確率の暫定係数は既存の0.8を維持します。補正確率・統計的下限の学習は未導入です。
         </p>
         <p>
-          表示更新間隔は再開後に通常3分、締切10分前以内1分を候補とする設計です。現在は未稼働です。外部オッズ収集と表示更新の間隔は別です。
+          外部観測は開催時間中の1分間隔で確認します。画面は手動更新です。新記録APIは日次1,000回または計測CPU60秒で停止し、エラー後は自動復旧しません。このCPU計測は請求値と同一ではありません。
         </p>
         {rules
           .filter((r) => r.legacy)

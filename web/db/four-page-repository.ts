@@ -11,12 +11,9 @@ import {
   MODEL_VERSION,
   jstDate,
   validateRule,
-  firstPurchases,
-  classify,
   type Entry,
   type Filters,
   type Observation,
-  type OfficialResult,
   type Rule,
 } from "@/lib/four-page";
 export type RuleRecord = {
@@ -247,6 +244,15 @@ export const loadModels = cache(async () => {
     return [MODEL_VERSION];
   }
 });
+export const loadRecordingState = cache(async () => {
+  if (!configured() || isolatedFixture()) return false;
+  try {
+    const rows = await read<Array<{ recording_enabled: boolean }>>("four_page_recording_control", {
+      select: "recording_enabled", rule_version: "eq."+RULE_VERSION, limit: 1,
+    });
+    return process.env.RESEARCH_FOUR_PAGE_RECORDING === "1" && rows[0]?.recording_enabled === true;
+  } catch { return false; }
+});
 export async function loadFeed(): Promise<Feed> {
   const empty: Feed = {
     updatedAt: null,
@@ -279,13 +285,14 @@ export async function loadFeed(): Promise<Feed> {
       ...status[0].data,
       updatedAt: status[0].updated_at,
       stopped:
-        process.env.RESEARCH_FOUR_PAGE_RECORDING !== "1" ||
+        !(await loadRecordingState()) ||
+        Date.now()-Date.parse(status[0].updated_at)>360000 ||
         status[0].data.stopped,
     };
     if (feed.stopped) return feed;
     const snapshots = await read<
       Array<{ data: { observations: Observation[] } }>
-    >("four_page_latest_observations", {
+    >("four_page_active_observations", {
       select: "data",
       race_date: "eq." + jstDate(),
       rule_version: "eq." + RULE_VERSION,
@@ -376,112 +383,7 @@ export async function saveRuleDraft(
   );
   return draft.rule_version;
 }
-/** Only a future, explicitly approved runner may call this. Reads never call it. */
-export async function recordObservation(snapshot: {
-  snapshotId: string;
-  raceId: string;
-  raceDate: string;
-  ruleVersion: string;
-  modelVersion: string;
-  receivedAt: string;
-  observations: Observation[];
-}) {
-  if (process.env.RESEARCH_FOUR_PAGE_RECORDING !== "1")
-    throw Error("取得停止中");
-  if (fixturePath()) throw Error("テスト画面から運転は開始できません。");
-  const controls = await read<
-    Array<{
-      approved_since: string | null;
-      recording_enabled: boolean;
-      settings: Rule;
-    }>
-  >("four_page_recording_control", {
-    select: "approved_since,recording_enabled,settings",
-    rule_version: "eq." + snapshot.ruleVersion,
-    model_version: "eq." + snapshot.modelVersion,
-    limit: 1,
-  });
-  const c = controls[0];
-  if (!c?.recording_enabled || !c.approved_since)
-    throw Error("新ルールの記録開始は未承認です。");
-  const rule = validateRule(c.settings);
-  const now = Date.now(),
-    sourceReceipt = Date.parse(snapshot.receivedAt);
-  if (
-    !Number.isFinite(sourceReceipt) ||
-    sourceReceipt > now ||
-    now - sourceReceipt > 30000 ||
-    snapshot.observations.length !== 120 ||
-    new Set(snapshot.observations.map((o) => o.combination)).size !== 120 ||
-    snapshot.observations.some(
-      (o) =>
-        o.raceId !== snapshot.raceId ||
-        o.ruleVersion !== snapshot.ruleVersion ||
-        o.modelVersion !== snapshot.modelVersion ||
-        o.receivedAt !== snapshot.receivedAt,
-    )
-  )
-    throw Error("観測データの品質条件を満たしません。");
-  const datasetQuality =
-    snapshot.observations.every(
-      (o) =>
-        typeof o.probability === "number" &&
-        o.probability >= 0 &&
-        o.probability <= 1 &&
-        /^[1-6]-[1-6]-[1-6]$/.test(o.combination) &&
-        new Set(o.combination.split("-")).size === 3,
-    ) &&
-    Math.abs(
-      snapshot.observations.reduce((sum, o) => sum + (o.probability ?? 0), 0) -
-        1,
-    ) <= 0.01;
-  const entries = datasetQuality
-    ? snapshot.observations.flatMap((o) =>
-        firstPurchases(o, new Set(), c.approved_since, now, rule),
-      )
-    : [];
-  const data = {
-    ...snapshot,
-    sourceReceivedAt: snapshot.receivedAt,
-    receivedAt: new Date(now).toISOString(),
-    assessments: snapshot.observations.map((o) => {
-      const a = classify(o, now, false, rule);
-      return {
-        combination: o.combination,
-        ...a,
-        ...(!datasetQuality
-          ? {
-              category: "excluded",
-              reasons: [...a.reasons, "確率総和・全120通り未確認"],
-            }
-          : {}),
-      };
-    }),
-  };
-  return supabaseRequest<number>(
-    "rpc/four_page_commit_observation",
-    {
-      method: "POST",
-      body: JSON.stringify({ p_snapshot: data, p_entries: entries }),
-    },
-    "service",
-  );
-}
-export async function settleRecordedRace(
-  raceId: string,
-  result: OfficialResult,
-) {
-  if (process.env.RESEARCH_FOUR_PAGE_RECORDING !== "1" || fixturePath())
-    throw Error("精算処理は停止中です。");
-  return supabaseRequest<number>(
-    "rpc/four_page_settle",
-    {
-      method: "POST",
-      body: JSON.stringify({ p_race_id: raceId, p_result: result }),
-    },
-    "service",
-  );
-}
+export { recordObservation, settleRecordedRace } from "@/db/four-page-writer";
 export async function detailsFor(entries: Entry[]): Promise<Entry[]> {
   const local = await fixture();
   if (local) return entries;

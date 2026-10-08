@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   recover:
+    if: vars.EDGE_LEGACY_AUTOMATION_ENABLED == '1'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

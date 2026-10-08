@@ -305,7 +305,7 @@ class Observer:
                 state["result_archive"] = evidence
                 state["result_error"] = None
                 # Also repair the existing site's result table using its signed API.
-                if os.environ.get("EDGE_SITE_INGEST_SECRET") and os.environ.get("EDGE_SITE_INGEST_ENDPOINT"):
+                if os.environ.get("EDGE_RESEARCH_FORWARD") != "1" and os.environ.get("EDGE_SITE_INGEST_SECRET") and os.environ.get("EDGE_SITE_INGEST_ENDPOINT"):
                     payload = {"schema_version": "boat-race-edge-ingest/v1", "generated_at": now.isoformat(),
                                "service_date": date, "artifacts": [{"kind": artifact.kind, "date": artifact.date,
                                    "url": artifact.url, "fetched_at": artifact.fetched_at,
@@ -340,6 +340,8 @@ class Observer:
                     race.pop("result_error", None)
                 except Exception as error:
                     race["result_error"] = str(error)[:160]
+        if os.environ.get("EDGE_RESEARCH_FORWARD") == "1":
+            return  # Payouts settle the new ledger; no repeated final-odds fetch.
         pending = [r for r in state["races"].values() if r.get("result") and not r["result"].get("cancelled")
                    and not r.get("final") and r.get("snapshots")]
         # Bounded work; prioritize oldest overdue races, retry missing grids later.

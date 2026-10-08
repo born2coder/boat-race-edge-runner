@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.event.repository.visibility == 'public'
+    if: github.event.repository.visibility == 'public' && vars.EDGE_LEGACY_AUTOMATION_ENABLED == '1'
     runs-on: ubuntu-latest
     timeout-minutes: 355
     steps:
