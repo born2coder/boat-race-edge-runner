@@ -303,7 +303,9 @@ export function SelectionNote({
       )}
       {!selected?.legacy && f.cohort === "forward" && (
         <p>
-          新ルールは未運転です。承認後、実際に保存を始めた時点から記録します。
+          {selected?.effectiveAt
+            ? `承認日時 ${stamp(selected.effectiveAt)} 以降に保存した事前記録を表示します。`
+            : "新ルールは未運転です。承認後、実際に保存を始めた時点から記録します。"}
         </p>
       )}
     </div>
