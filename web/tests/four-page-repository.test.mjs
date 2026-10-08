@@ -15,9 +15,11 @@ const js = ts.transpileModule(source, {
     target: ts.ScriptTarget.ES2022,
   },
 }).outputText;
+const writerJs = ts.transpileModule(await readFile(new URL("../db/four-page-writer.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 function repository(handler) {
   const exports = {};
-  new Function("exports", "require", js)(exports, (name) => {
+  const resolve = (name) => {
+    if (name === "@/db/four-page-writer") { const out = {}; new Function("exports", "require", writerJs)(out,resolve); return out; }
     if (name === "server-only") return {};
     if (name === "react") return { cache: (fn) => fn };
     if (name === "next/cache") return { unstable_cache: (fn) => fn };
@@ -31,7 +33,8 @@ function repository(handler) {
           ).toString(),
       };
     return require(name);
-  });
+  };
+  new Function("exports", "require", js)(exports, resolve);
   return exports;
 }
 const envKeys = [

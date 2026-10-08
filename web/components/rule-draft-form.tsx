@@ -84,7 +84,7 @@ export function RuleDraftForm({
       {state.version && (
         <div className="fp-notice success" role="status">
           下書きを保存しました：{state.version}
-          。運転は停止中で、設定は未適用です。
+          。設定は未適用です。運転状態は変更していません。
         </div>
       )}
       <button type="submit" className="fp-button" disabled={pending}>

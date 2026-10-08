@@ -317,7 +317,7 @@ export function EmptyState({
   return (
     <div className="fp-empty">
       <strong>{text}</strong>
-      <p>取得停止中です。閲覧・設定保存では収集や監視を開始しません。</p>
+      <p>閲覧・設定保存では収集や監視の運転状態を変更しません。</p>
     </div>
   );
 }
