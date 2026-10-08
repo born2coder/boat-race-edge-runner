@@ -4,7 +4,7 @@ import test from "node:test";
 
 test("uses finished Japanese metadata and removes the starter preview marker", async () => {
   const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
-  assert.match(layout, /BOAT RACE EDGE｜Research Terminal/);
+  assert.match(layout, /BOAT RACE EDGE｜研究端末/);
   assert.match(layout, /index: false, follow: false/);
   assert.match(layout, /<html lang="ja">/);
   assert.doesNotMatch(layout, /codex-preview|Starter Project/);
@@ -46,6 +46,6 @@ test("research terminal is primary and legacy remains available", async () => {
  const root = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
  const today = await readFile(new URL("../app/today/page.tsx", import.meta.url), "utf8");
  assert.match(root, /redirect\("\/today"\)/);
- assert.match(today, /DATA HEALTH/);
- assert.match(today, /BUY/);
+ assert.match(today, /今後の買い目/);
+ assert.match(today, /取得|loadFeed/);
 });
