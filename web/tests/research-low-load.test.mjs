@@ -7,7 +7,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const require = createRequire(import.meta.url);
-const source = await readFile(new URL("../app/performance/page.tsx", import.meta.url), "utf8");
+const source = await readFile(new URL("../app/research-archive/performance/page.tsx", import.meta.url), "utf8");
 const code = ts.transpileModule(source, { compilerOptions: {
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
   jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,

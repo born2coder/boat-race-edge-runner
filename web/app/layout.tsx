@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./four-page.css";
 import { SiteShell } from "@/components/site-shell";
 import { LiveRefresh } from "@/components/live-refresh";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
@@ -11,13 +12,13 @@ export const maxDuration = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "BOAT RACE EDGE｜Research Terminal", template: "%s｜舟の理" },
+  title: { default: "BOAT RACE EDGE｜研究端末", template: "%s｜BOAT RACE EDGE" },
   applicationName: SITE_NAME,
   description: SITE_DESCRIPTION,
   robots: { index: false, follow: false },
   openGraph: {
     type: "website", locale: "ja_JP", siteName: SITE_NAME,
-    title: "BOAT RACE EDGE｜Research Terminal", description: SITE_DESCRIPTION,
+    title: "BOAT RACE EDGE｜研究端末", description: SITE_DESCRIPTION,
     images: [{ url: "/brand/fune-no-kotowari-logo.png", width: 2172, height: 724, alt: "舟の理" }],
   },
   icons: {
