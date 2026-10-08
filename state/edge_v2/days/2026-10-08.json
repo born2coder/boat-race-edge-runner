@@ -40,7 +40,7 @@
     "BR:20261008:11:06:1252dac2b979be415bfd32d8957c2a09f645d7ba0e87f165c687c5d13cdec21c"
   ],
   "last_error": null,
-  "last_tick_at": "2026-10-08T07:16:29.980307+00:00",
+  "last_tick_at": "2026-10-08T07:17:31.040555+00:00",
   "races": {
     "202610080101": {
       "eligible_roster": true,
@@ -22895,22 +22895,31 @@
     "202610082404": {
       "eligible_roster": true,
       "errors": {
+        "t20": {
+          "at": "2026-10-08T07:17:31.040446+00:00",
+          "reason": "Official odds are stale or from the future"
+        },
         "t30": {
           "at": "2026-10-08T07:09:16.609711+00:00",
           "reason": "Official odds are stale or from the future"
         }
       },
       "exhibition_rejections": {
+        "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
       "forward_skipped_phases": {
+        "t20": {
+          "at": "2026-10-08T07:17:31.040446+00:00",
+          "reason": "Official odds are stale or from the future"
+        },
         "t30": {
           "at": "2026-10-08T07:09:16.609711+00:00",
           "reason": "Official odds are stale or from the future"
         }
       },
       "preview_error": {
-        "at": "2026-10-08T07:08:57.936727+00:00",
+        "at": "2026-10-08T07:17:21.534103+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
