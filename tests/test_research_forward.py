@@ -1,5 +1,8 @@
 import copy
 import unittest
+import json
+import tempfile
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from scripts import watch_research_forward as flow
@@ -41,5 +44,36 @@ class ForwardPayloadTests(unittest.TestCase):
             with patch.object(flow.urllib.request,"urlopen") as network:
                 with self.assertRaises(RuntimeError):flow.send({})
                 network.assert_not_called()
+
+    def test_failed_tick_is_saved_with_race_phase_reason_before_stop(self):
+        self.race["errors"]={"t15":{"at":self.now.isoformat(),"reason":"HTTP Error 503: Service Unavailable"},
+            "t30":{"at":(self.now-timedelta(minutes=30)).isoformat(),"reason":"old failure"}}
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/"day.json"
+            with self.assertRaises(RuntimeError),patch("builtins.print") as log:
+                flow.check_observations(self.state,self.now,path)
+            saved=json.loads(path.read_text())
+            self.assertEqual(saved,self.state)
+            event=json.loads(log.call_args.args[0])
+            self.assertEqual(event["errors"],[{"raceId":self.race["race_id"],"phase":"t15",
+                "at":self.now.isoformat(),"reason":"HTTP Error 503: Service Unavailable"}])
+            self.assertNotIn("forward_observations_sent",saved)
+
+    def test_stale_odds_are_excluded_once_per_phase_without_stopping_other_races(self):
+        self.race["snapshots"]={}
+        self.race["errors"]={"t15":{"at":self.now.isoformat(),"reason":"Official odds are stale or from the future"}}
+        other=copy.deepcopy(self.race)
+        other["race_id"]="BR:20261008:02:01"
+        other["errors"]={}
+        self.state["races"]["202610080201"]=other
+        with tempfile.TemporaryDirectory() as folder,patch("builtins.print"):
+            path=Path(folder)/"day.json"
+            flow.check_observations(self.state,self.now,path)
+            self.assertEqual(json.loads(path.read_text()),self.state)
+        self.assertIsNone(flow.edge.phase_due(self.race,self.now))
+        self.assertEqual(flow.edge.phase_due(other,self.now),"t15")
+        self.assertEqual(flow.edge.phase_due(self.race,self.now+timedelta(minutes=5)),"t10")
+        self.assertEqual(self.race["snapshots"],{})
+        self.assertEqual(flow.payload(self.state,self.now)["observations"],[])
 
 if __name__=="__main__":unittest.main()
