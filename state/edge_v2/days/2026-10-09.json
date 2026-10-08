@@ -10,7 +10,7 @@
   ],
   "forward_results_sent": [],
   "last_error": null,
-  "last_tick_at": "2026-10-08T23:51:39.249647+00:00",
+  "last_tick_at": "2026-10-08T23:52:58.993966+00:00",
   "races": {
     "202610090101": {
       "eligible_roster": true,
@@ -4643,6 +4643,26 @@
     },
     "202610091403": {
       "eligible_roster": true,
+      "errors": {
+        "t30": {
+          "at": "2026-10-08T23:52:58.993853+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "exhibition_rejections": {
+        "t30": "model_input_incomplete"
+      },
+      "forward_skipped_phases": {
+        "t30": {
+          "at": "2026-10-08T23:52:58.993853+00:00",
+          "reason": "Official odds are stale or from the future"
+        }
+      },
+      "preview_error": {
+        "at": "2026-10-08T23:52:48.559059+00:00",
+        "reason": "Official numeric field missing"
+      },
+      "preview_status": "model_input_incomplete",
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:14:03",
       "race_name": "一般",
