@@ -198,16 +198,16 @@
   gap: 20px;
 }
 .fp-race-card {
-  padding: 20px;
+  padding: 16px;
 }
 .fp-race-card > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 16px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #e8eef7;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .fp-race-card > header > div {
   display: flex;
@@ -234,17 +234,32 @@
   border-radius: 6px;
   margin: 0 0 5px;
 }
+.fp-pick-head,
 .fp-pick {
   display: grid;
   grid-template-columns: 0.8fr 1.25fr 1fr 1fr 1.7fr;
   align-items: center;
-  gap: 16px;
-  padding: 16px 12px;
+  gap: 12px;
+  padding: 6px 12px;
   border-bottom: 1px solid #e7eef7;
   font-size: 14px;
 }
+.fp-pick-head {
+  color: #6984a6;
+  background: #eef4fb;
+  font-size: 11px;
+  font-weight: 700;
+}
+.fp-pick .fp-small-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 .fp-combination {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 1px;
   color: #173458;
@@ -260,7 +275,7 @@
   margin-bottom: 5px;
 }
 .fp-pick .fp-ev {
-  font-size: 22px;
+  font-size: 18px;
   color: #bf334c;
 }
 .fp-pick details {
@@ -421,9 +436,9 @@
 .fp-history-head,
 .fp-history-row {
   display: grid;
-  grid-template-columns: 1.4fr 0.85fr 1.3fr 0.8fr 1.3fr;
-  gap: 15px;
-  padding: 12px 14px;
+  grid-template-columns: 1.3fr 0.65fr 1.3fr 0.65fr 1.75fr 45px;
+  gap: 10px;
+  padding: 8px 10px;
   align-items: center;
 }
 .fp-history-head {
@@ -442,9 +457,16 @@
 }
 .fp-history-row > div:first-child {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 7px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.fp-history-row > .fp-secondary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 .fp-history-row strong:not(.fp-combination) {
   display: block;
@@ -465,20 +487,20 @@
   color: #ac6611;
   background: #fff1d8;
 }
-.fp-badge.result-hit {
+.fp-badge.fp-result-hit {
   color: #178450;
   background: #e0f7ed;
 }
-.fp-badge.result-miss {
+.fp-badge.fp-result-miss {
   color: #b93c4e;
   background: #feeff1;
 }
-.fp-badge.result-pending,
-.fp-badge.result-checking {
+.fp-badge.fp-result-pending,
+.fp-badge.fp-result-checking {
   color: #6a7d98;
   background: #edf2f8;
 }
-.fp-badge.result-refunded {
+.fp-badge.fp-result-refunded {
   color: #895d16;
   background: #fff5de;
 }
@@ -490,17 +512,21 @@
 }
 .fp-accounting {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
   font-size: 11px;
 }
 .fp-accounting strong {
-  font-size: 16px;
+  font-size: 13px;
 }
 .fp-row-details {
-  grid-column: 1/-1;
   font-size: 11px;
   color: #6f84a1;
+}
+.fp-row-details[open] {
+  grid-column: 1/-1;
 }
 .fp-row-details summary {
   cursor: pointer;
@@ -776,6 +802,7 @@
   .fp-table-row {
     font-size: 12px;
   }
+  .fp-pick-head,
   .fp-pick {
     gap: 10px;
     grid-template-columns: 0.8fr 1fr 0.8fr 0.8fr 1.5fr;
@@ -856,14 +883,27 @@
   }
   .fp-pick {
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 16px 7px;
+    gap: 8px;
+    padding: 10px 3px;
+  }
+  .fp-pick-head {
+    display: none;
+  }
+  .fp-pick .fp-small-label {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    margin-bottom: 2px;
   }
   .fp-combination {
-    font-size: 23px;
+    font-size: 20px;
   }
   .fp-pick .fp-ev {
-    font-size: 24px;
+    font-size: 20px;
   }
   .fp-pick details {
     grid-column: 1/-1;
@@ -919,10 +959,12 @@
   }
   .fp-history-row {
     grid-template-columns: 1fr 1fr;
-    padding: 15px 3px;
-    gap: 13px 9px;
+    padding: 10px 3px;
+    gap: 7px 9px;
   }
   .fp-history-row > div:first-child {
+    flex-direction: row;
+    flex-wrap: wrap;
     grid-column: 1;
     grid-row: 1;
   }
@@ -942,6 +984,9 @@
   }
   .fp-history-row .fp-secondary {
     font-size: 11px;
+  }
+  .fp-row-details {
+    grid-column: 1/-1;
   }
   .fp-history-row .fp-secondary > strong {
     display: inline;

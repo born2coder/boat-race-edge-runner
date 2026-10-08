@@ -100,7 +100,7 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
                     <strong>{evText(e.ev)}</strong>
                   </div>
                   <div>
-                    <span className={"fp-badge result-" + e.outcome}>
+                    <span className={"fp-badge fp-result-" + e.outcome}>
                       {outcomeLabels[e.outcome]}
                     </span>
                   </div>
@@ -122,7 +122,7 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
                     </strong>
                   </div>
                   <details className="fp-row-details">
-                    <summary>判断・観測・精算の詳細</summary>
+                    <summary>詳細</summary>
                     <div className="fp-detail-grid">
                       <p>
                         初回掲載：

@@ -91,6 +91,15 @@ export function UpcomingRaces({
           Math.ceil((Date.parse(first.closeAt!) - now) / 1000),
         );
         const id = "optional-" + first.raceId.replaceAll(":", "-");
+        const pickHead = (
+          <div className="fp-pick-head" aria-hidden="true">
+            <span>買い目</span>
+            <span>期待回収率</span>
+            <span>保守確率</span>
+            <span>現在オッズ</span>
+            <span>詳細</span>
+          </div>
+        );
         const pick = (row: (typeof rows)[number]) => (
           <div className="fp-pick" key={row.o.combination}>
             <strong className="fp-combination">{row.o.combination}</strong>
@@ -150,6 +159,7 @@ export function UpcomingRaces({
                 <h3>
                   {CATEGORY_LABELS.recommended} {recommended.length}点
                 </h3>
+                {pickHead}
                 {recommended.map(pick)}
               </div>
             )}
@@ -173,6 +183,7 @@ export function UpcomingRaces({
                   hidden={!open[first.raceId]}
                   className="fp-optional"
                 >
+                  {pickHead}
                   {optional.map(pick)}
                 </div>
               </>
