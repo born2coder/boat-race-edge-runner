@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "event": "operator_resume",
+  "at": "2026-10-08T15:54:13.493Z",
+  "authorization": "User authorized resuming bounded automatic research on 2026-10-09 JST.",
+  "previousPause": {
+    "path": "state/edge_v2/forward-paused.json",
+    "blobSha": "4030836791ca634e6ed53574c6d7f69684170821",
+    "at": "2026-10-08T08:03:13.415063+00:00",
+    "kind": "HTTPError"
+  },
+  "fix": {
+    "pullRequest": 51,
+    "mainCommit": "acc438f6667eeeaaf94929640f007064a3677aec"
+  },
+  "nextScheduledStartJst": "2026-10-09T07:17:00+09:00",
+  "safeguards": {
+    "minimumSendIntervalSeconds": 60,
+    "appDailyCpuBudgetMs": 60000,
+    "appDailyAdmissionBudget": 1000,
+    "automaticRetry": false,
+    "legacyAutomationEnabled": false
+  },
+  "operationalTarget": {
+    "vercelProjectActiveCpuSecondsPer30Days": 7200,
+    "note": "Operational monitoring target, not an enforced Vercel CPU cap."
+  },
+  "recordingApprovalUnchanged": true
+}
