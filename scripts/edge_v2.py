@@ -36,7 +36,8 @@ def raw_id(value):
 def phase_due(race, now):
     minutes = (iso(race["start_at"]) - now).total_seconds() / 60
     return next((phase for phase, (high, low) in WINDOWS.items()
-                 if low <= minutes <= high and phase not in race.get("snapshots", {})), None)
+                 if low <= minutes <= high and phase not in race.get("snapshots", {})
+                 and phase not in race.get("forward_skipped_phases", {})), None)
 
 
 def fetch_grid(race):
