@@ -55,6 +55,22 @@ test("停止中は古い推奨を表示しない", () => {
   assert.equal(a.category, "excluded");
   assert.ok(a.reasons.includes("取得停止中"));
 });
+test("本番の2桁レース番号01〜12を分類・初回記録できる", () => {
+  for (let raceNo = 1; raceNo <= 12; raceNo++) {
+    const o = { ...obs, raceId: `BR:20261008:07:${String(raceNo).padStart(2, "0")}` };
+    assert.equal(p.classify(o, now).category, "recommended");
+    const entries = p.firstPurchases(o, new Set(), iso(now - 2000), now);
+    assert.equal(entries.length, 2);
+    assert.equal(entries[0].raceNo, raceNo);
+    assert.equal(entries[0].raceId, o.raceId);
+  }
+});
+test("旧保存データの1桁番号は互換維持し、不正番号は除外", () => {
+  for (let raceNo = 1; raceNo <= 9; raceNo++)
+    assert.equal(p.classify({ ...obs, raceId: `BR:20261008:07:${raceNo}` }, now).category, "recommended");
+  for (const raceNo of ["00", "0", "13", "99", "001", "010", "-1"])
+    assert.equal(p.classify({ ...obs, raceId: `BR:20261008:07:${raceNo}` }, now).category, "excluded");
+});
 test("110→125→115→130％は3方式ごとに初回だけ。両方を足さない", () => {
   const seen = new Set(),
     entries = [];

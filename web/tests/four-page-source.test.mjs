@@ -74,6 +74,18 @@ test("saved-source adapter keeps all 120 predictions, source times and inherited
   assert.equal(rows[0].receivedAt, iso(now));
   assert.equal(p.classify(rows[0], now).category, "recommended");
 });
+test("production padded 01-12 IDs survive the saved-source adapter and purchase policy", () => {
+  for (let raceNo = 1; raceNo <= 12; raceNo++) {
+    const r = { ...race, race_no: raceNo, race_id: `BR:20261008:07:${String(raceNo).padStart(2, "0")}` };
+    const rows = source.observationsFromSavedRace(r, snapshot, p.RULE_VERSION, 0.8);
+    assert.equal(rows.length, 120);
+    assert.equal(p.classify(rows[0], now).category, "recommended");
+    const entries = p.firstPurchases(rows[0], new Set(), iso(now - 2000), now);
+    assert.equal(entries.length, 2);
+    assert.equal(entries[0].raceId, r.race_id);
+    assert.equal(entries[0].raceNo, raceNo);
+  }
+});
 for (const [label, patch, racePatch] of [
   ["missing matrix", { exhibition: null }, {}],
   [
