@@ -74,7 +74,7 @@ export function classify(
   const remaining = (close - now) / 1000;
   if (stopped) reasons.push("取得停止中");
   if (
-    !/^BR:\d{8}:(0[1-9]|1\d|2[0-4]):(?:[1-9]|1[0-2])$/.test(o.raceId) ||
+    !/^BR:\d{8}:(0[1-9]|1\d|2[0-4]):(?:0?[1-9]|1[0-2])$/.test(o.raceId) ||
     !/^([1-6])-([1-6])-([1-6])$/.test(o.combination) ||
     new Set(o.combination.split("-")).size !== 3
   )
