@@ -18,6 +18,37 @@ if __package__ in (None, ""):
 from scripts import edge_v2 as edge, prepare_forward
 from scripts.edge_publication import DataPublisher
 
+def observation_errors(state, since):
+    """Keep the public-source failure evidence, never request credentials."""
+    return [{"raceId": race["race_id"], "phase": phase,
+             "at": error["at"], "reason": error["reason"][:180]}
+            for race in state["races"].values()
+            for phase, error in race.get("errors", {}).items()
+            if edge.iso(error["at"]) >= since]
+
+def check_observations(state, since, path):
+    errors = observation_errors(state, since)
+    if errors:
+        quality_reasons = {"Official odds are stale or from the future",
+                           "Official odds timestamp missing",
+                           "Request completed outside its prospective window"}
+        fatal = []
+        for error in errors:
+            if error["reason"] in quality_reasons:
+                race = state["races"][edge.raw_id(error["raceId"])]
+                race.setdefault("forward_skipped_phases", {}).setdefault(error["phase"],
+                    {"at": error["at"], "reason": error["reason"]})
+                print(json.dumps({"status": "observation_skipped", **error},
+                                 ensure_ascii=False), flush=True)
+            else:
+                fatal.append(error)
+        # Preserve the failed tick before raising; it is not a publication receipt.
+        prepare_forward._atomic_json(path, state)
+        if fatal:
+            print(json.dumps({"status": "observation_failed", "errors": fatal},
+                             ensure_ascii=False), flush=True)
+            raise RuntimeError("Official observation failed; see saved race/phase diagnostics")
+
 def payload(state, now):
     observations, results = [], []
     for race in state["races"].values():
@@ -112,8 +143,7 @@ def main():
                 initialized.add(date)
             try:
                 observer.tick(state)
-                if any(edge.iso(e["at"])>=now for r in state["races"].values() for e in r.get("errors",{}).values()):
-                    raise RuntimeError("Official observation failed")
+                check_observations(state, now, path)
                 prepare_forward._atomic_json(path,state); publisher.persist()
                 publisher.acknowledge(edge.confirm_publication(state,publisher.revision))
                 # Send receipt-fresh observations before result network work.
@@ -147,7 +177,8 @@ def main():
                 # No historical day scanning, legacy research API or final grids.
                 prepare_forward._atomic_json(path,state); publisher.persist()
             except Exception as error:
-                prepare_forward._atomic_json(stop_path,{"at":edge.utcnow().isoformat(),"kind":type(error).__name__})
+                prepare_forward._atomic_json(stop_path,{"at":edge.utcnow().isoformat(),
+                    "kind":type(error).__name__,"observationErrors":observation_errors(state,now)})
                 try: publisher.persist()
                 except Exception: pass
                 print(json.dumps({"status":"stopped","kind":type(error).__name__}),flush=True)
