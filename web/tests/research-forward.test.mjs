@@ -57,3 +57,25 @@ test("forward success meters CPU and failure permanently completes lease as fail
     assert.equal(calls.at(-1).path,"rpc/four_page_flow_end");assert.equal(calls.at(-1).body.p_failed,true);
   } finally {for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;}
 });
+test("rejected admission reports its reason without writes or lease completion",async()=>{
+  const old={secret:process.env.INGEST_SECRET,gate:process.env.RESEARCH_FOUR_PAGE_RECORDING};
+  process.env.INGEST_SECRET="test-only";process.env.RESEARCH_FOUR_PAGE_RECORDING="1";
+  const originalWarn=console.warn;const logs=[];console.warn=value=>logs.push(JSON.parse(value));
+  try {
+    for(const admission of ["rate_limited","busy","paused"]) {
+      const calls=[];
+      const r=route(async path=>{calls.push(path);return path==="rpc/four_page_flow_begin"?admission:null;},
+        {recordObservation:async()=>{throw Error("unexpected write");},settleRecordedRace:async()=>{throw Error("unexpected settlement");}});
+      const response=await r.POST(request(body()));
+      assert.equal(response.status,admission==="paused"?503:429);
+      assert.deepEqual(await response.json(),{status:admission});
+      assert.equal(response.headers.get("Retry-After"),admission==="rate_limited"?"40":null);
+      assert.deepEqual(calls,["ingestion_nonces","rpc/four_page_flow_begin"]);
+      assert.deepEqual(logs.at(-1),{event:"research_forward_admission_rejected",status:admission,
+        observationCount:0,resultCount:0});
+    }
+  } finally {
+    console.warn=originalWarn;
+    for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
+  }
+});
