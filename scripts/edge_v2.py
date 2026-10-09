@@ -276,7 +276,7 @@ class Observer:
             raise ValueError("Date precedes model forward boundary")
         return data, prepare_forward._load_service_day_compatible(hybrid_forward, data, date)
 
-    def tick(self, state):
+    def tick(self, state, max_observations=None):
         import pandas as pd
         self.official_deadlines = {raw_id(r["race_id"]): r["start_time_jst"]
                                    for r in state["races"].values() if r.get("deadline_evidence")}
@@ -296,6 +296,11 @@ class Observer:
             state["races"][raw]["roster"] = [{"lane_no": e["lane_no"], "racer_id": e["racer_id"]} for e in race["entries"]]
         due = {rid: phase_due(r, now) for rid, r in state["races"].items() if r.get("eligible_roster")}
         due = {rid: phase for rid, phase in due.items() if phase}
+        if max_observations is not None:
+            # Bound capture before network/model work. Deferred races stay due
+            # and are captured fresh on a later tick, never queued as old odds.
+            ordered = sorted(due, key=lambda rid: (state["races"][rid]["start_at"], rid))
+            due = {rid: due[rid] for rid in ordered[:max_observations]}
         morning, exhibition = {}, {}
         if due:
             self.overlay_previews(data, state["date"], due, state["races"])
