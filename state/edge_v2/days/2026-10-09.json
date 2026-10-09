@@ -1,6 +1,6 @@
 {
   "date": "2026-10-09",
-  "forward_last_send_completed_at": "2026-10-09T06:39:19.349056+00:00",
+  "forward_last_send_completed_at": "2026-10-09T06:40:45.373074+00:00",
   "forward_observations_ignored": [
     "4fb7ef3e4ca1fa6b4891c597a920e13340807ce478739d65747a6a59416ef36d",
     "2029932cfa483a7576c3652570bdc4a19de4ddd4dccbe5e8d2a4820f601ec0ce",
@@ -372,7 +372,10 @@
     "5c3e7e625495d7e8e877f7a9abb1d3cc411b674f5a83b2bee86f8841d6eb0cd5",
     "40591ece7a2e6ebea85ea958179f66c7f423f3169b1513e7ff93fba529fdc589",
     "153b940319c1298c46a6f02ad727023ce59293af1e447737577c270b25f0ead9",
-    "14c983470492091e7f320076e1a4ea4363d0a2f492b9b00622918e7e7da03c5e"
+    "14c983470492091e7f320076e1a4ea4363d0a2f492b9b00622918e7e7da03c5e",
+    "35a48a93ee64986c1b777a1ef2358e86f08435ac816a3bff36abb710809a744d",
+    "280d03e020670068d6964cfd7676cfc0aa487302351ad257c51e4e6ff6629e4c",
+    "41fe4b706bce617abbd09302f7dd0a0aec88a656fc82a56197530ce54b251ac1"
   ],
   "forward_results_sent": [
     "BR:20261009:23:01:0eb0905331b4b3ae781a73e92d410fb1c01de63b4f23ba49df0b56a8156dd1e7",
@@ -477,7 +480,8 @@
     "BR:20261009:05:10:b43176ecc5bb48d7046c2dc185888043f0da167756a79160d6d698284f0521b0",
     "BR:20261009:07:01:77f7bf84f7b33e3b13e8f4e00130ccd09474341301b1c7154e95feff02fb0ece",
     "BR:20261009:24:01:15a408628695051a2bfac4532dee2ae193bf2d9e45c053b4f35fbfca1ed5571b",
-    "BR:20261009:02:10:40d67bb91154da7b5a41528c4da3a7156eb570ff7cd57576835c0dabe0a20f71"
+    "BR:20261009:02:10:40d67bb91154da7b5a41528c4da3a7156eb570ff7cd57576835c0dabe0a20f71",
+    "BR:20261009:03:10:eeeef9fe6704d9e8ca8fe67739d96c290a1dc7cfe9d6ef2b009d4c2d6f5fc1f0"
   ],
   "last_error": null,
   "last_tick_at": "2026-10-09T06:40:40.696753+00:00",
@@ -732,8 +736,56 @@
         "c35b3fb6fa0139bfe32432357a72c2a1fc0da2d44e2a3009e4ba7b3a2aa86769": "2026-10-09T06:09:27.848198+00:00",
         "d50d9a16dc13af486cf555a557632eca1d845bbb1a767cb83917484faea94c6e": "2026-10-09T05:51:31.226030+00:00"
       },
-      "result_attempt_at": "2026-10-09T06:39:28.730685+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "1-6-3",
+        "evidence": {
+          "obtained_at": "2026-10-09T06:40:55.824901+00:00",
+          "sha256": "0a3ba6d8b21b72d1a419b35130e9ffd3eb655fbfca715e25a48b5d2b741dcb38",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20261009&jcd=01&rno=1&_edge_minute=29858800"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 1,
+            "racer_id": "4245",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 6,
+            "racer_id": "4550",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 3,
+            "racer_id": "4837",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 5,
+            "racer_id": "5455",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 4,
+            "racer_id": "3848",
+            "result_code": null
+          },
+          {
+            "finish_position": 6,
+            "lane_no": 2,
+            "racer_id": "5187",
+            "result_code": null
+          }
+        ],
+        "payout_per_100_yen": 1510,
+        "race_id": "BR:20261009:01:01",
+        "refunded_lanes": []
+      },
+      "result_attempt_at": "2026-10-09T06:40:55.843515+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -3151,6 +3203,7 @@
       "race_name": "予選",
       "race_no": 2,
       "receipts": {
+        "35a48a93ee64986c1b777a1ef2358e86f08435ac816a3bff36abb710809a744d": "2026-10-09T06:40:43.939003+00:00",
         "6b4c4ab9b74f4e3ef44f8775318f8a6835967bbd8d954b096aa33e20e2a0913a": "2026-10-09T06:32:58.902334+00:00"
       },
       "roster": [
@@ -97628,7 +97681,7 @@
         "c569603948de44ff68b11fa6696af6efa99bc4a15e5fa63c3153b9f67076577b": "2026-10-09T06:23:06.368839+00:00",
         "e2a8720ee5f157b616c1fa839903b976ffb0d165295239dc61a69c8c5225e22f": "2026-10-09T06:17:29.958016+00:00"
       },
-      "result_attempt_at": "2026-10-09T06:39:29.675650+00:00",
+      "result_attempt_at": "2026-10-09T06:40:55.772083+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -100000,6 +100053,7 @@
       "race_name": "予選特選",
       "race_no": 12,
       "receipts": {
+        "280d03e020670068d6964cfd7676cfc0aa487302351ad257c51e4e6ff6629e4c": "2026-10-09T06:40:43.939003+00:00",
         "333ba76d6c8a7c3fe6af5898c194880ebf0928b0450926258942e2eed3ca36cc": "2026-10-09T06:30:07.315741+00:00"
       },
       "roster": [
@@ -169142,6 +169196,9 @@
       "race_id": "BR:20261009:16:11",
       "race_name": "予選特選",
       "race_no": 11,
+      "receipts": {
+        "41fe4b706bce617abbd09302f7dd0a0aec88a656fc82a56197530ce54b251ac1": "2026-10-09T06:40:43.939003+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
