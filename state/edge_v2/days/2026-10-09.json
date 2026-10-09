@@ -1,6 +1,6 @@
 {
   "date": "2026-10-09",
-  "forward_last_send_completed_at": "2026-10-09T01:07:00.417457+00:00",
+  "forward_last_send_completed_at": "2026-10-09T01:09:24.543438+00:00",
   "forward_observations_ignored": [],
   "forward_observations_sent": [
     "b7cf6ad9eb355c1ebffea66649c85293f06fd61b0baabd1dbb04ac671f24e3bd",
@@ -34,7 +34,9 @@
     "15c60fd6e37c82dcb5a05a21997374879d47d5af95f42884b343f650e24e64c5",
     "ba4e4a67cf141b12668e1a6bdae191c7bc0a11e2e75c9b16fb4ec55a7540f494",
     "c447b56174b96c90d60763c7f867d9660dbd51a09a6399f39e1a57a112ca7056",
-    "377dd1e9bd6573e0535cf83c5901c518b9813575f2d62fb85527f291b703a77d"
+    "377dd1e9bd6573e0535cf83c5901c518b9813575f2d62fb85527f291b703a77d",
+    "dd7daaa05336576639abe53d7b651bb38a6b9c9ed5cdf0555eadde8d172900ae",
+    "7da35cb2383f59c8d7e3a576027a313dbdc5e07f3d1c6f29b1bc4116d6bb4801"
   ],
   "forward_results_sent": [
     "BR:20261009:23:01:0eb0905331b4b3ae781a73e92d410fb1c01de63b4f23ba49df0b56a8156dd1e7",
@@ -2818,7 +2820,8 @@
         "5272edd92dc27cb69e198182e209b23b4ff2a04625cf1e7277faa1f54b4422f0": "2026-10-09T00:52:08.385697+00:00",
         "8796ed083d057b5451fed21366c9d76e6e686e73e59c8a3f6f79103abbda0815": "2026-10-09T01:00:19.950561+00:00",
         "bc19edf49934ab0e98ca127a64e39fe28ffce46cc6675fbdea770d441234c789": "2026-10-09T00:41:53.869872+00:00",
-        "c447b56174b96c90d60763c7f867d9660dbd51a09a6399f39e1a57a112ca7056": "2026-10-09T01:04:30.459901+00:00"
+        "c447b56174b96c90d60763c7f867d9660dbd51a09a6399f39e1a57a112ca7056": "2026-10-09T01:04:30.459901+00:00",
+        "dd7daaa05336576639abe53d7b651bb38a6b9c9ed5cdf0555eadde8d172900ae": "2026-10-09T01:09:23.181850+00:00"
       },
       "roster": [
         {
@@ -10491,8 +10494,56 @@
         "c76557fbde1ea3eeba351603b2a473436d055bfa7e0d8d7a365416f27a54cd91": "2026-10-09T00:19:13.273689+00:00",
         "feb62f5ecc28605178dd5e1541cb32974f337477f6c4d104049874271f802f9f": "2026-10-09T00:46:23.800138+00:00"
       },
-      "result_attempt_at": "2026-10-09T01:08:14.105052+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "2-1-5",
+        "evidence": {
+          "obtained_at": "2026-10-09T01:09:34.805422+00:00",
+          "sha256": "144d847738b11468bd5e23aa00e871c027d5fc0a288b6614520336a2489abf08",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20261009&jcd=14&rno=4&_edge_minute=29858469"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 2,
+            "racer_id": "4934",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 1,
+            "racer_id": "5133",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 5,
+            "racer_id": "4607",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 4,
+            "racer_id": "4917",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 3,
+            "racer_id": "5044",
+            "result_code": null
+          },
+          {
+            "finish_position": 6,
+            "lane_no": 6,
+            "racer_id": "5452",
+            "result_code": null
+          }
+        ],
+        "payout_per_100_yen": 2150,
+        "race_id": "BR:20261009:14:04",
+        "refunded_lanes": []
+      },
+      "result_attempt_at": "2026-10-09T01:09:34.835322+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -18194,7 +18245,7 @@
         "b3c26cfd286f53cb492be6f12b5e044f85565eafe7acf940df38add87aa5b488": "2026-10-09T00:48:44.996157+00:00",
         "faf2d50c8c2d82e4abd608362b71d62eb507470e10f09d4d1880fac24352f048": "2026-10-09T00:53:32.855091+00:00"
       },
-      "result_attempt_at": "2026-10-09T01:08:13.064180+00:00",
+      "result_attempt_at": "2026-10-09T01:09:32.806615+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -19784,6 +19835,9 @@
       "race_id": "BR:20261009:23:05",
       "race_name": "レッツ５特賞",
       "race_no": 5,
+      "receipts": {
+        "7da35cb2383f59c8d7e3a576027a313dbdc5e07f3d1c6f29b1bc4116d6bb4801": "2026-10-09T01:09:23.181850+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
