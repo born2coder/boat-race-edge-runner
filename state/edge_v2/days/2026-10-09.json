@@ -1,6 +1,6 @@
 {
   "date": "2026-10-09",
-  "forward_last_send_completed_at": "2026-10-09T03:56:04.560880+00:00",
+  "forward_last_send_completed_at": "2026-10-09T03:57:27.363686+00:00",
   "forward_observations_ignored": [
     "4fb7ef3e4ca1fa6b4891c597a920e13340807ce478739d65747a6a59416ef36d",
     "2029932cfa483a7576c3652570bdc4a19de4ddd4dccbe5e8d2a4820f601ec0ce"
@@ -220,7 +220,8 @@
     "55ee658144313f2ba483e207b5a69fa7b4d2757277a90fa66c7b5d8d69d8f02c",
     "924e8044e486af692c3d0c984d20826a1e082230f26ed8e2d24abf11715d0e07",
     "5923399c19a9e00b062559b44e34eb921489a8d898f9351afc5af192c4628b04",
-    "54c9b6df975d7e545f80cc475c84b6098c6644958161c658b6ff556858437cae"
+    "54c9b6df975d7e545f80cc475c84b6098c6644958161c658b6ff556858437cae",
+    "6b943ae5b9540f528775de5a0b94505395502fb98c0273724505b4a2bdacca7a"
   ],
   "forward_results_sent": [
     "BR:20261009:23:01:0eb0905331b4b3ae781a73e92d410fb1c01de63b4f23ba49df0b56a8156dd1e7",
@@ -265,7 +266,8 @@
     "BR:20261009:08:05:0bf911d667d07ecb084c993dcbd51a4fc4077209ae4e0f750f25792d5fb547e8",
     "BR:20261009:10:05:b55f97142076487500c9b22369ee26ebbe6a3c8dde37680e205534c0e14f29e7",
     "BR:20261009:03:04:c0e8e428de4167592c0e7edb7faf11e5448314a3a0645c59f037b91ee0a55a10",
-    "BR:20261009:05:05:7349ae4f1f31e2dd58f4f3d32204d6d4be280effe010d39f8b16c0319514cc54"
+    "BR:20261009:05:05:7349ae4f1f31e2dd58f4f3d32204d6d4be280effe010d39f8b16c0319514cc54",
+    "BR:20261009:23:09:533767d7f54323de3dc28cf166a61f881e037a012e3c39863ca53cac5e2dfd06"
   ],
   "last_error": null,
   "last_tick_at": "2026-10-09T03:57:24.174871+00:00",
@@ -11051,8 +11053,56 @@
         "b163a5dd779f0606f7deb0078f2e590254224c0a8a36217028f85b9d9f155079": "2026-10-09T03:28:15.940987+00:00",
         "ec3aac3ca9e93412674e9684eb0f695f553c16e529697c1ef2e018a19744c3ac": "2026-10-09T03:32:27.734918+00:00"
       },
-      "result_attempt_at": "2026-10-09T03:56:13.848108+00:00",
-      "result_error": "Official result table missing",
+      "result": {
+        "combination": "4-1-3",
+        "evidence": {
+          "obtained_at": "2026-10-09T03:57:45.014074+00:00",
+          "sha256": "27df3a36ea02ee28fca9cec80cfd99c7a5c3b73d4fd5430a5843a4d4d2deeb3d",
+          "url": "https://www.boatrace.jp/owpc/pc/race/raceresult?hd=20261009&jcd=02&rno=5&_edge_minute=29858637"
+        },
+        "finishers": [
+          {
+            "finish_position": 1,
+            "lane_no": 4,
+            "racer_id": "5005",
+            "result_code": null
+          },
+          {
+            "finish_position": 2,
+            "lane_no": 1,
+            "racer_id": "5210",
+            "result_code": null
+          },
+          {
+            "finish_position": 3,
+            "lane_no": 3,
+            "racer_id": "5356",
+            "result_code": null
+          },
+          {
+            "finish_position": 4,
+            "lane_no": 6,
+            "racer_id": "5404",
+            "result_code": null
+          },
+          {
+            "finish_position": 5,
+            "lane_no": 2,
+            "racer_id": "4724",
+            "result_code": null
+          },
+          {
+            "finish_position": 6,
+            "lane_no": 5,
+            "racer_id": "5090",
+            "result_code": null
+          }
+        ],
+        "payout_per_100_yen": 2530,
+        "race_id": "BR:20261009:02:05",
+        "refunded_lanes": []
+      },
+      "result_attempt_at": "2026-10-09T03:57:45.050511+00:00",
       "roster": [
         {
           "lane_no": 1,
@@ -13087,6 +13137,7 @@
       "race_name": "予選",
       "race_no": 6,
       "receipts": {
+        "6b943ae5b9540f528775de5a0b94505395502fb98c0273724505b4a2bdacca7a": "2026-10-09T03:57:26.271122+00:00",
         "9fc5100fe8c661cadea82e9f3f361217c32197e009fe99e7d599a167bf468e04": "2026-10-09T03:49:28.518311+00:00"
       },
       "roster": [
@@ -49602,7 +49653,7 @@
         "41399a1831b891fd26602386fd2edf29d9937e199ada6f977c890ff60fbc8aeb": "2026-10-09T03:25:50.887302+00:00",
         "d833c0105154163c3ebe49092c651ef4403b9e8562937484f2c480395f9e400a": "2026-10-09T03:33:50.382917+00:00"
       },
-      "result_attempt_at": "2026-10-09T03:56:12.783982+00:00",
+      "result_attempt_at": "2026-10-09T03:57:45.000245+00:00",
       "result_error": "Official result table missing",
       "roster": [
         {
@@ -116687,8 +116738,8 @@
     }
   },
   "result_archive": {
-    "obtained_at": "2026-10-09T03:41:40+00:00",
-    "sha256": "9dcebb8bb8a7711066ec8176da4a9ef56500a8de7c83a1692ac346be6a3a614e",
+    "obtained_at": "2026-10-09T03:57:35+00:00",
+    "sha256": "20ce93fa0ddc21a3c9f80087700c08525113d653f9f8c280de2d4e6e23183c7b",
     "source": "official_archive",
     "url": "https://www1.mbrace.or.jp/od2/K/202610/k261009.lzh"
   },
