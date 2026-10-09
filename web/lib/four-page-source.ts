@@ -1,6 +1,7 @@
 /** Adapt already saved EDGE observations. Never fetch odds or infer a model here. */
 import {
   isPublicBeforeDeadline,
+  snapshotDeadline,
   type EdgeRaceV2,
   type Snapshot,
   type EdgeDayV2,
@@ -31,7 +32,7 @@ export function observationsFromSavedRace(
   return snapshot.combinations.map((combination, i) => ({
     raceId: race.race_id,
     combination,
-    closeAt: race.start_at ?? null,
+    closeAt: snapshotDeadline(race, snapshot) ?? null,
     observedAt: snapshot.observed_at,
     receivedAt: receivedAt ?? "",
     generatedAt: snapshot.computed_at ?? null,

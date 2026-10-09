@@ -59,6 +59,15 @@ const race = {
   snapshots: { t20: snapshot },
   receipts: { saved: iso(now) },
 };
+test("deadline revisions preserve each saved snapshot's original assessment boundary", () => {
+  const delayed = { ...race, start_at: iso(now + 2400000),
+    snapshot_deadlines: { saved: race.start_at } };
+  const rows = source.observationsFromSavedRace(delayed, snapshot, p.RULE_VERSION, 0.8);
+  assert.equal(rows[0].closeAt, race.start_at);
+  assert.equal(edge.isPublicBeforeDeadline({ ...delayed, receipts: { saved: iso(now + 1300000) } }, snapshot), false);
+  const fresh = { ...snapshot, snapshot_id: "new", close_at: delayed.start_at };
+  assert.equal(edge.snapshotDeadline(delayed, fresh), delayed.start_at);
+});
 test("saved-source adapter keeps all 120 predictions, source times and inherited factor without inference", () => {
   const rows = source.observationsFromSavedRace(
     race,

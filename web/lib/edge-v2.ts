@@ -8,10 +8,12 @@ export type Snapshot = {
   combinations: string[]; odds: number[]; morning: number[]; exhibition: number[] | null;
   exhibition_source_ready_at: string | null;
   exhibition_status?: string;
+  close_at?: string;
 };
 export type EdgeRaceV2 = {
   race_id: string; race_date: string; venue_code: string; venue: string; race_no: number; start_at: string;
   snapshots: Partial<Record<Phase, Snapshot>>; receipts?: Record<string, string>;
+  snapshot_deadlines?: Record<string, string>;
   result?: { combination: string; payout_per_100_yen: number; refunded_lanes: number[]; cancelled?: boolean };
   final?: { odds: Record<string, number>; observed_at: string; validation: string };
   errors?: Record<string, { at: string; reason: string }>;
@@ -50,9 +52,13 @@ export function dayProgress(day: EdgeDayV2, now = Date.now()): ProgressV2 {
   };
 }
 
+export function snapshotDeadline(race: EdgeRaceV2, snapshot: Snapshot) {
+  return snapshot.close_at ?? race.snapshot_deadlines?.[snapshot.snapshot_id] ?? race.start_at;
+}
+
 export function isPublicBeforeDeadline(race: EdgeRaceV2, snapshot: Snapshot) {
   const receipt = race.receipts?.[snapshot.snapshot_id];
-  return Boolean(receipt && Date.parse(snapshot.observed_at) <= Date.parse(receipt) && Date.parse(receipt) < Date.parse(race.start_at));
+  return Boolean(receipt && Date.parse(snapshot.observed_at) <= Date.parse(receipt) && Date.parse(receipt) < Date.parse(snapshotDeadline(race, snapshot)));
 }
 
 export function selectedPicks(snapshot: Snapshot, model: Model, threshold: number) {

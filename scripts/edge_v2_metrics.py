@@ -20,10 +20,14 @@ def snapshot_hash(snapshot):
     return hashlib.sha256(json.dumps(snapshot, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
 
 
+def snapshot_deadline(race, snapshot):
+    return snapshot.get("close_at") or race.get("snapshot_deadlines", {}).get(snapshot["snapshot_id"]) or race["start_at"]
+
+
 def public_eligible(race, snapshot):
     receipt = race.get("receipts", {}).get(snapshot["snapshot_id"])
     # A server's positive receipt is an upper bound on first public availability.
-    return bool(receipt and iso(snapshot["observed_at"]) <= iso(receipt) < iso(race["start_at"]))
+    return bool(receipt and iso(snapshot["observed_at"]) <= iso(receipt) < iso(snapshot_deadline(race, snapshot)))
 
 
 def picks(snapshot, model, threshold=150, scope="all120"):

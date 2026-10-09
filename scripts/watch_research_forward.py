@@ -85,9 +85,11 @@ def payload(state, now):
             if (receipt and snapshot["snapshot_id"] not in state.get("forward_observations_sent", [])
                     and snapshot["snapshot_id"] not in state.get("forward_observations_ignored", [])
                     and 0 <= (now-edge.iso(receipt)).total_seconds() <= 25
-                    and edge.iso(race["start_at"])>now):
+                    and edge.iso(race["start_at"])>now
+                    and edge.iso(edge.snapshot_deadline(race, snapshot))>now):
                 observations.append({**{k: race[k] for k in (
                     "race_id", "race_date", "venue_code", "venue", "race_no", "start_at")},
+                    "start_at": edge.snapshot_deadline(race, snapshot),
                     "snapshot": snapshot, "receipt": receipt})
         result = race.get("result")
         recorded_race = any(s["snapshot_id"] in state.get("forward_observations_sent", [])
