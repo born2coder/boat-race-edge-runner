@@ -35,7 +35,7 @@ export default async function TodayPage() {
             r.includes("範囲外"),
         ),
     )
-      ? "必要なデータが不足しているか、オッズが古いため、買い目を表示していません。"
+      ? "条件を満たすデータがありません。"
       : null;
   return (
     <div className="fp-page">
@@ -67,12 +67,7 @@ export default async function TodayPage() {
       <ErrorPanel message={feed.error} />
       {!feed.error && qualityError && (
         <div className="fp-notice error" role="alert">
-          <strong>現在表示できる買い目がありません</strong>
-          <p>{qualityError}</p>
-          <p>
-            この表示は、データ収集の停止を示すものではありません。
-            最新の保存内容を見るには「保存済みデータを再読込」を押してください。
-          </p>
+          <strong>{qualityError}</strong>
         </div>
       )}
       <ProbabilityNote />
