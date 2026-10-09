@@ -35,7 +35,7 @@ export default async function TodayPage() {
             r.includes("範囲外"),
         ),
     )
-      ? "保存済み判定の品質・鮮度を確認できません。"
+      ? "必要なデータが不足しているか、オッズが古いため、買い目を表示していません。"
       : null;
   return (
     <div className="fp-page">
@@ -64,7 +64,17 @@ export default async function TodayPage() {
       {feed.cancelled !== null && feed.cancelled > 0 && (
         <p className="fp-note">中止 {feed.cancelled}R（終了・残りから除外）</p>
       )}
-      <ErrorPanel message={feed.error ?? qualityError} />
+      <ErrorPanel message={feed.error} />
+      {!feed.error && qualityError && (
+        <div className="fp-notice error" role="alert">
+          <strong>現在表示できる買い目がありません</strong>
+          <p>{qualityError}</p>
+          <p>
+            この表示は、データ収集の停止を示すものではありません。
+            最新の保存内容を見るには「保存済みデータを再読込」を押してください。
+          </p>
+        </div>
+      )}
       <ProbabilityNote />
       <CalculationDetails version={RULE_VERSION} />
       <UpcomingRaces
