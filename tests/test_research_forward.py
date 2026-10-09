@@ -87,6 +87,34 @@ class ForwardPayloadTests(unittest.TestCase):
         self.assertEqual(self.race["snapshots"],{})
         self.assertEqual(flow.payload(self.state,self.now)["observations"],[])
 
+    def test_incomplete_odds_exclude_only_failed_phase_and_keep_healthy_payload(self):
+        for count in (0, 24, 60, 119):
+            with self.subTest(count=count):
+                bad=copy.deepcopy(self.race)
+                bad["race_id"]="BR:20261008:08:08"
+                bad["snapshots"]={}
+                bad["errors"]={"t15":{"at":self.now.isoformat(),
+                    "reason":f"Official odds grid was incomplete: {count}/120"}}
+                self.state["races"]["202610080808"]=bad
+                with tempfile.TemporaryDirectory() as folder,patch("builtins.print"):
+                    path=Path(folder)/"day.json"
+                    flow.check_observations(self.state,self.now,path)
+                    saved=json.loads(path.read_text())
+                self.assertIsNone(flow.edge.phase_due(bad,self.now))
+                self.assertEqual(flow.edge.phase_due(bad,self.now+timedelta(minutes=5)),"t10")
+                self.assertEqual(bad["snapshots"],{})
+                observations=flow.payload(saved,self.now)["observations"]
+                self.assertEqual([o["snapshot"]["snapshot_id"] for o in observations],["new"])
+                self.assertIn("t15",saved["races"]["202610080808"]["forward_skipped_phases"])
+
+    def test_unknown_or_impossible_odds_errors_still_stop(self):
+        for reason in ("Official odds grid was incomplete: 121/120", "Invalid odds",
+                       "Model combination ordering differs"):
+            with self.subTest(reason=reason),tempfile.TemporaryDirectory() as folder,patch("builtins.print"):
+                self.race["errors"]={"t15":{"at":self.now.isoformat(),"reason":reason}}
+                with self.assertRaises(RuntimeError):
+                    flow.check_observations(self.state,self.now,Path(folder)/"day.json")
+
     def test_http_error_preserves_allowlisted_evidence_without_retry_or_secrets(self):
         headers=Message()
         headers["Retry-After"]="40"

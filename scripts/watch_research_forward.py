@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import sys
 import tempfile
@@ -62,7 +63,11 @@ def check_observations(state, since, path):
                            "Request completed outside its prospective window"}
         fatal = []
         for error in errors:
-            if error["reason"] in quality_reasons:
+            # A withdrawal leaves 5P3=60 prices; other missing prices also
+            # invalidate only this observation. Never fabricate/renormalize
+            # odds or retry the phase. Unknown failures still stop the writer.
+            incomplete = re.fullmatch(r"Official odds grid was incomplete: (\d{1,3})/120", error["reason"])
+            if error["reason"] in quality_reasons or (incomplete and int(incomplete[1]) < 120):
                 race = state["races"][edge.raw_id(error["raceId"])]
                 race.setdefault("forward_skipped_phases", {}).setdefault(error["phase"],
                     {"at": error["at"], "reason": error["reason"]})
