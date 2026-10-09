@@ -35,7 +35,7 @@ export default async function TodayPage() {
             r.includes("範囲外"),
         ),
     )
-      ? "保存済み判定の品質・鮮度を確認できません。"
+      ? "条件を満たすデータがありません。"
       : null;
   return (
     <div className="fp-page">
@@ -64,7 +64,12 @@ export default async function TodayPage() {
       {feed.cancelled !== null && feed.cancelled > 0 && (
         <p className="fp-note">中止 {feed.cancelled}R（終了・残りから除外）</p>
       )}
-      <ErrorPanel message={feed.error ?? qualityError} />
+      <ErrorPanel message={feed.error} />
+      {!feed.error && qualityError && (
+        <div className="fp-notice error" role="alert">
+          <strong>{qualityError}</strong>
+        </div>
+      )}
       <ProbabilityNote />
       <CalculationDetails version={RULE_VERSION} />
       <UpcomingRaces
