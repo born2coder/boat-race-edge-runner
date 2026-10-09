@@ -1,8 +1,9 @@
 import copy
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
-from scripts.edge_official import parse_preview, parse_result, archive_result
+from scripts.edge_official import parse_preview, parse_result, archive_result, parse_schedule, fetch_preview_bundle
 
 FIXTURES = Path(__file__).parent / "fixtures"
 RACE = {"race_id": "BR:20260914:02:02", "race_date": "2026-09-14", "venue_code": "02", "race_no": 2,
@@ -28,6 +29,25 @@ class OfficialTests(unittest.TestCase):
     def test_exhibition_flying_start_is_a_negative_time(self):
         value = parse_preview(self.preview.replace(">.08<", ">F.08<", 1), RACE, EVIDENCE)
         self.assertEqual(value["stt"]["艇1_スタート展示"], -.08)
+
+    def test_schedule_is_available_even_when_exhibition_is_missing(self):
+        html = self.preview.replace(">6.60<", "> <").replace(">11:16<", ">11:25<")
+        with patch("scripts.edge_official.page", return_value=(html, EVIDENCE)) as fetch:
+            value = fetch_preview_bundle(RACE)
+        fetch.assert_called_once()
+        self.assertEqual(value["deadlines"][2], "11:25")
+        self.assertEqual(len(value["deadlines"]), 12)
+        self.assertIsNone(value["preview"])
+        self.assertEqual(value["error"], "Official numeric field missing")
+
+    def test_schedule_rejects_wrong_identity_missing_and_invalid_clocks(self):
+        for html in (self.preview.replace(">11:16<", "> <"),
+                     self.preview.replace(">11:16<", ">25:99<"),
+                     self.preview.replace(">11:16<", ">10:30<"),
+                     self.preview.replace("rno=12&amp;jcd=02", "rno=12&amp;jcd=03")):
+            with self.subTest(html=html[:40]):
+                with self.assertRaises(ValueError):
+                    parse_schedule(html, RACE)
 
     def test_wrong_race_date_or_roster_is_rejected(self):
         for field, value in [("race_date", "2026-09-13"), ("race_no", 3), ("venue_code", "03")]:

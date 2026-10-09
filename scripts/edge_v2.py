@@ -17,7 +17,7 @@ if __package__ in (None, ""):
 
 from scripts import edge_shadow, prepare_forward, edge_official, build_fixture
 from scripts.edge_v2_model import predict_full
-from scripts.edge_v2_metrics import VERSION, PHASES, comparison, aggregate_days, snapshot_hash, iso
+from scripts.edge_v2_metrics import VERSION, PHASES, comparison, aggregate_days, snapshot_hash, snapshot_deadline, iso
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / "state" / "edge_v2"
@@ -78,7 +78,7 @@ def capture(race, phase, grid, models, computed_at):
         raise ValueError("Model combination ordering differs")
     snapshot = {
         "version": VERSION, "race_id": race["race_id"], "phase": phase, **timing,
-        "computed_at": computed_at, "minutes_before": minutes,
+        "computed_at": computed_at, "minutes_before": minutes, "close_at": race["start_at"],
         "combinations": combos, "odds": [odds[c] for c in combos],
         "morning": morning["probabilities"],
         "exhibition": exhibition["probabilities"] if exhibition else None,
@@ -188,21 +188,62 @@ class Observer:
         self.frozen_date = None
         self.preview_cache = {}
         self.archive_checks = {}
+        self.official_deadlines = {}
+
+    def apply_schedule(self, source, bundle, races):
+        evidence = bundle["evidence"]
+        for race in races.values():
+            if (race["race_date"] != source["race_date"] or race["venue_code"] != source["venue_code"]
+                    or race.get("result")):
+                continue
+            previous = race.get("deadline_evidence")
+            if previous and iso(previous["obtained_at"]) >= iso(evidence["obtained_at"]):
+                continue
+            clock = bundle["deadlines"][int(race["race_no"])]
+            deadline = f"{race['race_date']}T{clock}:00+09:00"
+            if iso(deadline) != iso(race["start_at"]):
+                # Freeze the old assessment boundary outside immutable raw snapshots.
+                for snapshot in race.get("snapshots", {}).values():
+                    race.setdefault("snapshot_deadlines", {}).setdefault(
+                        snapshot["snapshot_id"], snapshot_deadline(race, snapshot))
+                race.setdefault("deadline_changes", []).append({
+                    "previous": race["start_at"], "current": deadline, "evidence": evidence})
+            race["start_at"], race["start_time_jst"] = deadline, clock
+            race["deadline_evidence"] = evidence
+            self.official_deadlines[raw_id(race["race_id"])] = clock
+
+    def overlay_deadlines(self, data, date):
+        """Update only the disposable input checkout, before the frozen loader runs."""
+        import pandas as pd
+        if not self.official_deadlines:
+            return
+        path = prepare_forward._day_path(data, "programs/title", date)
+        titles = pd.read_csv(path, dtype={"レースコード": str})
+        clocks = titles["レースコード"].map(self.official_deadlines)
+        titles.loc[clocks.notna(), "電話投票締切予定"] = clocks[clocks.notna()]
+        titles.to_csv(path, index=False)
 
     def overlay_previews(self, data, date, due, races):
         """Fresh official inputs, obtained before inference; never backfill old snapshots."""
         import pandas as pd
         with ThreadPoolExecutor(max_workers=6) as pool:
-            futures = {pool.submit(edge_official.fetch_preview, races[rid]): rid for rid in due}
+            futures = {pool.submit(edge_official.fetch_preview_bundle, races[rid]): rid for rid in due}
             for future in as_completed(futures):
                 rid = futures[future]
                 try:
-                    preview = future.result()
+                    bundle = future.result()
+                    self.apply_schedule(races[rid], bundle, races)
+                    preview = bundle["preview"]
+                    if preview is None:
+                        raise ValueError(bundle["error"])
                     if iso(preview["evidence"]["obtained_at"]) >= iso(races[rid]["start_at"]):
                         raise ValueError("Preview arrived after closing")
                     self.preview_cache[rid] = preview
                     races[rid]["preview_status"] = "official_source_ready"
-                    races[rid].setdefault("preview_observations", {})[due[rid]] = preview
+                    races[rid].pop("preview_error", None)
+                    phase = phase_due(races[rid], utcnow())
+                    if phase:
+                        races[rid].setdefault("preview_observations", {})[phase] = preview
                 except Exception as error:
                     races[rid]["preview_status"] = "official_source_unavailable"
                     races[rid]["preview_error"] = {"at": utcnow().isoformat(), "reason": str(error)[:160]}
@@ -218,6 +259,7 @@ class Observer:
 
     def load(self, date):
         data = prepare_forward._clone_data(self.session / "boatracecsv", date)
+        self.overlay_deadlines(data, date)
         extracted = self.session / "model"
         if not extracted.exists():
             encrypted, plain = self.session / prepare_forward.MODEL_FILENAME, self.session / "model.tar.gz"
@@ -236,6 +278,8 @@ class Observer:
 
     def tick(self, state):
         import pandas as pd
+        self.official_deadlines = {raw_id(r["race_id"]): r["start_time_jst"]
+                                   for r in state["races"].values() if r.get("deadline_evidence")}
         data, schedule = self.load(state["date"])
         now = utcnow()
         cards, titles = prepare_forward._load_cards(data, state["date"])
@@ -254,11 +298,16 @@ class Observer:
         due = {rid: phase for rid, phase in due.items() if phase}
         morning, exhibition = {}, {}
         if due:
-            frame = schedule[schedule["race_id"].astype(str).isin(due)].copy()
-            morning = predict_full(frame, self.models["morning"], self.hybrid, self.module, "morning", pd.Timestamp(now))
             self.overlay_previews(data, state["date"], due, state["races"])
+            self.overlay_deadlines(data, state["date"])
+            # A changed deadline can move this request into another phase, or outside
+            # every window. Do not consume a phase using the old schedule or retry POSTs.
+            due = {rid: phase_due(state["races"][rid], utcnow()) for rid in due}
+            due = {rid: phase for rid, phase in due.items() if phase}
             refreshed = prepare_forward._load_service_day_compatible(self.hybrid, data, state["date"])
             exhibition_frame = refreshed[refreshed["race_id"].astype(str).isin(due)].copy()
+            morning = predict_full(exhibition_frame, self.models["morning"], self.hybrid, self.module,
+                                   "morning", pd.Timestamp(utcnow()))
             rejected = {}
             exhibition = predict_full(exhibition_frame, self.models["exhibition"], self.hybrid, self.module,
                                       "exhibition", pd.Timestamp(utcnow()), diagnostics=rejected)

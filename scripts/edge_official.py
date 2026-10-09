@@ -131,6 +131,48 @@ def fetch_preview(race):
     return parse_preview(html, race, evidence)
 
 
+def parse_schedule(html, race):
+    """Read all twelve deadlines from the same identity-checked official page."""
+    soup = document(html, race, "beforeinfo")
+    rows = [row for row in soup.select("tbody tr")
+            if row.find("td") and clean(row.find("td").get_text()) == "締切予定時刻"]
+    if len(rows) != 1:
+        raise ValueError("Official deadline row missing or ambiguous")
+    row = rows[0]
+    links = row.find_parent("table").select("thead th a[href]")
+    cells = row.find_all("td", recursive=False)[1:]
+    if len(links) != 12 or len(cells) != 12:
+        raise ValueError("Official deadline row incomplete")
+    deadlines = {}
+    for expected, (link, cell) in enumerate(zip(links, cells), 1):
+        url = urlparse(link["href"]); query = parse_qs(url.query)
+        if (url.path != "/owpc/pc/race/beforeinfo"
+                or query.get("hd") != [race["race_date"].replace("-", "")]
+                or query.get("jcd") != [f"{int(race['venue_code']):02d}"]
+                or query.get("rno") not in ([str(expected)], [f"{expected:02d}"])):
+            raise ValueError("Official deadline identity does not match")
+        clock = clean(cell.get_text())
+        if not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", clock):
+            raise ValueError("Official deadline time missing or invalid")
+        deadlines[expected] = clock
+    if list(deadlines.values()) != sorted(set(deadlines.values())):
+        raise ValueError("Official deadlines are not strictly increasing")
+    return deadlines
+
+
+def fetch_preview_bundle(race):
+    # No additional request: a missing exhibition must not hide a changed deadline.
+    html, evidence = page(race, "beforeinfo")
+    deadlines = parse_schedule(html, race)
+    current = dict(race, start_time_jst=deadlines[int(race["race_no"])])
+    try:
+        preview = parse_preview(html, current, evidence)
+        error = None
+    except ValueError as exc:
+        preview, error = None, str(exc)
+    return {"deadlines": deadlines, "evidence": evidence, "preview": preview, "error": error}
+
+
 def parse_result(html, race, evidence):
     soup = document(html, race, "raceresult")
     def table_with(title):

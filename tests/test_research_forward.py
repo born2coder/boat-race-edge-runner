@@ -27,6 +27,15 @@ class ForwardPayloadTests(unittest.TestCase):
         self.state["forward_observations_ignored"]=[]
         self.race["start_at"]=self.now.isoformat()
         self.assertEqual(flow.payload(self.state,self.now)["observations"],[])
+    def test_deadline_change_never_revives_expired_snapshot_or_closed_race(self):
+        self.race["snapshot_deadlines"]={"new":(self.now-timedelta(seconds=1)).isoformat()}
+        self.assertEqual(flow.payload(self.state,self.now)["observations"],[])
+        self.race["snapshot_deadlines"]["new"]=(self.now+timedelta(minutes=10)).isoformat()
+        sent=flow.payload(self.state,self.now)["observations"][0]
+        self.assertEqual(sent["start_at"],self.race["snapshot_deadlines"]["new"])
+        self.race["start_at"]=self.now.isoformat()
+        self.assertEqual(flow.payload(self.state,self.now)["observations"],[])
+
     def test_results_only_for_recorded_cohort_and_unchanged_result_dedup(self):
         self.race["result"]={"combination":"1-2-3","payout_per_100_yen":1000,"refunded_lanes":[],
                              "evidence":{"obtained_at":self.now.isoformat()}}
