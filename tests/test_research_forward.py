@@ -10,6 +10,11 @@ from unittest.mock import patch
 from scripts import watch_research_forward as flow
 
 class ForwardPayloadTests(unittest.TestCase):
+    def test_operating_hours_include_midnight_races_but_stop_at_day_boundary(self):
+        for hour, expected in [(6, False), (7, True), (21, True), (22, True), (23, True), (0, False)]:
+            now = datetime(2026, 10, 9, hour, 59, tzinfo=flow.prepare_forward.JST)
+            self.assertEqual(flow.operating_hours(now), expected)
+
     def setUp(self):
         self.now=datetime.now(timezone.utc)
         self.race={"race_id":"BR:20261008:01:01","race_date":"2026-10-08","venue_code":"01",

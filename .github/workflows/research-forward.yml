@@ -1,8 +1,8 @@
 name: Record bounded prospective research
 on:
   schedule:
-    # 07:17, 12:17, 17:17 JST; overlapping healthy runs serialize.
-    - cron: "17 22,3,8 * * *"
+    # 07:17, 12:17, 17:17, 22:17 JST; midnight racing, serialized runs.
+    - cron: "17 22,3,8,13 * * *"
   workflow_dispatch:
     inputs:
       once:

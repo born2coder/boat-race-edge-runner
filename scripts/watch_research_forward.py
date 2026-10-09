@@ -23,6 +23,10 @@ from scripts.edge_publication import DataPublisher
 MIN_SEND_INTERVAL_SECONDS = 60
 MAX_BATCH_ITEMS = 24
 
+def operating_hours(now):
+    # Midnight racing continues after 22:00. Keep the same daily safety caps.
+    return 7 <= now.astimezone(prepare_forward.JST).hour < 24
+
 def wait_for_send_slot(last_send):
     """Wait before capturing fresh observations, never after capturing them."""
     if last_send is not None:
@@ -206,7 +210,7 @@ def main():
         initialized = set()
         while time.monotonic()-started<315*60:
             now = edge.utcnow()
-            if not 7<=now.astimezone(prepare_forward.JST).hour<22: return
+            if not operating_hours(now): return
             date = now.astimezone(prepare_forward.JST).date().isoformat()
             path = edge.STATE/"days"/(date+".json")
             state = json.loads(path.read_text()) if path.exists() else {
@@ -226,7 +230,7 @@ def main():
                 if time.monotonic()-started >= 315*60: return
                 tick = time.monotonic()
                 now = edge.utcnow()
-                if not 7<=now.astimezone(prepare_forward.JST).hour<22: return
+                if not operating_hours(now): return
                 observer.tick(state, max_observations=MAX_BATCH_ITEMS)
                 check_observations(state, now, path)
                 prepare_forward._atomic_json(path,state); publisher.persist()

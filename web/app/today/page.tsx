@@ -73,6 +73,7 @@ export default async function TodayPage() {
       <ProbabilityNote />
       <CalculationDetails version={RULE_VERSION} />
       <UpcomingRaces
+        initialNow={now}
         observations={observations}
         stopped={feed.stopped}
         error={feed.error ?? qualityError}
