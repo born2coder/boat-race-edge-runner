@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { aggregate, CATEGORY_LABELS, type Entry } from "@/lib/four-page";
 import { venueNames } from "@/lib/venues";
 import {
@@ -11,14 +10,11 @@ import {
   outcomeLabels,
 } from "@/components/four-page-common";
 export function HistoryRaces({ groups }: { groups: Entry[][] }) {
-  const [open, setOpen] = useState<Record<string, boolean>>({});
   return (
     <div className="fp-race-list">
       {groups.map((rows) => {
         const first = rows[0],
-          a = aggregate(rows),
-          expanded = Boolean(open[first.raceId]),
-          id = "history-" + first.raceId.replaceAll(":", "-");
+          a = aggregate(rows);
         const payout = rows.every((e) => e.payoutYen !== null)
           ? rows.reduce((s, e) => s + e.payoutYen!, 0)
           : null;
@@ -39,6 +35,7 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
                   {venueNames[first.venueCode] ?? first.venueCode}{" "}
                   {first.raceNo}R
                 </h2>
+                <span>締切 {stamp(rows.filter((e) => Number.isFinite(Date.parse(e.closeAt ?? ""))).map((e) => e.closeAt!).sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null)}</span>
               </div>
               <div className="fp-race-summary">
                 <span>
@@ -69,6 +66,8 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
                 </strong>
               </div>
             </header>
+            <details className="fp-details">
+            <summary>買い目を表示（全{rows.length}点）</summary>
             <div className="fp-history-head" aria-hidden="true">
               <span>買い目・記録時判定</span>
               <span>保守確率</span>
@@ -76,11 +75,10 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
               <span>結果</span>
               <span>仮想購入・払戻・収支</span>
             </div>
-            <div id={id}>
-              {rows.map((e, i) => (
+            <div>
+              {rows.map((e) => (
                 <article
                   key={e.id}
-                  hidden={i >= 4 && !expanded}
                   className="fp-history-row"
                   data-pick={e.combination}
                 >
@@ -189,19 +187,7 @@ export function HistoryRaces({ groups }: { groups: Entry[][] }) {
                 </article>
               ))}
             </div>
-            {rows.length > 4 && (
-              <button
-                type="button"
-                className="fp-expand"
-                aria-expanded={expanded}
-                aria-controls={id}
-                onClick={() => setOpen({ ...open, [first.raceId]: !expanded })}
-              >
-                {expanded
-                  ? "▲ 閉じる"
-                  : `▼ 残り${rows.length - 4}点の買い目を表示`}
-              </button>
-            )}
+            </details>
           </section>
         );
       })}

@@ -462,6 +462,16 @@ export function groupRaces(entries: Entry[]) {
         a[0].raceNo - b[0].raceNo,
     );
 }
+export function historyRaces(entries: Entry[]) {
+  const deadline = (rows: Entry[]) => Math.max(...rows.map((e) => {
+    const time = Date.parse(e.closeAt ?? "");
+    return Number.isFinite(time) ? time : -Infinity;
+  }));
+  return groupRaces(entries).sort((a, b) => {
+    const left = deadline(a), right = deadline(b);
+    return left === right ? 0 : left > right ? -1 : 1;
+  });
+}
 export function aggregate(entries: Entry[]) {
   const seen = new Set<string>();
   entries = entries.filter((e) => {

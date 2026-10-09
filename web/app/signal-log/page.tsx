@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   filtersFrom,
   selectEntries,
-  groupRaces,
+  historyRaces,
   linkFilters,
 } from "@/lib/four-page";
 import {
@@ -52,13 +52,13 @@ export default async function HistoryPage({
     loadModels(),
   ]);
   const selected = selectEntries(data.entries, f, venueNames),
-    groups = groupRaces(selected),
+    groups = historyRaces(selected),
     pageGroups = groups.slice((f.page - 1) * 20, f.page * 20);
   let detailed = pageGroups;
   let detailError: string | null = null;
   try {
     const entries = await detailsFor(pageGroups.flat());
-    detailed = groupRaces(entries);
+    detailed = historyRaces(entries);
   } catch {
     detailError =
       "判断の詳細履歴を取得できませんでした。初回仮想購入値と精算は保持しています。";
@@ -81,7 +81,7 @@ export default async function HistoryPage({
             ? `${groups.length}レース・${selected.length}点`
             : "—"}
         </span>
-        <span>開催日が新しい順・記録時期待回収率順</span>
+        <span>締切時刻が遅い順・買い目はクリックで表示</span>
       </div>
       {detailed.length ? (
         <HistoryRaces groups={detailed} />
