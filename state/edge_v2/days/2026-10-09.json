@@ -1,7 +1,10 @@
 {
   "date": "2026-10-09",
   "forward_last_send_completed_at": "2026-10-09T02:21:14.835811+00:00",
-  "forward_observations_ignored": [],
+  "forward_observations_ignored": [
+    "4fb7ef3e4ca1fa6b4891c597a920e13340807ce478739d65747a6a59416ef36d",
+    "2029932cfa483a7576c3652570bdc4a19de4ddd4dccbe5e8d2a4820f601ec0ce"
+  ],
   "forward_observations_sent": [
     "b7cf6ad9eb355c1ebffea66649c85293f06fd61b0baabd1dbb04ac671f24e3bd",
     "ce962f2f2b4847036f1d48c433fc681b5ed76f676cca8093ad8aea41beec7189",
@@ -135,7 +138,7 @@
     "BR:20261009:10:02:b60ca07adc1d1e0f27709aba512a9bd22a06927accfa47804e5eaebbaf8a62d8"
   ],
   "last_error": null,
-  "last_tick_at": "2026-10-09T02:22:36.271715+00:00",
+  "last_tick_at": "2026-10-09T02:23:55.302320+00:00",
   "races": {
     "202610090101": {
       "eligible_roster": true,
@@ -12140,6 +12143,11 @@
       "venue_code": "05"
     },
     "202610090502": {
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "errors": {
         "t30": {
@@ -14326,6 +14334,22 @@
       "venue_code": "05"
     },
     "202610090503": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T11:43:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T11:40:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "errors": {
         "t30": {
@@ -14344,10 +14368,10 @@
         }
       },
       "preview_error": {
-        "at": "2026-10-09T02:16:01.614239+00:00",
+        "at": "2026-10-09T02:23:55.223543+00:00",
         "reason": "Official numeric field missing"
       },
-      "preview_status": "model_input_incomplete",
+      "preview_status": "official_source_unavailable",
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:03",
       "race_name": "一般",
@@ -14381,6 +14405,9 @@
           "racer_id": "5406"
         }
       ],
+      "snapshot_deadlines": {
+        "cea324655b318409c01febd8d51c3fa77bba5d5c27491edc80f3431710f4a1d7": "2026-10-09T11:40:00+09:00"
+      },
       "snapshots": {
         "t20": {
           "combinations": [
@@ -14765,12 +14792,28 @@
           "version": "edge-full120-v2"
         }
       },
-      "start_at": "2026-10-09T11:40:00+09:00",
-      "start_time_jst": "11:40",
+      "start_at": "2026-10-09T11:43:00+09:00",
+      "start_time_jst": "11:43",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090504": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T12:15:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T12:12:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:04",
@@ -14803,12 +14846,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T12:12:00+09:00",
-      "start_time_jst": "12:12",
+      "start_at": "2026-10-09T12:15:00+09:00",
+      "start_time_jst": "12:15",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090505": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T12:42:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T12:39:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:05",
@@ -14841,12 +14900,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T12:39:00+09:00",
-      "start_time_jst": "12:39",
+      "start_at": "2026-10-09T12:42:00+09:00",
+      "start_time_jst": "12:42",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090506": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T13:13:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T13:10:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:06",
@@ -14879,12 +14954,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T13:10:00+09:00",
-      "start_time_jst": "13:10",
+      "start_at": "2026-10-09T13:13:00+09:00",
+      "start_time_jst": "13:13",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090507": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T13:46:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T13:43:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:07",
@@ -14917,12 +15008,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T13:43:00+09:00",
-      "start_time_jst": "13:43",
+      "start_at": "2026-10-09T13:46:00+09:00",
+      "start_time_jst": "13:46",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090508": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T14:17:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T14:14:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:08",
@@ -14955,12 +15062,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T14:14:00+09:00",
-      "start_time_jst": "14:14",
+      "start_at": "2026-10-09T14:17:00+09:00",
+      "start_time_jst": "14:17",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090509": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T14:49:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T14:46:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:09",
@@ -14993,12 +15116,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T14:46:00+09:00",
-      "start_time_jst": "14:46",
+      "start_at": "2026-10-09T14:49:00+09:00",
+      "start_time_jst": "14:49",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090510": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T15:18:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T15:15:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:10",
@@ -15031,12 +15170,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T15:15:00+09:00",
-      "start_time_jst": "15:15",
+      "start_at": "2026-10-09T15:18:00+09:00",
+      "start_time_jst": "15:18",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090511": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T15:53:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T15:50:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:11",
@@ -15069,12 +15224,28 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T15:50:00+09:00",
-      "start_time_jst": "15:50",
+      "start_at": "2026-10-09T15:53:00+09:00",
+      "start_time_jst": "15:53",
       "venue": "多摩川",
       "venue_code": "05"
     },
     "202610090512": {
+      "deadline_changes": [
+        {
+          "current": "2026-10-09T16:31:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+            "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+          },
+          "previous": "2026-10-09T16:28:00+09:00"
+        }
+      ],
+      "deadline_evidence": {
+        "obtained_at": "2026-10-09T02:23:55.159887+00:00",
+        "sha256": "cec9fba9b3d7d8650edc9fea1537b10a048e8084bea8336fda66244c7a06f3ac",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261009&jcd=05&rno=3&_edge_minute=29858543"
+      },
       "eligible_roster": true,
       "race_date": "2026-10-09",
       "race_id": "BR:20261009:05:12",
@@ -15107,8 +15278,8 @@
         }
       ],
       "snapshots": {},
-      "start_at": "2026-10-09T16:28:00+09:00",
-      "start_time_jst": "16:28",
+      "start_at": "2026-10-09T16:31:00+09:00",
+      "start_time_jst": "16:31",
       "venue": "多摩川",
       "venue_code": "05"
     },
