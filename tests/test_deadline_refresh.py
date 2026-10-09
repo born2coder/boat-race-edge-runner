@@ -74,6 +74,34 @@ class DeadlineRefreshTests(unittest.TestCase):
         self.assertEqual(self.race["start_time_jst"], "10:14")
         self.assertEqual(self.race["preview_error"]["reason"], "Official numeric field missing")
 
+    def test_capture_capacity_is_reserved_before_fetch_and_defers_fresh_work(self):
+        clock=datetime.fromisoformat("2026-10-09T09:50:00+09:00")
+        races={str(i):dict(copy.deepcopy(self.race), race_id=str(i), eligible_roster=True) for i in range(30)}
+        state={"date":"2026-10-09","races":races}
+        frame=pd.DataFrame([{"race_id":rid} for rid in races])
+        self.observer.models={"morning":object(),"exhibition":object()}
+        self.observer.hybrid=self.observer.module=object()
+        def record(row,*args):
+            return dict(races[str(row["race_id"])],entries=[{"lane_no":i,"racer_id":str(i)} for i in range(1,7)])
+        with patch.object(self.observer,"load",return_value=(Path("unused"),frame)), \
+                patch.object(self.observer,"overlay_previews") as preview, \
+                patch.object(self.observer,"overlay_deadlines"), \
+                patch.object(prepare_forward,"_load_cards",return_value=(None,None)), \
+                patch.object(prepare_forward,"_race_record",side_effect=record), \
+                patch.object(prepare_forward,"_race_is_publishable",return_value=True), \
+                patch.object(prepare_forward,"_load_service_day_compatible",return_value=frame), \
+                patch.object(edge_v2,"utcnow",return_value=clock), \
+                patch.object(edge_v2,"predict_full",return_value={}), \
+                patch.object(edge_v2,"fetch_grid",return_value=None) as fetch, \
+                patch.object(edge_v2,"capture"):
+            self.observer.tick(state,max_observations=24)
+        selected=preview.call_args.args[2]
+        self.assertEqual(len(selected),24)
+        self.assertEqual(fetch.call_count,24)
+        for rid in set(races)-set(selected):
+            self.assertEqual(edge_v2.phase_due(races[rid],clock),"t15")
+            self.assertEqual(races[rid]["snapshots"],{})
+
     def test_tick_rechecks_window_after_preview_and_reloads_model_input(self):
         rid = "202610092304"
         state = {"date": "2026-10-09", "races": {rid: self.race}}

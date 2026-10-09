@@ -50,6 +50,54 @@ class ForwardPayloadTests(unittest.TestCase):
     def test_batch_overflow_halts_instead_of_sampling(self):
         self.state["races"]={str(i):copy.deepcopy(self.race) for i in range(25)}
         with self.assertRaises(RuntimeError):flow.payload(self.state,self.now)
+
+    def test_live_and_archive_result_receipts_are_equivalent_but_corrections_are_not(self):
+        self.race["result"]={"combination":"1-2-3","payout_per_100_yen":1000,
+                             "refunded_lanes":[],"evidence":{"obtained_at":self.now.isoformat()}}
+        old={k:self.race["result"].get(k) for k in ("combination","payout_per_100_yen","refunded_lanes","cancelled")}
+        legacy=flow.result_fingerprint(self.race["race_id"],old)
+        canonical=flow.result_key(self.race)
+        self.race["result"]["cancelled"]=False
+        self.assertEqual(flow.result_key(self.race),canonical)
+        self.assertTrue(flow.result_was_sent(self.race,[legacy]))
+        self.race["result"]["payout_per_100_yen"]=1100
+        self.assertFalse(flow.result_was_sent(self.race,[legacy,canonical]))
+        self.race["result"]["cancelled"]=True
+        self.assertFalse(flow.result_was_sent(self.race,[legacy,canonical]))
+
+    def test_result_backlog_drains_across_restart_without_loss_or_duplicates(self):
+        state={"date":"2026-10-08","races":{},"forward_observations_sent":[]}
+        for i in range(60):
+            race=copy.deepcopy(self.race)
+            race["race_id"]=f"BR:20261008:{i//12+1:02}:{i%12+1:02}"
+            race["snapshots"]={"t15":{"snapshot_id":str(i)}}
+            race["result"]={"combination":"1-2-3","payout_per_100_yen":1000,
+                "refunded_lanes":[],"evidence":{"obtained_at":self.now.isoformat()}}
+            state["races"][flow.edge.raw_id(race["race_id"])]=race
+            state["forward_observations_sent"].append(str(i))
+        received=[];sizes=[]
+        with patch("builtins.print"):
+            for _ in range(3):
+                body=flow.bound_results(flow.payload(state,self.now))
+                sizes.append(len(body["results"]))
+                # Before success, a restart must keep the exact same queue.
+                replay=flow.bound_results(flow.payload(json.loads(json.dumps(state)),self.now))
+                self.assertEqual(replay,body)
+                received.extend(r["raceId"] for r in body["results"])
+                flow.acknowledge_results(state,body["results"])
+                state=json.loads(json.dumps(state))
+        self.assertEqual(sizes,[24,24,12])
+        self.assertEqual(len(set(received)),60)
+        self.assertEqual(flow.payload(state,self.now)["results"],[])
+
+    def test_previous_and_current_day_share_one_result_limit(self):
+        def rows(date):return [{"raceId":f"BR:{date}:01:{i:02}","result":{"confirmedAt":date}} for i in range(1,21)]
+        with patch("builtins.print"):
+            body=flow.bound_results({"observations":["fresh"],"results":rows("20261009")},
+                                    {"results":rows("20261008")})
+        self.assertEqual(len(body["results"]),24)
+        self.assertEqual(body["observations"],["fresh"])
+        self.assertEqual(sum(r["raceId"].startswith("BR:20261008") for r in body["results"]),20)
     def test_send_refuses_unreviewed_destination_before_network(self):
         with patch.dict(flow.os.environ,{"EDGE_SITE_INGEST_ENDPOINT":"https://other.example/api/internal/ingest"}):
             with patch.object(flow.urllib.request,"urlopen") as network:
@@ -160,7 +208,8 @@ class ForwardPayloadTests(unittest.TestCase):
             def acknowledge(self,*args): pass
         class Observer:
             def __init__(self,*args): pass
-            def tick(self,state):
+            def tick(self,state, max_observations=None):
+                assert max_observations == 24
                 captures.append(clock[0]); clock[0]+=32 if len(captures)==1 else 11
             def settle(self,state): clock[0]+=9
         error=flow.urllib.error.HTTPError("https://example.test",429,"limited",None,None)
@@ -182,7 +231,7 @@ class ForwardPayloadTests(unittest.TestCase):
                  patch.object(flow,"send",side_effect=send),patch("builtins.print"):
                 # Reproduce an observation send followed by a result-only send.
                 with patch.object(flow,"payload",side_effect=[{"observations":[{"snapshot":{"snapshot_id":"new"}}],"results":[]},
-                    {"observations":[],"results":[{"raceId":"BR:20261008:01:04"}]}]):
+                    {"observations":[],"results":[{"raceId":"BR:20261008:01:04","result":{"confirmedAt":base.isoformat()}}]}]):
                     with self.assertRaises(flow.urllib.error.HTTPError): flow.main()
             stop=json.loads((root/"forward-paused.json").read_text())
             saved=json.loads(day.read_text())

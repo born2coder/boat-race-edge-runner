@@ -21,6 +21,7 @@ from scripts import edge_v2 as edge, prepare_forward
 from scripts.edge_publication import DataPublisher
 
 MIN_SEND_INTERVAL_SECONDS = 60
+MAX_BATCH_ITEMS = 24
 
 def wait_for_send_slot(last_send):
     """Wait before capturing fresh observations, never after capturing them."""
@@ -102,7 +103,7 @@ def payload(state, now):
         if result and recorded_race:
             key = result_key(race)
             confirmed = result.get("evidence", {}).get("obtained_at")
-            if confirmed and key not in state.get("forward_results_sent", []):
+            if confirmed and not result_was_sent(race, state.get("forward_results_sent", [])):
                 results.append({"raceId": race["race_id"], "result": {
                     "cancelled": bool(result.get("cancelled")),
                     "refundedLanes": result.get("refunded_lanes", []),
@@ -110,7 +111,7 @@ def payload(state, now):
                     "payoutPer100Yen": result.get("payout_per_100_yen"),
                     "unsupported": False, "confirmedAt": confirmed}})
     # The admission interval is per tick. Never silently sample or drop a cohort.
-    if len(observations)>24 or len(results)>24:
+    if len(observations)>MAX_BATCH_ITEMS:
         raise RuntimeError("Forward batch exceeds the reviewed limit")
     races = list(state["races"].values())
     cancelled = sum(bool(r.get("result", {}).get("cancelled")) for r in races)
@@ -122,10 +123,47 @@ def payload(state, now):
 
 def result_key(race):
     r = race["result"]
-    # A new fetch timestamp does not republish an unchanged official result.
-    return race["race_id"]+":"+hashlib.sha256(json.dumps(
-        {k:r.get(k) for k in ("combination","payout_per_100_yen","refunded_lanes","cancelled")},
-        sort_keys=True).encode()).hexdigest()
+    return result_fingerprint(race["race_id"], {
+        "combination": r.get("combination") or None,
+        "payout_per_100_yen": r.get("payout_per_100_yen"),
+        "refunded_lanes": sorted(r.get("refunded_lanes") or []),
+        "cancelled": bool(r.get("cancelled"))})
+
+def result_fingerprint(race_id, value):
+    return race_id+":"+hashlib.sha256(json.dumps(value,sort_keys=True).encode()).hexdigest()
+
+def result_was_sent(race, sent):
+    # Accept old receipts without rewriting history: live pages omitted false,
+    # while the daily archive explicitly stored it. These mean the same result.
+    if result_key(race) in sent:
+        return True
+    r = race["result"]
+    legacy = {k:r.get(k) for k in ("combination","payout_per_100_yen","refunded_lanes","cancelled")}
+    for cancelled in ((True,) if r.get("cancelled") else (None, False)):
+        legacy["cancelled"] = cancelled
+        if result_fingerprint(race["race_id"], legacy) in sent:
+            return True
+    return False
+
+def bound_results(body, previous_body=None):
+    # Pending results remain in their day state until a successful send ACK.
+    # Combine days before limiting so neither day has a separate 24-item quota.
+    pending = body["results"] + (previous_body["results"] if previous_body else [])
+    pending.sort(key=lambda r: (r["result"]["confirmedAt"], r["raceId"]))
+    body["results"] = pending[:MAX_BATCH_ITEMS]
+    if len(pending)>MAX_BATCH_ITEMS:
+        print(json.dumps({"status":"settlement_backlog", "pending":len(pending),
+                          "sending":MAX_BATCH_ITEMS}),flush=True)
+    return body
+
+def acknowledge_results(state, results):
+    sent = state.setdefault("forward_results_sent", [])
+    for row in results:
+        race = state["races"].get(edge.raw_id(row["raceId"]))
+        if race:
+            key = result_key(race)
+            if key not in sent:
+                sent.append(key)
 
 def send(body):
     configured = urlsplit(os.environ["EDGE_SITE_INGEST_ENDPOINT"])
@@ -189,7 +227,7 @@ def main():
                 tick = time.monotonic()
                 now = edge.utcnow()
                 if not 7<=now.astimezone(prepare_forward.JST).hour<22: return
-                observer.tick(state)
+                observer.tick(state, max_observations=MAX_BATCH_ITEMS)
                 check_observations(state, now, path)
                 prepare_forward._atomic_json(path,state); publisher.persist()
                 publisher.acknowledge(edge.confirm_publication(state,publisher.revision))
@@ -197,23 +235,19 @@ def main():
                 body = payload(state,edge.utcnow())
                 previous_path = edge.STATE/"days"/((now.astimezone(prepare_forward.JST).date()-timedelta(days=1)).isoformat()+".json")
                 previous = json.loads(previous_path.read_text()) if previous_path.exists() else None
-                if previous:
-                    # Only the preceding day's genuinely recorded cohort, no old archive replay.
-                    previous_body = payload(previous,edge.utcnow())
-                    body["results"].extend(previous_body["results"])
-                    if len(body["results"])>24: raise RuntimeError("Settlement batch limit")
+                # Only the preceding day's genuinely recorded cohort, no old archive replay.
+                bound_results(body, payload(previous,edge.utcnow()) if previous else None)
                 if body["observations"] or body["results"] or last_send is None or tick-last_send>=300:
                     send(body); last_send = time.monotonic()
                     state["forward_last_send_completed_at"] = edge.utcnow().isoformat()
                     state.setdefault("forward_observations_sent",[]).extend(
                         r["snapshot"]["snapshot_id"] for r in body["observations"])
-                    state.setdefault("forward_results_sent",[]).extend(
-                        result_key(state["races"][edge.raw_id(r["raceId"])]) for r in body["results"]
-                        if edge.raw_id(r["raceId"]) in state["races"])
+                    acknowledge_results(state, body["results"])
                     if previous:
-                        previous.setdefault("forward_results_sent",[]).extend(
-                            result_key(previous["races"][edge.raw_id(r["raceId"])]) for r in body["results"]
-                            if edge.raw_id(r["raceId"]) in previous["races"])
+                        acknowledge_results(previous, body["results"])
+                        prepare_forward._atomic_json(previous_path,previous)
+                    # Persist delivery receipts before further result network work.
+                    prepare_forward._atomic_json(path,state); publisher.persist()
                 observer.settle(state)
                 if previous:
                     pending = {rid:r for rid,r in previous["races"].items() if not r.get("result") and
