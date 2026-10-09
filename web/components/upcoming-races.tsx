@@ -12,12 +12,14 @@ export function UpcomingRaces({
   observations,
   stopped,
   error,
+  initialNow,
 }: {
   observations: Observation[];
   stopped: boolean;
   error: string | null;
+  initialNow: number;
 }) {
-  const [now, setNow] = useState<number | null>(null),
+  const [now, setNow] = useState(initialNow),
     [open, setOpen] = useState<Record<string, boolean>>({});
   useEffect(() => {
     if (stopped) return;
@@ -32,17 +34,13 @@ export function UpcomingRaces({
       document.removeEventListener("visibilitychange", update);
     };
   }, [stopped]);
+  if (error) return null;
   if (stopped)
     return (
       <div className="fp-empty">
-        <strong>取得停止中</strong>
-        <p>
-          古い買い目を現在有効な購入推奨として表示しません。自動更新はオフです。
-        </p>
+        <strong>条件を満たすデータがありません。</strong>
       </div>
     );
-  if (error) return null;
-  if (now === null) return <div className="fp-empty">データ確認中</div>;
   const eligible = observations
     .map((o) => ({ o, a: classify(o, now) }))
     .filter((x) => x.a.category !== "excluded");
@@ -55,19 +53,10 @@ export function UpcomingRaces({
       a[0].o.raceId.localeCompare(b[0].o.raceId, undefined, { numeric: true }),
   );
   if (!ordered.length) {
-    const stale = observations.some(
-      (o) =>
-        Date.parse(o.closeAt ?? "") > now &&
-        classify(o, now).reasons.some(
-          (r) => r.includes("鮮度") || r.includes("未取得"),
-        ),
-    );
     return (
       <div className="fp-empty">
         <strong>
-          {stale
-            ? "データ確認中（オッズの鮮度・欠損）"
-            : "現在、表示条件を満たす買い目はありません"}
+          条件を満たすデータがありません。
         </strong>
       </div>
     );
