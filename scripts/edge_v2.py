@@ -33,6 +33,17 @@ def raw_id(value):
     return str(value).replace("BR:", "").replace(":", "")
 
 
+class InvalidOfficialOdds(ValueError):
+    """Reject the entire source grid and retain bounded public evidence."""
+    def __init__(self, odds, timing):
+        super().__init__("Invalid odds")
+        invalid = [(combination, value) for combination, value in odds.items()
+                   if not 0 < value <= 100000]
+        self.evidence = {**timing, "invalid_count": len(invalid),
+                         "invalid_samples": [{"combination": str(c)[:12], "value": str(v)[:32]}
+                                             for c, v in invalid[:5]]}
+
+
 def phase_due(race, now):
     minutes = (iso(race["start_at"]) - now).total_seconds() / 60
     return next((phase for phase, (high, low) in WINDOWS.items()
@@ -49,10 +60,11 @@ def fetch_grid(race):
         html = response.read().decode("utf-8")
     odds, official = edge_shadow.parse_odds_html(html)
     finished = utcnow()
+    timing = {"request_started_at": started.isoformat(), "observed_at": finished.isoformat(),
+              "official_update_time": official, "source_sha256": prepare_forward._sha_bytes(html.encode())}
     if any(not 0 < value <= 100000 for value in odds.values()):
-        raise ValueError("Invalid odds")
-    return odds, {"request_started_at": started.isoformat(), "observed_at": finished.isoformat(),
-                  "official_update_time": official, "source_sha256": prepare_forward._sha_bytes(html.encode())}
+        raise InvalidOfficialOdds(odds, timing)
+    return odds, timing
 
 
 def capture(race, phase, grid, models, computed_at):
@@ -333,6 +345,8 @@ class Observer:
                     state["races"][rid].get("errors", {}).pop(due[rid], None)
                 except Exception as error:
                     state["races"][rid].setdefault("errors", {})[due[rid]] = {"at": utcnow().isoformat(), "reason": str(error)[:180]}
+                    if isinstance(error, InvalidOfficialOdds):
+                        state["races"][rid]["errors"][due[rid]]["evidence"] = error.evidence
         state["last_tick_at"] = utcnow().isoformat()
         state["last_error"] = None
 
@@ -411,3 +425,4 @@ class Observer:
                     race.pop("final_error", None)
                 except Exception as error:
                     race["final_error"] = str(error)[:180]
+

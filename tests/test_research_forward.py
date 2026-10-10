@@ -161,12 +161,50 @@ class ForwardPayloadTests(unittest.TestCase):
                 self.assertIn("t15",saved["races"]["202610080808"]["forward_skipped_phases"])
 
     def test_unknown_or_impossible_odds_errors_still_stop(self):
-        for reason in ("Official odds grid was incomplete: 121/120", "Invalid odds",
+        for reason in ("Official odds grid was incomplete: 121/120", "Unexpected odds format",
                        "Model combination ordering differs"):
             with self.subTest(reason=reason),tempfile.TemporaryDirectory() as folder,patch("builtins.print"):
                 self.race["errors"]={"t15":{"at":self.now.isoformat(),"reason":reason}}
                 with self.assertRaises(RuntimeError):
                     flow.check_observations(self.state,self.now,Path(folder)/"day.json")
+
+    def test_invalid_odds_reject_whole_phase_without_losing_healthy_race(self):
+        bad=copy.deepcopy(self.race)
+        bad["race_id"]="BR:20261008:08:03"
+        bad["snapshots"]={}
+        bad["errors"]={"t15":{"at":self.now.isoformat(),"reason":"Invalid odds",
+            "evidence":{"invalid_count":1,"invalid_samples":[{"combination":"1-2-3","value":"0.0"}]}}}
+        self.state["races"]["202610080803"]=bad
+        with tempfile.TemporaryDirectory() as folder,patch("builtins.print"):
+            path=Path(folder)/"day.json"
+            flow.check_observations(self.state,self.now,path)
+            saved=json.loads(path.read_text())
+        self.assertIsNone(flow.edge.phase_due(bad,self.now))
+        self.assertEqual(flow.edge.phase_due(bad,self.now+timedelta(minutes=5)),"t10")
+        self.assertEqual([o["snapshot"]["snapshot_id"] for o in flow.payload(saved,self.now)["observations"]],["new"])
+        self.assertEqual(saved["races"]["202610080803"]["errors"],bad["errors"])
+        self.assertEqual(bad["snapshots"],{})
+
+    def test_fetch_grid_rejects_invalid_values_with_bounded_public_evidence(self):
+        from itertools import permutations
+        from unittest.mock import MagicMock
+        combos=["-".join(map(str,p)) for p in permutations(range(1,7),3)]
+        for value in (0.0,-1.0,100001.0,float("nan"),float("inf")):
+            with self.subTest(value=value):
+                odds=dict.fromkeys(combos,10.0)
+                odds.update(dict.fromkeys(combos[:7],value))
+                response=MagicMock()
+                response.__enter__.return_value.read.return_value=b"public odds fixture"
+                with patch.object(flow.edge.urllib.request,"urlopen",return_value=response) as network, \
+                     patch.object(flow.edge.edge_shadow,"parse_odds_html",return_value=(odds,"10:36")):
+                    with self.assertRaises(flow.edge.InvalidOfficialOdds) as raised:
+                        flow.edge.fetch_grid(self.race)
+                network.assert_called_once()
+                evidence=raised.exception.evidence
+                self.assertEqual(evidence["invalid_count"],7)
+                self.assertEqual(len(evidence["invalid_samples"]),5)
+                self.assertEqual(len(evidence["source_sha256"]),64)
+                self.assertEqual(str(raised.exception),"Invalid odds")
 
     def test_http_error_preserves_allowlisted_evidence_without_retry_or_secrets(self):
         headers=Message()
@@ -249,3 +287,4 @@ class ForwardPayloadTests(unittest.TestCase):
             self.assertGreaterEqual(captures[0]-previous_completion,60)
 
 if __name__=="__main__":unittest.main()
+
