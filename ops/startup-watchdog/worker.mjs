@@ -24,7 +24,7 @@ export async function check(env, now = Date.now(), request = fetch) {
   if (!env.GITHUB_ACTIONS_TOKEN) return { status: 'missing_secret' };
   const jst = new Date(now + 9 * 3600000);
   const minute = jst.getUTCHours() * 60 + jst.getUTCMinutes();
-  if (minute < 450) return { status: 'outside_hours' }; // 07:30–23:59 JST
+  if (minute < 450 || minute >= 1290) return { status: 'outside_hours' }; // 07:30–21:29 JST
   const dayStart = Date.parse(jst.toISOString().slice(0, 10) + 'T00:00:00+09:00');
   const headers = {
     Authorization: `Bearer ${env.GITHUB_ACTIONS_TOKEN}`,

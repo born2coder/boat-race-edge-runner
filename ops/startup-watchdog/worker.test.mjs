@@ -42,6 +42,12 @@ test('disabled, absent secret and night make no network calls',async()=>{
   assert.equal((await check(env,Date.parse('2026-10-11T02:00:00+09:00'),f.request)).status,'outside_hours');
   assert.equal(f.calls.length,0);
 });
+test('21:30 JST and later are outside monitoring hours',async()=>{
+  const f=fixture();
+  for(const time of ['21:30:00','21:45:00','23:59:00'])
+    assert.equal((await check(env,Date.parse(`2026-10-11T${time}+09:00`),f.request)).status,'outside_hours');
+  assert.equal(f.calls.length,0);
+});
 test('HTTP failures never retry or dispatch',async()=>{
   for(const http of [401,403,429,500]){const f=fixture({http});await assert.rejects(check(env,now,f.request),new RegExp(`github_http_${http}`));assert.equal(f.calls.length,1);}
 });

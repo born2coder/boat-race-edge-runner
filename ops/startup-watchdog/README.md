@@ -6,7 +6,8 @@ as a Cloudflare encrypted Secret. The secret value is never retrieved.
 Configuration was verified through the Cloudflare API; a live dispatch with
 this credential has not yet been verified because the persistent stop remains.
 
-Cron: */15 0-14,22-23 * * * (UTC). The code acts only 07:30–23:59 JST.
+Cron (UTC): 30,45 22 * * *; */15 0-11,23 * * *; 0,15 12 * * *.
+Checks run every 15 minutes from 07:30 through 21:15 JST; no checks at or after 21:30.
 It checks the persistent stop record, workflow status and recent runs, permits
 only successful previous jobs, waits 15 minutes after completion and permits
 at most four workflow_dispatch starts per JST day (manual starts included).
