@@ -1,0 +1,10 @@
+{
+  "name": "boat-edge-startup-watchdog",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-10",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "vars": { "WATCHDOG_ENABLED": "1" },
+  "triggers": { "crons": ["30,45 22 * * *", "*/15 0-11,23 * * *", "0,15 12 * * *"] },
+  "observability": { "enabled": true, "head_sampling_rate": 1 }
+}
