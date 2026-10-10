@@ -65,12 +65,14 @@ def check_observations(state, since, path):
     if errors:
         quality_reasons = {"Official odds are stale or from the future",
                            "Official odds timestamp missing",
-                           "Request completed outside its prospective window"}
+                           "Request completed outside its prospective window",
+                           "Invalid odds"}
         fatal = []
         for error in errors:
             # A withdrawal leaves 5P3=60 prices; other missing prices also
             # invalidate only this observation. Never fabricate/renormalize
-            # odds or retry the phase. Unknown failures still stop the writer.
+            # odds or retry the phase. Out-of-range odds likewise reject the
+            # whole grid, not other races. Unknown failures still stop.
             incomplete = re.fullmatch(r"Official odds grid was incomplete: (\d{1,3})/120", error["reason"])
             if error["reason"] in quality_reasons or (incomplete and int(incomplete[1]) < 120):
                 race = state["races"][edge.raw_id(error["raceId"])]
@@ -275,3 +277,4 @@ def main():
         # Scheduled starts, not self-dispatch, continue healthy daytime operation.
 
 if __name__=="__main__": main()
+
