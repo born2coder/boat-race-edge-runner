@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-11T22:44:00Z",
+  "stop_at": "2026-10-11T22:31:00.807953+00:00",
+  "reason": "Morning startup loaded data before the daily race cards were published. Logs show RuntimeError: No race cards for 2026-10-12. Upstream first published this path at 2026-10-11T22:31:02Z.",
+  "fix_commit": "3175121bae51f5f2e8de72283b2c7357ae242069",
+  "pull_request": 61,
+  "upstream_commit": "d2c9db3caab8db6aa5986fbee1ef631cffffbc28",
+  "run_id": 38180666934,
+  "failed_job_id": 114592358047,
+  "stop_archive": "state/edge_v2/stop-history/20261011T223100-race-cards-pending.json",
+  "validation": "52 focused tests passed; missing/header-only cards wait 300 seconds within existing 315 minute budget; malformed data and HTTP failures still stop.",
+  "recovery_status": "authorized_single_restart_pending_verification",
+  "budget_check": "No ingestion was reached in the failed morning run or the preceding out-of-hours run. Supabase connector is temporarily unavailable; application-enforced daily budgets and control state remain unchanged.",
+  "operational_constraint": "No manual writes to edge-data after recovery starts. Do not backfill forecasts."
+}
