@@ -2,6 +2,7 @@
 """Full120 prospective observer; raw observations are immutable and versioned."""
 from __future__ import annotations
 
+import csv
 import json
 import os
 import subprocess
@@ -23,6 +24,22 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / "state" / "edge_v2"
 SITE = "https://boat-race-edge-runner.vercel.app"
 WINDOWS = {"t30": (35, 27), "t20": (25, 17), "t15": (17, 13), "t10": (12, 8), "t5": (7, 2)}
+
+
+class RaceCardsPending(RuntimeError):
+    """The upstream daily cards have not arrived; no inference is possible yet."""
+
+
+def require_race_cards(data, date):
+    path = prepare_forward._day_path(data, "programs/race_cards", date)
+    if not path.exists():
+        raise RaceCardsPending(f"No race cards for {date}")
+    with path.open(encoding="utf-8-sig", newline="") as source:
+        rows = csv.DictReader(source)
+        if not rows.fieldnames or "レースコード" not in rows.fieldnames:
+            raise ValueError("Invalid race card header")
+        if next(rows, None) is None:
+            raise RaceCardsPending(f"No race cards for {date}")
 
 
 def utcnow():
@@ -271,6 +288,7 @@ class Observer:
 
     def load(self, date):
         data = prepare_forward._clone_data(self.session / "boatracecsv", date)
+        require_race_cards(data, date)
         self.overlay_deadlines(data, date)
         extracted = self.session / "model"
         if not extracted.exists():
