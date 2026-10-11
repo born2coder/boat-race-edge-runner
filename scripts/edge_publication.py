@@ -37,12 +37,27 @@ class DataPublisher:
     def git(folder, *args, check=True):
         return subprocess.run(["git", *args], cwd=folder, check=check, capture_output=True, text=True, timeout=90)
 
+    def push_data_branch(self):
+        """Accept a push whose response was lost only after verifying the remote SHA."""
+        head = self.git(self.folder, "rev-parse", "HEAD").stdout.strip()
+        pushed = self.git(
+            self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
+        if pushed.returncode == 0:
+            return
+        remote = self.git(
+            self.folder, "ls-remote", "--exit-code", "--heads", "origin",
+            f"refs/heads/{self.branch}", check=False)
+        remote_head = remote.stdout.split(maxsplit=1)[0] if remote.returncode == 0 and remote.stdout.strip() else ""
+        if remote_head == head:
+            return
+        pushed.check_returncode()
+
     def persist(self):
         shutil.copytree(self.root / "state/edge_v2", self.folder / "state/edge_v2", dirs_exist_ok=True)
         self.git(self.folder, "add", "--", "state/edge_v2", "vercel.json", "web/vercel.json")
         if self.git(self.folder, "diff", "--cached", "--quiet", check=False).returncode == 1:
             self.git(self.folder, "commit", "-m", "Record EDGE observations without deploying the application")
-            self.git(self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}")
+            self.push_data_branch()
         self.revision = self.git(self.folder, "rev-parse", "HEAD").stdout.strip()
         # Keep the old production UI alive until its receipt endpoint positively
         # acknowledges the new branch. This is a one-way, compatible handover.
