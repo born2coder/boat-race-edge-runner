@@ -233,7 +233,23 @@ def main():
                 tick = time.monotonic()
                 now = edge.utcnow()
                 if not operating_hours(now): return
-                observer.tick(state, max_observations=MAX_BATCH_ITEMS)
+                try:
+                    observer.tick(state, max_observations=MAX_BATCH_ITEMS)
+                except edge.RaceCardsPending:
+                    checked_at = edge.utcnow().isoformat()
+                    waiting = state.setdefault("forward_source_wait", {"first_seen_at": checked_at})
+                    waiting.update(status="waiting", reason="race_cards_pending", checked_at=checked_at)
+                    prepare_forward._atomic_json(path, state)
+                    publisher.persist()
+                    print(json.dumps({"status": "waiting", "reason": "race_cards_pending",
+                                      "date": date, "retryAfterSeconds": 300}), flush=True)
+                    if os.environ.get("RESEARCH_FORWARD_ONCE") == "1": return
+                    # Refresh upstream on the next tick, within the existing run limit.
+                    time.sleep(max(0, min(300, 315*60-(time.monotonic()-started))))
+                    continue
+                waiting = state.get("forward_source_wait")
+                if waiting and waiting.get("status") == "waiting":
+                    waiting.update(status="ready", recovered_at=edge.utcnow().isoformat())
                 check_observations(state, now, path)
                 prepare_forward._atomic_json(path,state); publisher.persist()
                 publisher.acknowledge(edge.confirm_publication(state,publisher.revision))

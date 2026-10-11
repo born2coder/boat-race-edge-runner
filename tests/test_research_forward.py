@@ -9,6 +9,105 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from scripts import watch_research_forward as flow
 
+class RaceCardReadinessTests(unittest.TestCase):
+    def test_missing_and_header_only_cards_wait_but_malformed_cards_fail(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            path=flow.prepare_forward._day_path(root,"programs/race_cards","2026-10-12")
+            with self.assertRaises(flow.edge.RaceCardsPending):
+                flow.edge.require_race_cards(root,"2026-10-12")
+            path.parent.mkdir(parents=True)
+            path.write_text("レースコード,レース日\n",encoding="utf-8")
+            with self.assertRaises(flow.edge.RaceCardsPending):
+                flow.edge.require_race_cards(root,"2026-10-12")
+            path.write_text("unexpected\nvalue\n",encoding="utf-8")
+            with self.assertRaises(ValueError):
+                flow.edge.require_race_cards(root,"2026-10-12")
+            path.write_text("レースコード,レース日\n202610120101,2026-10-12\n",encoding="utf-8")
+            flow.edge.require_race_cards(root,"2026-10-12")
+
+    def test_pending_cards_are_checked_before_model_download(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            with patch.object(flow.prepare_forward,"_clone_data",return_value=root), \
+                 patch.object(flow.prepare_forward,"_download_model") as download:
+                with self.assertRaises(flow.edge.RaceCardsPending):
+                    flow.edge.Observer(root).load("2026-10-12")
+                download.assert_not_called()
+
+    def run_flow(self, *, once=False, failure=None, exhaust=False):
+        clock=[0.0]; ticks=[]; saves=[]
+        base=datetime(2026,10,12,7,30,tzinfo=flow.prepare_forward.JST)
+        class Publisher:
+            revision="a"*40
+            def __init__(self,*args): pass
+            @staticmethod
+            def git(*args): pass
+            def acknowledge(self,*args): pass
+            def persist(self): saves.append(clock[0])
+        class Observer:
+            def __init__(self,*args): pass
+            def tick(self,state,max_observations=None):
+                ticks.append(clock[0])
+                assert max_observations == 24
+                if failure: raise failure
+                if len(ticks)==1:
+                    if exhaust: clock[0]=315*60-2
+                    raise flow.edge.RaceCardsPending("No race cards for 2026-10-12")
+                # End the test after the first successful live tick.
+                flow.os.environ["RESEARCH_FORWARD_ONCE"]="1"
+            def settle(self,state): pass
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            with patch.dict(flow.os.environ,{"EDGE_REPOSITORY_VISIBILITY":"public",
+                                            "RESEARCH_FORWARD_ONCE":"1" if once else "0"}), \
+                 patch.object(flow.edge,"STATE",root),patch.object(flow,"DataPublisher",Publisher), \
+                 patch.object(flow.edge,"Observer",Observer), \
+                 patch.object(flow.edge,"utcnow",side_effect=lambda:base+timedelta(seconds=clock[0])), \
+                 patch.object(flow.edge,"confirm_publication",return_value={}), \
+                 patch.object(flow.time,"monotonic",side_effect=lambda:clock[0]), \
+                 patch.object(flow.time,"sleep",side_effect=lambda delay:clock.__setitem__(0,clock[0]+delay)), \
+                 patch.object(flow,"send") as send,patch("builtins.print"):
+                if failure:
+                    with self.assertRaises(type(failure)): flow.main()
+                else: flow.main()
+            day=root/"days/2026-10-12.json"
+            return {"ticks":ticks,"clock":clock[0],"saves":saves,"send_count":send.call_count,
+                    "day":json.loads(day.read_text()) if day.exists() else None,
+                    "paused":(root/"forward-paused.json").exists()}
+
+    def test_wait_then_arrival_resumes_without_pause_or_synthetic_predictions(self):
+        result=self.run_flow()
+        self.assertEqual(result["ticks"],[0,300])
+        self.assertEqual(result["send_count"],1)
+        self.assertFalse(result["paused"])
+        self.assertEqual(result["day"]["races"],{})
+        self.assertEqual(result["day"]["forward_source_wait"]["status"],"ready")
+        self.assertIn("forward_last_send_completed_at",result["day"])
+
+    def test_once_wait_does_not_send_or_loop(self):
+        result=self.run_flow(once=True)
+        self.assertEqual(result["ticks"],[0])
+        self.assertEqual(result["send_count"],0)
+        self.assertEqual(result["saves"],[0])
+        self.assertFalse(result["paused"])
+        self.assertEqual(result["day"]["forward_source_wait"]["status"],"waiting")
+
+    def test_wait_cannot_extend_run_budget(self):
+        result=self.run_flow(exhaust=True)
+        self.assertEqual(result["clock"],315*60)
+        self.assertEqual(result["ticks"],[0])
+        self.assertEqual(result["send_count"],0)
+
+    def test_unknown_errors_keep_persistent_stop(self):
+        for error in (RuntimeError("unrecognized loader failure"),
+                      flow.urllib.error.HTTPError("https://example.test",503,"unavailable",None,None)):
+            with self.subTest(error=type(error).__name__):
+                result=self.run_flow(failure=error)
+                self.assertTrue(result["paused"])
+                self.assertEqual(result["ticks"],[0])
+                self.assertEqual(result["send_count"],0)
+
 class ForwardPayloadTests(unittest.TestCase):
     def test_operating_hours_include_midnight_races_but_stop_at_day_boundary(self):
         for hour, expected in [(6, False), (7, True), (21, True), (22, True), (23, True), (0, False)]:
