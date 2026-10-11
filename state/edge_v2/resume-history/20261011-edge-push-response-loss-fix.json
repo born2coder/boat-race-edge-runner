@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-11",
+  "reason": "The edge-data push reached GitHub, but the runner lost the success response and treated the already-published commit as a failure. The publisher now verifies the remote SHA once and accepts only an exact match.",
+  "fix_commit": "b3f1ee185586b5e7af6c414e1f2defebca872ead",
+  "pull_request": 60,
+  "stop_archive": "state/edge_v2/stop-history/20261011T100455-edge-push-response-loss.json",
+  "evidence": {
+    "failed_run": 38130275466,
+    "failed_job": 114442972428,
+    "accepted_remote_commit": "4cd55ad227ff708ceace5762511bca9fe6bc47d5",
+    "pause_commit": "24e46a10878aa2c73a80cda9f48338a768f0335b",
+    "observation_delivery_before_stop": {
+      "entries": 18,
+      "settled": 14,
+      "cpu_ms": 50
+    }
+  },
+  "authorization": "User requested diagnosis and resolution of stoppages on 2026-10-11.",
+  "validation": "100 local unit tests passed; 1 pre-existing official-fixture test skipped. Live post-fix recording remains to be verified.",
+  "safeguards": {
+    "minimum_send_interval_seconds": 60,
+    "app_daily_admission_budget": 1000,
+    "app_daily_cpu_budget_ms": 60000,
+    "observation_and_result_batch_limit": 24,
+    "execution_limit_minutes": 315,
+    "legacy_automation_enabled": false
+  },
+  "historical_predictions_reconstructed": false
+}
