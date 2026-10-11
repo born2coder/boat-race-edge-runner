@@ -16,7 +16,7 @@
     }
   },
   "authorization": "User requested diagnosis and resolution of stoppages on 2026-10-11.",
-  "validation": "100 local unit tests passed; 1 pre-existing official-fixture test skipped. Live post-fix recording remains to be verified.",
+  "validation": "100 local unit tests passed; 1 pre-existing official-fixture test skipped.",
   "safeguards": {
     "minimum_send_interval_seconds": 60,
     "app_daily_admission_budget": 1000,
@@ -25,5 +25,12 @@
     "execution_limit_minutes": 315,
     "legacy_automation_enabled": false
   },
-  "historical_predictions_reconstructed": false
+  "historical_predictions_reconstructed": false,
+  "live_validation": {
+    "verified_at": "2026-10-11T10:33:13Z",
+    "workflow_run": 38130275466,
+    "workflow_attempt": 2,
+    "data_commit": "3c5a80b7d261e5a6b453015e4d27b73c24bdcd14",
+    "status": "New edge-data save confirmed after the fix; forward-paused.json remains absent."
+  }
 }
