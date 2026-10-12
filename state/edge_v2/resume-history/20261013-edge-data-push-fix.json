@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-13",
+  "reason": "Two consecutive bounded research runs ended only when git push to edge-data returned exit status 1 after successful application ingestion. The failure occurred during state persistence and the previous runner discarded stderr, so no odds, authentication or application-budget error was evidenced. The publisher now distinguishes hard stops from allowlisted transient transport failures, verifies that the remote branch has not advanced, and permits only one delayed retry.",
+  "fix_commit": "91ff4d3e26175e447807f5a89d05f57553acfc8a",
+  "pull_request": 64,
+  "stop_archive": "state/edge_v2/stop-history/20261012T125545-edge-data-push-failure.json",
+  "evidence": {
+    "failed_runs": [38231898399, 38238417563],
+    "failed_jobs": [114760413669, 114811099161],
+    "stage": "persist_settlement",
+    "exception": "CalledProcessError",
+    "command": "git push origin HEAD:refs/heads/edge-data",
+    "application_delivery_before_final_failure": {
+      "status": "recorded",
+      "entries": 0,
+      "settled": 0,
+      "cpu_ms": 34
+    }
+  },
+  "validation": "115 unit tests passed; 1 captured-official-fixture test skipped.",
+  "safeguards": {
+    "transient_retry_count": 1,
+    "transient_retry_delay_seconds": 10,
+    "remote_parent_lease_required": true,
+    "auth_quota_rate_limit_policy_conflict_and_unknown_failures_stop": true,
+    "minimum_send_interval_seconds": 60,
+    "app_daily_admission_budget": 1000,
+    "app_daily_cpu_budget_ms": 60000,
+    "observation_and_result_batch_limit": 24,
+    "execution_limit_minutes": 315,
+    "legacy_automation_enabled": false
+  },
+  "budget_before_resume": {
+    "latest_race_date": "2026-10-12",
+    "requests": 426,
+    "cpu_ms": 20701,
+    "stopped_reason": null,
+    "lease_id": null,
+    "last_observation_received_at": "2026-10-12T12:54:23.047+00:00",
+    "checked_at": "2026-10-12T23:17:00Z"
+  },
+  "historical_predictions_reconstructed": false,
+  "recovery_status": "startup_watchdog_restart_pending_verification",
+  "authorization": "User requested recurring diagnosis and repair of stoppages; only the diagnosed stop is archived and cleared."
+}
