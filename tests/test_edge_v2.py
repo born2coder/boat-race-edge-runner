@@ -47,6 +47,8 @@ class EdgeV2Tests(unittest.TestCase):
             receipt = confirm_publication(state, "a" * 40)
         self.assertIn("raw.githubusercontent.com", fetch.call_args.args[0].full_url)
         self.assertIn("/" + "a" * 40 + "/", fetch.call_args.args[0].full_url)
+        fetch.assert_called_once()
+        self.assertEqual(fetch.call_args.kwargs["timeout"], 45)
         self.assertEqual(receipt["storage_branch"], "edge-data")
         self.assertEqual(set(first["receipts"]), {"s1"})
         self.assertEqual(second["receipts"], {})
@@ -57,6 +59,15 @@ class EdgeV2Tests(unittest.TestCase):
         with patch("scripts.edge_v2.urllib.request.urlopen", return_value=io.BytesIO(b'{}')):
             with self.assertRaises(ValueError):
                 confirm_publication(state, "a" * 40)
+        self.assertEqual(race["receipts"], {})
+
+    def test_public_readback_timeout_does_not_retry_or_acknowledge(self):
+        race = fixture(); race["receipts"] = {}
+        state = {"date": "2026-09-14", "races": {"1": race}}
+        with patch("scripts.edge_v2.urllib.request.urlopen", side_effect=TimeoutError("read timed out")) as fetch:
+            with self.assertRaises(TimeoutError):
+                confirm_publication(state, "a" * 40)
+        fetch.assert_called_once()
         self.assertEqual(race["receipts"], {})
 
     def test_exhibition_rejects_future_source_and_reports_the_reason(self):
