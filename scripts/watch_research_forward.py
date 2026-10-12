@@ -336,7 +336,9 @@ def main():
             except Exception as error:
                 prepare_forward._atomic_json(stop_path,{"at":edge.utcnow().isoformat(),
                     "kind":type(error).__name__,"stage":stage,"observationErrors":observation_errors(state,now),
-                    **({"http": error.forward_diagnostics} if hasattr(error,"forward_diagnostics") else {})})
+                    **({"http": error.forward_diagnostics} if hasattr(error,"forward_diagnostics") else {}),
+                    **({"git": error.edge_publication_diagnostics}
+                       if hasattr(error,"edge_publication_diagnostics") else {})})
                 try: publisher.persist()
                 except Exception: pass
                 print(json.dumps({"status":"stopped","kind":type(error).__name__}),flush=True)

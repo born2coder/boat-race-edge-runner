@@ -4,10 +4,12 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import time
 
 
 class DataPublisher:
     branch = "edge-data"
+    push_retry_seconds = 10
 
     def __init__(self, root, folder):
         self.root, self.folder = root, folder
@@ -38,19 +40,74 @@ class DataPublisher:
         return subprocess.run(["git", *args], cwd=folder, check=check, capture_output=True, text=True, timeout=90)
 
     def push_data_branch(self):
-        """Accept a push whose response was lost only after verifying the remote SHA."""
+        """Verify ambiguous success and retry one safe transient transport failure.
+
+        The retry is allowed only while the remote still points at this commit's
+        parent. Authentication, quota/rate-limit, policy and non-fast-forward
+        failures remain hard stops. This avoids replaying over a concurrent
+        writer while preventing a short GitHub transport failure from pausing
+        the full research day.
+        """
         head = self.git(self.folder, "rev-parse", "HEAD").stdout.strip()
+        parent_result = self.git(self.folder, "rev-parse", "HEAD^", check=False)
+        parent = parent_result.stdout.strip() if parent_result.returncode == 0 else ""
         pushed = self.git(
             self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
         if pushed.returncode == 0:
             return
+        remote_head = self.remote_head()
+        if remote_head == head:
+            return
+        category = self.push_failure_category(pushed)
+        retry = category == "transient_transport" and remote_head == parent
+        if retry:
+            time.sleep(self.push_retry_seconds)
+            retried = self.git(
+                self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
+            if retried.returncode == 0 or self.remote_head() == head:
+                return
+            self.raise_push_error(
+                retried, self.push_failure_category(retried), retry_attempted=True)
+        self.raise_push_error(pushed, category, retry_attempted=False)
+
+    def remote_head(self):
         remote = self.git(
             self.folder, "ls-remote", "--exit-code", "--heads", "origin",
             f"refs/heads/{self.branch}", check=False)
-        remote_head = remote.stdout.split(maxsplit=1)[0] if remote.returncode == 0 and remote.stdout.strip() else ""
-        if remote_head == head:
-            return
-        pushed.check_returncode()
+        return remote.stdout.split(maxsplit=1)[0] if remote.returncode == 0 and remote.stdout.strip() else ""
+
+    @staticmethod
+    def push_failure_category(result):
+        detail = (result.stderr or "").lower()
+        hard_stop = (
+            "authentication failed", "permission denied", "repository not found",
+            "could not read username", "write access to repository not granted",
+            "non-fast-forward", "fetch first", "stale info", "rate limit",
+            "too many requests", "error: 401", "error: 403", "error: 429",
+        )
+        transient = (
+            "connection reset", "remote end hung up", "unexpected disconnect",
+            "http/2 stream", "rpc failed", "tls connection", "failed to connect",
+            "connection timed out", "operation timed out", "error: 500",
+            "error: 502", "error: 503", "error: 504", "internal server error",
+            "service unavailable", "gateway timeout",
+        )
+        if any(marker in detail for marker in hard_stop):
+            return "hard_stop"
+        if any(marker in detail for marker in transient):
+            return "transient_transport"
+        return "unknown"
+
+    @staticmethod
+    def raise_push_error(result, category, *, retry_attempted):
+        error = subprocess.CalledProcessError(
+            result.returncode, result.args, result.stdout, result.stderr)
+        error.edge_publication_diagnostics = {
+            "operation": "push_edge_data",
+            "category": category,
+            "retryAttempted": retry_attempted,
+        }
+        raise error
 
     def persist(self):
         shutil.copytree(self.root / "state/edge_v2", self.folder / "state/edge_v2", dirs_exist_ok=True)
