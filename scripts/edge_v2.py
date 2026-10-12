@@ -195,7 +195,9 @@ def confirm_publication(state, revision):
     url = (f"https://raw.githubusercontent.com/{repository}/{revision}/"
            f"state/edge_v2/days/{state['date']}.json?receipt={time.time_ns()}")
     request = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
-    with urllib.request.urlopen(request, timeout=15) as response:
+    # Allow a slow immutable public read without issuing another request.
+    # This is not the application ingestion endpoint; its budget is unchanged.
+    with urllib.request.urlopen(request, timeout=45) as response:
         published = json.load(response)
     if published.get("date") != state["date"] or published.get("version") != VERSION:
         raise ValueError("Published observation does not match requested day")
