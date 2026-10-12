@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded prospective writer. A failed run persists a stop, never chains a retry."""
+"""Bounded writer: safety failures stop; public-read timeouts defer fresh capture."""
 from __future__ import annotations
 import hashlib
 import hmac
@@ -22,6 +22,46 @@ from scripts.edge_publication import DataPublisher
 
 MIN_SEND_INTERVAL_SECONDS = 60
 MAX_BATCH_ITEMS = 24
+PUBLICATION_BACKOFF_SECONDS = 300
+
+def confirm_or_defer(state, publisher):
+    """Only public GET transport failures may recover, never ingestion failures.
+
+    The failed batch is permanently excluded from forward delivery. A subsequent
+    tick captures fresh observations instead of giving old odds a new receipt.
+    """
+    sent = set(state.get("forward_observations_sent", []))
+    ignored = set(state.get("forward_observations_ignored", []))
+    pending = {s["snapshot_id"] for r in state["races"].values()
+               for s in r.get("snapshots", {}).values()
+               if s["snapshot_id"] not in sent | ignored}
+    # Results and idle heartbeats do not need another full-day public read.
+    if not pending:
+        return True
+    try:
+        receipt = edge.confirm_publication(state, publisher.revision)
+    except (TimeoutError, urllib.error.URLError) as error:
+        transient = (isinstance(error, TimeoutError) or
+                     isinstance(getattr(error, "reason", None), TimeoutError) or
+                     isinstance(error, urllib.error.HTTPError) and error.code in (502, 503, 504))
+        if not transient:
+            raise
+        state.setdefault("forward_observations_ignored", []).extend(sorted(pending))
+        now = edge.utcnow().isoformat()
+        wait = state.setdefault("forward_publication_wait", {"first_seen_at": now})
+        wait.update(status="waiting", checked_at=now, kind=type(error).__name__,
+                    revision=publisher.revision,
+                    failures=wait.get("failures", 0)+1,
+                    skipped_observations=wait.get("skipped_observations", 0)+len(pending))
+        print(json.dumps({"status": "publication_deferred", "kind": type(error).__name__,
+                          "skippedObservations": len(pending),
+                          "retryAfterSeconds": PUBLICATION_BACKOFF_SECONDS}), flush=True)
+        return False
+    publisher.acknowledge(receipt)
+    wait = state.get("forward_publication_wait")
+    if wait and wait.get("status") == "waiting":
+        wait.update(status="ready", recovered_at=edge.utcnow().isoformat())
+    return True
 
 def operating_hours(now):
     # Midnight racing continues after 22:00. Keep the same daily safety caps.
@@ -227,6 +267,7 @@ def main():
                     if s["snapshot_id"] not in state.get("forward_observations_sent",[])
                     and s["snapshot_id"] not in state.get("forward_observations_ignored",[]))
                 initialized.add(date)
+            stage = "capture"
             try:
                 wait_for_send_slot(last_send)
                 if time.monotonic()-started >= 315*60: return
@@ -251,8 +292,16 @@ def main():
                 if waiting and waiting.get("status") == "waiting":
                     waiting.update(status="ready", recovered_at=edge.utcnow().isoformat())
                 check_observations(state, now, path)
+                stage = "persist_observations"
                 prepare_forward._atomic_json(path,state); publisher.persist()
-                publisher.acknowledge(edge.confirm_publication(state,publisher.revision))
+                stage = "public_readback"
+                if not confirm_or_defer(state, publisher):
+                    prepare_forward._atomic_json(path, state)
+                    publisher.persist()
+                    if os.environ.get("RESEARCH_FORWARD_ONCE") == "1": return
+                    time.sleep(max(0, min(PUBLICATION_BACKOFF_SECONDS,
+                                          315*60-(time.monotonic()-started))))
+                    continue
                 # Send receipt-fresh observations before result network work.
                 body = payload(state,edge.utcnow())
                 previous_path = edge.STATE/"days"/((now.astimezone(prepare_forward.JST).date()-timedelta(days=1)).isoformat()+".json")
@@ -260,6 +309,7 @@ def main():
                 # Only the preceding day's genuinely recorded cohort, no old archive replay.
                 bound_results(body, payload(previous,edge.utcnow()) if previous else None)
                 if body["observations"] or body["results"] or last_send is None or tick-last_send>=300:
+                    stage = "ingestion"
                     send(body); last_send = time.monotonic()
                     state["forward_last_send_completed_at"] = edge.utcnow().isoformat()
                     state.setdefault("forward_observations_sent",[]).extend(
@@ -269,7 +319,9 @@ def main():
                         acknowledge_results(previous, body["results"])
                         prepare_forward._atomic_json(previous_path,previous)
                     # Persist delivery receipts before further result network work.
+                    stage = "persist_delivery"
                     prepare_forward._atomic_json(path,state); publisher.persist()
+                stage = "settlement"
                 observer.settle(state)
                 if previous:
                     pending = {rid:r for rid,r in previous["races"].items() if not r.get("result") and
@@ -279,10 +331,11 @@ def main():
                         observer.settle({**previous,"races":pending})
                     prepare_forward._atomic_json(previous_path,previous)
                 # No historical day scanning, legacy research API or final grids.
+                stage = "persist_settlement"
                 prepare_forward._atomic_json(path,state); publisher.persist()
             except Exception as error:
                 prepare_forward._atomic_json(stop_path,{"at":edge.utcnow().isoformat(),
-                    "kind":type(error).__name__,"observationErrors":observation_errors(state,now),
+                    "kind":type(error).__name__,"stage":stage,"observationErrors":observation_errors(state,now),
                     **({"http": error.forward_diagnostics} if hasattr(error,"forward_diagnostics") else {})})
                 try: publisher.persist()
                 except Exception: pass
