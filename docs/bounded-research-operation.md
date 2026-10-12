@@ -32,8 +32,19 @@ An API processing error disables recording immediately. An unfinished admitted
 request stops the next admission. Runner failures save `forward-paused.json` on
 `edge-data` and never self-dispatch. If GitHub itself cannot persist the stop,
 the next scheduled runner can start; API admission still enforces durable limits.
-Restoration after a failure is an explicit investigation and fresh approval, not
-an automatic next-day reset. Retain the historical budget and stop audit data.
+Restoration after a safety failure requires investigation, not an automatic
+next-day reset. Retain the historical budget and stop audit data.
+
+Public publication readback has a separate, narrow recovery policy. A GET timeout
+(including a wrapped timeout), or HTTP 502/503/504, excludes that batch permanently
+and defers fresh capture for five minutes within the existing 315-minute run
+limit. The next tick never replays those old snapshots with a new receipt.
+Results-only/idle ticks skip the full-day readback. Authentication, rate limits,
+invalid publication content, unknown failures and all ingestion POST failures
+still persist the safety stop; POSTs are never retried by this policy. Diagnostic
+state records publication wait/recovery and the stage of any terminal failure.
+The existing startup watchdog can resume a successfully finished bounded run,
+but never removes a persistent safety stop or restarts a failed job.
 
 Read-only verification:
 
