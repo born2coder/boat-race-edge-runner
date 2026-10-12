@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-12T10:04:19Z",
+  "stop_at": "2026-10-12T09:46:45.140760+00:00",
+  "stop_archive": "state/edge_v2/stop-history/20261012T094645-publication-read-timeout.json",
+  "reason": "Logs identify socket read TimeoutError in confirm_publication on immutable raw.githubusercontent.com content before application ingestion. The stale-odds phase was independently skipped and was not the fatal cause.",
+  "fix_commit": "694434107f20b4ac21129ea03ba5b11f34d502db",
+  "pull_request": 62,
+  "run_id": 38231898399,
+  "failed_job_id": 114753154480,
+  "change": "Single immutable public read timeout 15 to 45 seconds. No retries or bypass. Unknown persistent outage is not presumed solved.",
+  "validation": "43 focused tests passed; timeout causes one request and no receipt.",
+  "budget_before_resume": {
+    "requests": 351,
+    "cpu_ms": 17286,
+    "stopped_reason": null,
+    "leased": false,
+    "recording_enabled": true,
+    "checked_at": "2026-10-12T10:00:55.354446Z"
+  },
+  "recovery_status": "single_restart_pending_verification",
+  "constraints": "60-second sends, 1000/day requests, 60000ms/day CPU, 24-item batches and 315-minute run limit unchanged. No branch writes after restart; no historical forecast backfill."
+}
