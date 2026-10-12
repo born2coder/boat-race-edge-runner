@@ -85,5 +85,74 @@ class PublicationTests(unittest.TestCase):
             with self.assertRaises(subprocess.CalledProcessError):
                 publisher.persist()
 
+    def test_one_transient_push_failure_retries_only_while_remote_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / "code"; remote = base / "remote.git"
+            def run(cwd, *args):
+                return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+            run(base, "init", "--bare", str(remote)); run(base, "init", "-b", "main", str(root))
+            run(root, "config", "user.name", "test"); run(root, "config", "user.email", "test@example.invalid")
+            (root / "web").mkdir(); (root / "web/vercel.json").write_text("{}")
+            state = root / "state/edge_v2/index.json"; state.parent.mkdir(parents=True); state.write_text('{"revision":1}')
+            run(root, "add", "."); run(root, "commit", "-m", "fixture"); run(root, "remote", "add", "origin", str(remote))
+            run(root, "push", "-u", "origin", "main")
+            publisher = DataPublisher(root, base / "data")
+            state.write_text('{"revision":2}')
+            publisher.persist()
+            publisher.ready = True
+            original_git = publisher.git
+            publisher.push_retry_seconds = 0
+            pushes = 0
+
+            def transient_once(folder, *args, check=True):
+                nonlocal pushes
+                if args[:2] == ("push", "origin"):
+                    pushes += 1
+                    if pushes == 1:
+                        return subprocess.CompletedProcess(
+                            ["git", *args], 1, "", "RPC failed; HTTP/2 stream was reset")
+                return original_git(folder, *args, check=check)
+
+            publisher.git = transient_once
+            state.write_text('{"revision":3}')
+            publisher.persist()
+            self.assertEqual(pushes, 2)
+            self.assertEqual(json.loads(run(remote, "show", "edge-data:state/edge_v2/index.json"))["revision"], 3)
+
+    def test_auth_or_unknown_push_failure_never_retries(self):
+        for message, category in (("fatal: Authentication failed", "hard_stop"),
+                                  ("simulated rejection", "unknown")):
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as tmp:
+                base = Path(tmp); root = base / "code"; remote = base / "remote.git"
+                def run(cwd, *args):
+                    return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+                run(base, "init", "--bare", str(remote)); run(base, "init", "-b", "main", str(root))
+                run(root, "config", "user.name", "test"); run(root, "config", "user.email", "test@example.invalid")
+                (root / "web").mkdir(); (root / "web/vercel.json").write_text("{}")
+                state = root / "state/edge_v2/index.json"; state.parent.mkdir(parents=True); state.write_text('{"revision":1}')
+                run(root, "add", "."); run(root, "commit", "-m", "fixture"); run(root, "remote", "add", "origin", str(remote))
+                run(root, "push", "-u", "origin", "main")
+                publisher = DataPublisher(root, base / "data")
+                state.write_text('{"revision":2}')
+                publisher.persist()
+                publisher.ready = True
+                original_git = publisher.git
+                pushes = 0
+
+                def rejected(folder, *args, check=True):
+                    nonlocal pushes
+                    if args[:2] == ("push", "origin"):
+                        pushes += 1
+                        return subprocess.CompletedProcess(["git", *args], 1, "", message)
+                    return original_git(folder, *args, check=check)
+
+                publisher.git = rejected
+                state.write_text('{"revision":3}')
+                with self.assertRaises(subprocess.CalledProcessError) as raised:
+                    publisher.persist()
+                self.assertEqual(pushes, 1)
+                self.assertEqual(raised.exception.edge_publication_diagnostics,
+                    {"operation":"push_edge_data", "category":category, "retryAttempted":False})
+
 
 if __name__ == "__main__": unittest.main()
