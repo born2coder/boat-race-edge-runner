@@ -21,7 +21,7 @@ class PublicationRecoveryTests(unittest.TestCase):
     def test_transient_public_read_failure_excludes_batch_permanently(self):
         errors = [TimeoutError(), flow.urllib.error.URLError(TimeoutError())]
         errors += [flow.urllib.error.HTTPError("https://example.test", c, "", None, None)
-                   for c in (502, 503, 504)]
+                   for c in (404, 502, 503, 504)]
         for error in errors:
             with self.subTest(error=error):
                 state = self.state(); publisher = Mock(revision="a"*40)
@@ -29,6 +29,8 @@ class PublicationRecoveryTests(unittest.TestCase):
                     self.assertFalse(flow.confirm_or_defer(state, publisher))
                 publisher.acknowledge.assert_not_called()
                 self.assertEqual(state["forward_observations_ignored"], ["old"])
+                if isinstance(error, flow.urllib.error.HTTPError):
+                    self.assertEqual(state["forward_publication_wait"]["http_status"], error.code)
                 # Even a later readback of the same snapshot cannot make it fresh.
                 race = state["races"]["202610120101"]
                 now = datetime(2026, 10, 12, 10, 5, tzinfo=timezone.utc)
@@ -45,13 +47,26 @@ class PublicationRecoveryTests(unittest.TestCase):
         errors = [ValueError("mismatch"), RuntimeError("unknown"),
                   flow.urllib.error.URLError("certificate failure")]
         errors += [flow.urllib.error.HTTPError("https://example.test", c, "", None, None)
-                   for c in (401, 403, 404, 429)]
+                   for c in (401, 403, 429)]
         for error in errors:
             state = self.state(); before = copy.deepcopy(state)
             with self.subTest(error=error), patch.object(flow.edge, "confirm_publication", side_effect=error):
                 with self.assertRaises(type(error)):
                     flow.confirm_or_defer(state, Mock(revision="a"*40))
             self.assertEqual(state, before)
+
+    def test_second_consecutive_immutable_404_still_stops(self):
+        state = self.state(); publisher = Mock(revision="a"*40)
+        first = flow.urllib.error.HTTPError("https://example.test", 404, "", None, None)
+        with patch.object(flow.edge, "confirm_publication", side_effect=first), patch("builtins.print"):
+            self.assertFalse(flow.confirm_or_defer(state, publisher))
+        state["races"]["202610120101"]["snapshots"]["t15"] = {"snapshot_id": "fresh"}
+        before = copy.deepcopy(state)
+        second = flow.urllib.error.HTTPError("https://example.test", 404, "", None, None)
+        with patch.object(flow.edge, "confirm_publication", side_effect=second):
+            with self.assertRaises(flow.urllib.error.HTTPError):
+                flow.confirm_or_defer(state, publisher)
+        self.assertEqual(state, before)
 
     def test_results_and_heartbeat_do_not_read_whole_day_again(self):
         state = self.state(); state["forward_observations_sent"] = ["old"]
