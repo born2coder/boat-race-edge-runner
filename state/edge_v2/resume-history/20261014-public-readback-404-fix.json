@@ -1,0 +1,9 @@
+{
+  "stopped_at": "2026-10-14T10:57:25.827974+00:00",
+  "resumed_at": "2026-10-14T11:33:35.581Z",
+  "cause": "A newly pushed immutable edge-data revision returned HTTP 404 about five seconds after commit creation; the exact revision and file later resolved publicly, confirming transient raw GitHub propagation lag.",
+  "resolution": "PR #65 allows only the first consecutive immutable public-readback 404 to defer for five minutes. The failed batch remains permanently excluded. A second consecutive 404, auth/quota/ingestion failures, and unknown failures still stop.",
+  "fix_pull_request": "https://github.com/born2coder/boat-race-edge-runner/pull/65",
+  "fix_commit": "1efddf8df8bb65ea3264a59e3cf68fa6d1b906dc",
+  "verification": "116 tests passed; 1 skipped. Exact stopped revision 22b5d17b384b56e3c291aac03ae76549caac3272 contains state/edge_v2/days/2026-10-14.json and is publicly resolvable after propagation."
+}
