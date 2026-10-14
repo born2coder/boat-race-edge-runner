@@ -41,15 +41,24 @@ def confirm_or_defer(state, publisher):
     try:
         receipt = edge.confirm_publication(state, publisher.revision)
     except (TimeoutError, urllib.error.URLError) as error:
+        previous_wait = state.get("forward_publication_wait") or {}
+        first_immutable_404 = (
+            isinstance(error, urllib.error.HTTPError) and error.code == 404 and
+            not (previous_wait.get("status") == "waiting" and
+                 previous_wait.get("kind") == "HTTPError" and
+                 previous_wait.get("http_status") == 404)
+        )
         transient = (isinstance(error, TimeoutError) or
                      isinstance(getattr(error, "reason", None), TimeoutError) or
-                     isinstance(error, urllib.error.HTTPError) and error.code in (502, 503, 504))
+                     isinstance(error, urllib.error.HTTPError) and error.code in (502, 503, 504) or
+                     first_immutable_404)
         if not transient:
             raise
         state.setdefault("forward_observations_ignored", []).extend(sorted(pending))
         now = edge.utcnow().isoformat()
         wait = state.setdefault("forward_publication_wait", {"first_seen_at": now})
         wait.update(status="waiting", checked_at=now, kind=type(error).__name__,
+                    http_status=getattr(error, "code", None),
                     revision=publisher.revision,
                     failures=wait.get("failures", 0)+1,
                     skipped_observations=wait.get("skipped_observations", 0)+len(pending))
