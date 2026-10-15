@@ -1,0 +1,40 @@
+.page { line-height: 1.8; color: #172e58; }
+.page p { margin: 12px 0; }
+.page h2 { font-size: 22px; font-weight: 750; line-height: 1.5; }
+.page h3 { margin: 30px 0 10px; padding-top: 20px; border-top: 1px solid #dbe5f3; font-size: 19px; font-weight: 700; }
+.page h4 { font-weight: 700; margin: 12px 0 6px; }
+.page a { color: #1264ac; text-decoration: underline; text-underline-offset: 3px; }
+.notice { background: #eaf4ff; border-left: 4px solid #2376c5; padding: 16px 20px; border-radius: 8px; }
+.periods { display: grid; grid-template-columns: minmax(180px, 1fr) 2fr; margin: 24px 0 12px; border: 1px solid #dbe5f3; border-radius: 12px; overflow: hidden; background: white; }
+.periods dt, .periods dd { padding: 12px 16px; margin: 0; border-bottom: 1px solid #e6edf6; }
+.periods dt { background: #f0f5fb; font-weight: 700; }
+.overview, .phase { background: white; padding: 26px; border: 1px solid #dbe5f3; border-radius: 16px; margin: 28px 0; box-shadow: 0 4px 16px #16355c05; scroll-margin-top: 20px; }
+.phaseHeader { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.phaseHeader a { font-size: 13px; }
+.badge { display: inline-block; background: #edf3f9; color: #415b79; border-radius: 6px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
+.tableScroll { overflow-x: auto; margin: 16px 0; }
+.page table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 14px; margin: 12px 0; border: 1px solid #dbe5f3; border-radius: 8px; overflow: hidden; }
+.page th, .page td { padding: 13px 16px; border-bottom: 1px solid #e2eaf4; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.page thead th { background: #edf3fa; color: #294b72; font-weight: 700; }
+.page th:first-child { text-align: left; }
+.page tbody tr:nth-child(even) { background: #f8fafc; }
+.page tbody tr:last-child > * { border-bottom: 0; }
+.page details { margin: 20px 0; padding: 14px 18px; border: 1px solid #dbe5f3; border-radius: 10px; }
+.page summary { cursor: pointer; font-weight: 700; }
+.chartGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.chart { margin: 12px 0; background: #f7fafd; border: 1px solid #e0e9f3; padding: 18px; border-radius: 12px; }
+.chart figcaption { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.chart small, .note { font-size: 12px; color: #536984; }
+.barRow { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 12px; }
+.barRow > span { width: 44px; flex-shrink: 0; }
+.barRow strong { width: 72px; text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.track { flex: 1; height: 12px; background: #e5edf5; border-radius: 3px; overflow: hidden; min-width: 24px; }
+.before, .after { height: 100%; background: #3578c8; }
+.after { background: #138477; }
+.reliabilityRow { padding: 10px 0; border-bottom: 1px solid #e0e9f3; }
+.reliabilityRow > span { display: flex; justify-content: space-between; font-size: 12px; gap: 8px; }
+.legend { font-size: 12px; }
+.legend span:first-child { color: #2864aa; }
+.legend span:nth-child(2) { color: #0c7568; margin-left: 10px; }
+.empty { color: #536984; padding: 20px 8px; font-size: 14px; }
+@media (max-width: 700px) { .chartGrid { grid-template-columns: 1fr; gap: 0; } .overview, .phase { padding: 16px; border-radius: 12px; } .periods { grid-template-columns: 1fr; } .page h2 { font-size: 20px; } .page h3 { font-size: 17px; } .page th, .page td { padding: 11px; } .chart { padding: 12px; } }
