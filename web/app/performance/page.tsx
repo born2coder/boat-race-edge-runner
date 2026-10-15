@@ -83,6 +83,7 @@ export default async function PerformancePage({
       <FiltersForm f={f} rules={rules} models={models} />
       <SelectionNote f={f} rules={rules} />
       <ProbabilityNote />
+      <Link href="/calibration" prefetch={false}>確率と確定オッズの補正検証を見る</Link>
       <ErrorPanel message={data.error} />
       <PerformanceKpis entries={entries} available={data.available} />
       {!entries.length && !data.error && <EmptyState />}

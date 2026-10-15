@@ -68,17 +68,21 @@ def phase_due(race, now):
                  and phase not in race.get("forward_skipped_phases", {})), None)
 
 
-def fetch_grid(race):
+def fetch_grid(race, verify_identity=False):
     started = utcnow()
     url = edge_shadow.ODDS_URL.format(date=race["race_date"].replace("-", ""),
                                       venue=int(race["venue_code"]), race_no=race["race_no"])
     request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 FuneNoKotowari/2.0"})
     with urllib.request.urlopen(request, timeout=15) as response:
         html = response.read().decode("utf-8")
+    if verify_identity:
+        edge_official.document(html, race, "odds3t")
     odds, official = edge_shadow.parse_odds_html(html)
     finished = utcnow()
     timing = {"request_started_at": started.isoformat(), "observed_at": finished.isoformat(),
               "official_update_time": official, "source_sha256": prepare_forward._sha_bytes(html.encode())}
+    if verify_identity:
+        timing["race_identity_verified"] = race["race_id"]
     if any(not 0 < value <= 100000 for value in odds.values()):
         raise InvalidOfficialOdds(odds, timing)
     return odds, timing
@@ -142,6 +146,11 @@ def final_grid(race, grid):
     result = race.get("result")
     if not result or iso(timing["observed_at"]) <= iso(race["start_at"]):
         raise ValueError("Result is required before labeling final odds")
+    from scripts.edge_calibration import COMBOS, finite
+    if set(odds) != COMBOS or not all(finite(value, 0, 100000) for value in odds.values()):
+        raise ValueError("Final grid must contain all 120 valid odds")
+    if result.get("cancelled") or result.get("refunded_lanes"):
+        raise ValueError("Nonstandard results are excluded from final-odds calibration")
     # Never pass a still-moving pre-close grid off as confirmed odds.
     if abs(odds.get(result["combination"], -1) * 100 - result["payout_per_100_yen"]) > 0.01:
         raise ValueError("Closing grid does not match official winning payout")
@@ -429,20 +438,33 @@ class Observer:
                     race.pop("result_error", None)
                 except Exception as error:
                     race["result_error"] = str(error)[:160]
-        if os.environ.get("EDGE_RESEARCH_FORWARD") == "1":
-            return  # Payouts settle the new ledger; no repeated final-odds fetch.
+        forward = os.environ.get("EDGE_RESEARCH_FORWARD") == "1"
+        # Use only idle slots within the existing eight-request settlement batch.
+        # Result settlement takes priority; at most two grids, three attempts per
+        # race, 15 minutes apart. No retry or quota ceiling is increased.
+        final_limit = min(2, max(0, 8 - len(overdue[:8]))) if forward else 8
         pending = [r for r in state["races"].values() if r.get("result") and not r["result"].get("cancelled")
-                   and not r.get("final") and r.get("snapshots")]
+                   and not r["result"].get("refunded_lanes")
+                   and not r.get("final") and r.get("snapshots")
+                   and (not forward or (
+                       r.get("final_attempt_count", 0) < 3
+                       and any(s["snapshot_id"] in state.get("forward_observations_sent", [])
+                               for s in r["snapshots"].values())
+                       and (not r.get("final_attempt_at") or
+                            (now - iso(r["final_attempt_at"])).total_seconds() >= 900)))]
         # Bounded work; prioritize oldest overdue races, retry missing grids later.
         pending.sort(key=lambda r: r.get("final_attempt_at", ""))
         with ThreadPoolExecutor(max_workers=4) as pool:
-            futures = {pool.submit(fetch_grid, r): r for r in pending[:8]}
+            futures = {pool.submit(fetch_grid, r, True): r for r in pending[:final_limit]}
             for future in as_completed(futures):
                 race = futures[future]
                 race["final_attempt_at"] = utcnow().isoformat()
+                race["final_attempt_count"] = race.get("final_attempt_count", 0) + 1
                 try:
                     final_grid(race, future.result())
                     race.pop("final_error", None)
                 except Exception as error:
                     race["final_error"] = str(error)[:180]
+                    if isinstance(error, urllib.error.HTTPError) and error.code in (401, 403, 429):
+                        raise
 
