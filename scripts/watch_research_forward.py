@@ -19,6 +19,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import edge_v2 as edge, prepare_forward
 from scripts.edge_publication import DataPublisher
+from scripts.edge_calibration import daily_report, shadow_snapshot
 
 MIN_SEND_INTERVAL_SECONDS = 60
 MAX_BATCH_ITEMS = 24
@@ -259,6 +260,7 @@ def main():
         observer = edge.Observer(Path(folder))
         started, last_send = time.monotonic(), None
         initialized = set()
+        calibration = None
         while time.monotonic()-started<315*60:
             now = edge.utcnow()
             if not operating_hours(now): return
@@ -276,6 +278,13 @@ def main():
                     if s["snapshot_id"] not in state.get("forward_observations_sent",[])
                     and s["snapshot_id"] not in state.get("forward_observations_ignored",[]))
                 initialized.add(date)
+                # Local-only fitting once/day; diagnostics never stop collection.
+                try:
+                    calibration = daily_report(edge.STATE, date, prepare_forward.MODEL_SHA256)
+                    state["calibration_status"] = {"mode": "shadow", "artifactId": calibration["artifactId"]}
+                except Exception as error:
+                    calibration = None
+                    state["calibration_status"] = {"mode": "unavailable", "error": type(error).__name__}
             stage = "capture"
             try:
                 wait_for_send_slot(last_send)
@@ -301,6 +310,26 @@ def main():
                 if waiting and waiting.get("status") == "waiting":
                     waiting.update(status="ready", recovered_at=edge.utcnow().isoformat())
                 check_observations(state, now, path)
+                if calibration:
+                    # Separate annotation: raw snapshots and their hashes stay intact.
+                    try:
+                        for race in state["races"].values():
+                            for snapshot in race.get("snapshots", {}).values():
+                                sid = snapshot["snapshot_id"]
+                                if (sid in state.get("forward_observations_sent", []) or
+                                    sid in state.get("forward_observations_ignored", []) or
+                                    race.get("result") or
+                                    edge.iso(edge.snapshot_deadline(race, snapshot)) <= edge.utcnow()):
+                                    continue
+                                annotations = race.setdefault("calibration_shadow", {})
+                                if sid not in annotations:
+                                    value = shadow_snapshot(snapshot, calibration)
+                                    if value is not None:
+                                        value["recordedAt"] = edge.utcnow().isoformat()
+                                        annotations[sid] = value
+                    except Exception as error:
+                        calibration = None
+                        state["calibration_status"] = {"mode": "unavailable", "error": type(error).__name__}
                 stage = "persist_observations"
                 prepare_forward._atomic_json(path,state); publisher.persist()
                 stage = "public_readback"
@@ -333,13 +362,14 @@ def main():
                 stage = "settlement"
                 observer.settle(state)
                 if previous:
-                    pending = {rid:r for rid,r in previous["races"].items() if not r.get("result") and
+                    pending = {rid:r for rid,r in previous["races"].items() if (not r.get("result") or
+                               (not r.get("final") and r.get("final_attempt_count", 0) < 3)) and
                                any(s["snapshot_id"] in previous.get("forward_observations_sent",[])
                                    for s in r.get("snapshots",{}).values())}
                     if pending:
                         observer.settle({**previous,"races":pending})
                     prepare_forward._atomic_json(previous_path,previous)
-                # No historical day scanning, legacy research API or final grids.
+                # Only current/previous day settlement; no historical network scan.
                 stage = "persist_settlement"
                 prepare_forward._atomic_json(path,state); publisher.persist()
             except Exception as error:
