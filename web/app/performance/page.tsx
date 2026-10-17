@@ -27,6 +27,7 @@ import {
   number,
 } from "@/components/four-page-common";
 import {
+  TopWinningEntries,
   PerformanceKpis,
   ProfitChart,
   Breakdown,
@@ -86,6 +87,7 @@ export default async function PerformancePage({
       <Link href="/calibration" prefetch={false}>確率と確定オッズの補正検証を見る</Link>
       <ErrorPanel message={data.error} />
       <PerformanceKpis entries={entries} available={data.available} />
+      {data.available && <TopWinningEntries entries={entries} />}
       {!entries.length && !data.error && <EmptyState />}
       {data.available && (
         <div className="fp-performance-grid">
