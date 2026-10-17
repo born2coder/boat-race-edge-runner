@@ -1178,3 +1178,11 @@
     overflow-wrap: anywhere;
   }
 }
+
+.fp-top-hits { margin: 20px 0; }
+.fp-top-hits-scroll { overflow-x: auto; }
+.fp-top-hits table { width: 100%; border-collapse: collapse; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.fp-top-hits th, .fp-top-hits td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #dce4ef; }
+.fp-top-hits th { font-size: 12px; color: #52647c; background: #f4f7fb; }
+.fp-top-hits td:nth-last-child(-n+2), .fp-top-hits th:nth-last-child(-n+2) { text-align: right; }
+.fp-top-hits strong { color: #1765bd; }

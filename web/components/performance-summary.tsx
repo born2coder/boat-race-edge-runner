@@ -1,4 +1,5 @@
-import { aggregate, type Entry, type Filters } from "@/lib/four-page";
+import { venueNames } from "@/lib/venues";
+import { topWinningEntries, aggregate, type Entry, type Filters } from "@/lib/four-page";
 import {
   HistoryLink,
   number,
@@ -214,6 +215,31 @@ export function Breakdown({
           );
         })}
       </div>
+    </section>
+  );
+}
+
+export function TopWinningEntries({ entries }: { entries: Entry[] }) {
+  const rows = topWinningEntries(entries);
+  return (
+    <section className="fp-card fp-top-hits">
+      <h2>期間中の的中倍率 TOP 5</h2>
+      <p className="fp-note">選択中の期間・購入モードなどの条件に一致する的中買い目です。倍率は確定払戻 ÷ 購入額で計算します。</p>
+      {rows.length ? (
+        <div className="fp-top-hits-scroll" role="region" aria-label="的中倍率上位5点" tabIndex={0}>
+          <table>
+            <thead><tr><th scope="col">順位</th><th scope="col">日付</th><th scope="col">レース</th><th scope="col">買い目</th><th scope="col">的中倍率</th><th scope="col">払戻（100円当たり）</th></tr></thead>
+            <tbody>{rows.map(({ entry: e, multiple }, index) => (
+              <tr key={e.id}>
+                <td>{index + 1}</td><td>{e.raceDate}</td>
+                <td>{venueNames[e.venueCode] ?? e.venueCode} {e.raceNo}R</td>
+                <td>{e.combination}</td><td><strong>{number(multiple, 1)}倍</strong></td>
+                <td>{yen(multiple * 100)}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      ) : <p className="fp-empty">選択した条件では、結果が確定した的中買い目はありません。</p>}
     </section>
   );
 }

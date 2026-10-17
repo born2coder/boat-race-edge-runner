@@ -626,3 +626,20 @@ export function expectedReturnText(ev: number | null) {
   }
   return ev < 1.2 && ev > 1.1 ? "120％未満" : "100％超";
 }
+
+/** Rank filtered, settled wins by the actual return multiple, never quoted odds. */
+export function topWinningEntries(entries: Entry[]) {
+  const seen = new Set<string>();
+  return entries.filter((e) => {
+    if (seen.has(e.id)) return false;
+    seen.add(e.id);
+    return e.outcome === "hit" && e.hit === true && !!e.settledAt &&
+      Number.isFinite(e.stakeYen) && e.stakeYen > 0 &&
+      e.payoutYen !== null && Number.isFinite(e.payoutYen) && e.payoutYen > 0;
+  }).map((entry) => ({ entry, multiple: entry.payoutYen! / entry.stakeYen }))
+    .sort((a, b) => b.multiple - a.multiple ||
+      b.entry.raceDate.localeCompare(a.entry.raceDate) ||
+      a.entry.venueCode.localeCompare(b.entry.venueCode) ||
+      a.entry.raceNo - b.entry.raceNo || a.entry.id.localeCompare(b.entry.id))
+    .slice(0, 5);
+}
