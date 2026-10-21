@@ -1,0 +1,41 @@
+name: Audit production HIT model
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/audit_production_model.py
+      - .github/workflows/production-model-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out validation branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install locked dependencies
+        run: python -m pip install --requirement requirements.txt
+      - name: Audit frozen production model without publishing
+        env:
+          EDGE_MODEL_REPOSITORY: ${{ secrets.EDGE_MODEL_REPOSITORY }}
+          EDGE_MODEL_TOKEN: ${{ secrets.EDGE_MODEL_TOKEN }}
+          EDGE_MODEL_KEY: ${{ secrets.EDGE_MODEL_KEY }}
+          EDGE_AUDIT_DATE: "2026-09-07"
+        run: python scripts/audit_production_model.py
+      - name: Upload safe audit output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-model-audit
+          path: validation-output/production-model-audit.json
+          if-no-files-found: error
+          retention-days: 7
