@@ -1,0 +1,14 @@
+{
+  "stopped_at": "2026-10-22T05:08:05.214170+00:00",
+  "resumed_at": "2026-10-22T05:58:28Z",
+  "stop_archive": "state/edge_v2/stop-history/20261022T050805-public-readback-connection-reset.json",
+  "cause": "The immutable edge-data public readback failed during the TLS handshake with URLError wrapping ConnectionResetError. Git persistence and earlier application ingestion had succeeded; this was not an auth, quota, official-data, or ingestion failure.",
+  "resolution": "PR #69 treats only URLError(ConnectionResetError) at public readback as a transient transport failure. The failed batch remains permanently excluded and is never replayed; the watcher waits five minutes and captures fresh observations. Auth, quota, ingestion, and unknown failures still stop.",
+  "fix_pull_request": "https://github.com/born2coder/boat-race-edge-runner/pull/69",
+  "fix_commit": "653ea8905346863887c979a3ce2c466fde09f917",
+  "verification": "130 tests passed; 1 skipped. Recovery, permanent failed-batch exclusion, auth/quota stopping, and ingestion stopping are covered.",
+  "failed_run_id": 39701118711,
+  "failed_job_id": 119626993130,
+  "recovery_status": "single_restart_pending_verification",
+  "constraints": "60-second sends, 1000/day requests, 60000ms/day CPU, 24-item batches and 315-minute run limit unchanged. No historical forecast backfill."
+}
