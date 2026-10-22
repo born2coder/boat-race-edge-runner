@@ -19,7 +19,8 @@ class PublicationRecoveryTests(unittest.TestCase):
             "snapshots": {"t20": {"snapshot_id": "old"}}, "receipts": {}}}}
 
     def test_transient_public_read_failure_excludes_batch_permanently(self):
-        errors = [TimeoutError(), flow.urllib.error.URLError(TimeoutError())]
+        errors = [TimeoutError(), flow.urllib.error.URLError(TimeoutError()),
+                  flow.urllib.error.URLError(ConnectionResetError())]
         errors += [flow.urllib.error.HTTPError("https://example.test", c, "", None, None)
                    for c in (404, 502, 503, 504)]
         for error in errors:

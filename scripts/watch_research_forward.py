@@ -51,6 +51,7 @@ def confirm_or_defer(state, publisher):
         )
         transient = (isinstance(error, TimeoutError) or
                      isinstance(getattr(error, "reason", None), TimeoutError) or
+                     isinstance(getattr(error, "reason", None), ConnectionResetError) or
                      isinstance(error, urllib.error.HTTPError) and error.code in (502, 503, 504) or
                      first_immutable_404)
         if not transient:
