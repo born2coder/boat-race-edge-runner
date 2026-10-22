@@ -5,7 +5,11 @@
   },
   "date": "2026-10-22",
   "forward_last_send_completed_at": "2026-10-22T04:12:05.205258+00:00",
-  "forward_observations_ignored": [],
+  "forward_observations_ignored": [
+    "0458c743a6e48584fc6f418363e9cea099e50b3e3e6e707fb06ac1344ba79dce",
+    "7c3e6bfbade1293017923f6c558be4008386405664900bba06a3bef771dca39a",
+    "d0e6cc604f5e39838bda8dc0dcb9fb9244153a5fe9c076b3e71bdc92fcd0300f"
+  ],
   "forward_observations_sent": [
     "f9e856b788412957dcb1683d5c7e63089814ba8ad3048f6558eba7f3db9e0650",
     "38be7380612e8c2aec0f193d3bddc042276babb3791c2ad618ff2c97c0f40383",
@@ -315,6 +319,16 @@
     "bddaf18d674075d776e6ec683fc5af30a6095472d4b6c52261bedfbe3779ff24",
     "b265787f899d24302a05cb88cbe80f7b04ec5a8ab2a5929db69a9580afc8d987"
   ],
+  "forward_publication_wait": {
+    "checked_at": "2026-10-22T04:14:15.724357+00:00",
+    "failures": 1,
+    "first_seen_at": "2026-10-22T04:14:15.724357+00:00",
+    "http_status": null,
+    "kind": "TimeoutError",
+    "revision": "b56c205c6c360feeef0de721d343ab23717ffe86",
+    "skipped_observations": 3,
+    "status": "waiting"
+  },
   "forward_results_sent": [
     "BR:20261022:14:01:863a2fa4bf9d1e126cf924ce87e3f1af98c86a46e21ff4255d2042f150173afb",
     "BR:20261022:18:01:ed5664ebdd65b178d7738a613a9f8dc2d7d570a1f47f786ea874f1f1183b37c3",
