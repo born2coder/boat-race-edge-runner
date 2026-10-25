@@ -109,7 +109,7 @@ export default async function CalibrationPage() {
         <p className={styles.note}>ズレは平均対数誤差で比較しています。オッズの倍率そのものではありません。</p>
         <h3>補正して選ぶと、戻ってくる金額は増えた？</h3>
         <p>実際には購入せず、1点100円で買ったと仮定して比べます。回収率100％なら収支ゼロ、100％未満なら赤字です。</p>
-        <StrategyComparison data={phase.policyComparison} title="過去データでの試算：3つの計算方法" />
+        <StrategyComparison data={phase.policyComparison} title={report.version === "edge-calibration-v2" ? "過去データでの試算：3つの計算方法" : "旧方式の試算：補正前と補正後"} />
         {phase.under20Comparison && <details><summary>判定時20倍未満に絞った場合</summary><StrategyComparison data={phase.under20Comparison} title="過去データでの試算：20倍未満" /></details>}
         <details><summary>詳しい採点方法と数値（専門指標）</summary>
           <p>以下の誤差の点数は、小さいほど実際の結果に近いことを表します。的中率や金額そのものではありません。</p>

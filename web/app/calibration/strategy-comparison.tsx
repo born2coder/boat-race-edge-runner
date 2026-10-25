@@ -24,7 +24,7 @@ export function StrategyComparison({data, title}: {data: Comparison; title: stri
     </figure>
     <div className={styles.tableScroll} tabIndex={0} role="region" aria-label={title}><table>
       <thead><tr><th scope="col">計算方法</th><th scope="col">購入／的中</th><th scope="col">使った金額</th><th scope="col">払戻</th><th scope="col">収支</th><th scope="col">回収率</th></tr></thead>
-      <tbody>{rows.map(([key,p]) => <tr key={key}><th scope="row">{labels[key]}</th><td>{p.supportedTickets === 0 ? "未評価" : `${p.tickets.toLocaleString("ja-JP")}／${p.hits}点`}</td><td>{yen(p.stake)}</td><td>{yen(p.payout)}</td><td>{yen(p.payout-p.stake)}</td><td>{pct(p.roi)}</td></tr>)}</tbody>
+      <tbody>{rows.map(([key,p]) => <tr key={key}><th scope="row">{labels[key]}</th><td>{p.supportedTickets === 0 ? "未評価" : `${p.tickets.toLocaleString("ja-JP")}／${p.hits}点`}</td><td>{p.supportedTickets === 0 ? "未評価" : yen(p.stake)}</td><td>{p.supportedTickets === 0 ? "未評価" : yen(p.payout)}</td><td>{p.supportedTickets === 0 ? "未評価" : yen(p.payout-p.stake)}</td><td>{pct(p.roi)}</td></tr>)}</tbody>
     </table></div>
     {data.baseline.supportedTickets === 0 ? <p>比較に必要なデータがまだありません。購入を見送ったという意味ではありません。</p> : data.baseline.tickets === 0 && <p>比較できた範囲では、現行の計算で購入条件を満たす買い目がありませんでした。</p>}
     {data.baseline.supportedTickets != null && <p className={styles.note}>比較対象：{data.baseline.evaluatedRaces}レース・{data.baseline.supportedTickets.toLocaleString("ja-JP")}通り。データ不足で未評価：{data.baseline.unsupportedTickets?.toLocaleString("ja-JP")}通り。</p>}
