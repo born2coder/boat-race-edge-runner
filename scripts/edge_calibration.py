@@ -14,7 +14,8 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-VERSION = "edge-calibration-v1"
+VERSION = "edge-calibration-v2"
+from scripts import calibration_strategy as strategy
 COMBOS = {"-".join(x) for x in itertools.permutations("123456", 3)}
 PHASES = ("t20", "t15", "t10", "t5")
 ODDS_BOUNDS = (10, 30, 100, 300, math.inf)
@@ -111,20 +112,25 @@ def examples(days, as_of, model_sha):
                     rejected["invalid_or_unacknowledged_snapshot"] += 1
                     continue
                 seen.add(key)
-                rows.append({"date": day["date"], "race_id": race["race_id"], "phase": phase,
+                shadow = race.get("calibration_shadow", {}).get(snapshot["snapshot_id"], {})
+                try:
+                    shadow_valid = observed <= stamp(shadow["recordedAt"]) <= receipt < close
+                except (KeyError, ValueError, TypeError):
+                    shadow_valid = False
+                rows.append({"combinations": combos, "shadow": shadow, "shadow_valid": shadow_valid, "date": day["date"], "race_id": race["race_id"], "phase": phase,
                              "p": probabilities, "odds": odds, "winner": combos.index(winner),
                              "payout": result["payout_per_100_yen"],
                              "final": [closing[c] for c in combos] if final_ok else None})
     return rows, dict(rejected)
 
 
-def probability_metrics(rows, temperature):
+def probability_metrics(rows, temperature, points=None):
     if not rows:
         return None
     loss = brier = 0.0
     buckets = defaultdict(lambda: [0, 0., 0])
     for row in rows:
-        p = scaled(row["p"], temperature)
+        p = strategy.calibrate(row["p"], points) if points is not None else scaled(row["p"], temperature)
         loss -= math.log(max(p[row["winner"]], 1e-15))
         brier += sum((v - int(i == row["winner"])) ** 2 for i, v in enumerate(p))
         for i, v in enumerate(p):
@@ -178,28 +184,20 @@ def odds_metrics(rows, cells):
             "belowLowerRate": below / n if n else None}
 
 
-def policy_metrics(rows, temperature, cells):
-    """Fixed 120% threshold, one phase/race; no post-hoc threshold search."""
-    variants = {k: {"tickets": 0, "hits": 0, "stake": 0, "payout": 0} for k in ("baseline", "adjusted")}
+def comparison_choices(rows, points, cells, ready=True):
+    choices = []
     for row in rows:
-        adjusted = scaled(row["p"], temperature)
-        for i, opening in enumerate(row["odds"]):
+        corrected = strategy.calibrate(row["p"], points)
+        lower = []
+        for opening in row["odds"]:
             cell = cells.get(str(odds_band(opening)))
-            # Match baseline to exactly the supported adjusted cohort.
-            if not cell or cell["races"] < MIN_RACES or row["final"] is None:
-                continue
-            for name, ev in (("baseline", row["p"][i] * .8 * opening),
-                             ("adjusted", adjusted[i] * opening * cell["lowerRatio"])):
-                if ev >= 1.2:
-                    target = variants[name]
-                    target["tickets"] += 1
-                    target["stake"] += 100
-                    if i == row["winner"]:
-                        target["hits"] += 1
-                        target["payout"] += row["payout"]
-    for value in variants.values():
-        value["roi"] = value["payout"] / value["stake"] if value["stake"] else None
-    return variants
+            lower.append(opening * cell["lowerRatio"] if cell and cell["races"] >= MIN_RACES and row["final"] is not None else None)
+        choices.append(strategy.selections(row["p"], corrected, row["odds"], lower, ready))
+    return choices
+
+
+def policy_metrics(rows, temperature, cells, points=None, ready=True):
+    return strategy.summarize(rows, comparison_choices(rows, points or [], cells, ready))
 
 
 def build_report(days, as_of, model_sha):
@@ -208,7 +206,7 @@ def build_report(days, as_of, model_sha):
     test_dates = dates[-MIN_TEST_DAYS:]
     train_dates = dates[:-MIN_TEST_DAYS]
     report = {"version": VERSION, "asOf": as_of, "modelSha": model_sha,
-              "mode": "shadow", "trainDates": train_dates, "testDates": test_dates,
+              "mode": "shadow", "experimentId": strategy.EXPERIMENT, "trainDates": train_dates, "testDates": test_dates,
               "minTrainDays": MIN_TRAIN_DAYS, "minTestDays": MIN_TEST_DAYS,
               "minRaces": MIN_RACES, "lookbackDays": LOOKBACK_DAYS,
               "rejected": rejected, "phases": {}}
@@ -220,7 +218,10 @@ def build_report(days, as_of, model_sha):
                   and len({r["date"] for r in test}) >= MIN_TEST_DAYS
                   and len(train) >= MIN_RACES and len(test) >= MIN_RACES)
         temperature = min(TEMPERATURES, key=lambda t: sum(-math.log(max(scaled(r["p"], t)[r["winner"]], 1e-15)) for r in train)) if train else 1.0
-        raw, corrected = probability_metrics(test, 1), probability_metrics(test, temperature)
+        points = strategy.fit_probability(train)
+        raw, corrected = probability_metrics(test, 1), probability_metrics(test, 1, points)
+        train_ready = (len({r["date"] for r in train}) >= MIN_TRAIN_DAYS and len(train) >= MIN_RACES
+                       and len({r["date"] for r in train if r["final"] is not None}) >= MIN_TRAIN_DAYS)
         cells = fit_odds(train)
         odds = odds_metrics(test, cells)
         probability_pass = bool(enough and raw and corrected and
@@ -233,11 +234,33 @@ def build_report(days, as_of, model_sha):
         report["phases"][phase] = {"trainRaces": len(train), "testRaces": len(test),
             "finalGridTrainRaces": sum(r["final"] is not None for r in train),
             "finalGridTestRaces": sum(r["final"] is not None for r in test),
-            "temperature": temperature, "oddsCells": cells,
+            "temperature": temperature, "probabilityCells": points, "trainReady": train_ready, "oddsCells": cells,
             "rawProbability": raw, "adjustedProbability": corrected, "oddsValidation": odds,
             "probabilityPass": probability_pass, "oddsPass": odds_pass,
             "status": "review_ready" if probability_pass and odds_pass else "collecting" if not enough else "validation_failed",
-            "policyComparison": policy_metrics(test, temperature, cells)}
+            "policyComparison": policy_metrics(test, temperature, cells, points, train_ready),
+            "under20Comparison": strategy.summarize(test, comparison_choices(test, points, cells, train_ready), 20)}
+    common = set.intersection(*({r["race_id"] for r in rows if r["date"] in test_dates and r["phase"] == phase and r["final"] is not None} for phase in strategy.TIMES))
+    report["matchedTiming"] = {"races": len(common), "phases": {}}
+    timing_rows, timing_choices = {}, {}
+    for phase in strategy.TIMES:
+        spec = report["phases"][phase]
+        matched = [r for r in rows if r["race_id"] in common and r["phase"] == phase]
+        timing_rows[phase] = matched
+        timing_choices[phase] = comparison_choices(matched, spec["probabilityCells"], spec["oddsCells"], spec["trainReady"])
+    supported = set.intersection(*({(r["race_id"], combo) for r, choices in zip(timing_rows[p], timing_choices[p])
+                                     for i, combo in enumerate(r["combinations"]) if choices["baseline"][i] is not None}
+                                    for p in strategy.TIMES))
+    for phase in strategy.TIMES:
+        for row, choices in zip(timing_rows[phase], timing_choices[phase]):
+            for i, combo in enumerate(row["combinations"]):
+                if (row["race_id"], combo) not in supported:
+                    for name in strategy.VARIANTS:
+                        choices[name][i] = None
+        report["matchedTiming"]["phases"][phase] = {
+            "all": strategy.summarize(timing_rows[phase], timing_choices[phase]),
+            "under20": strategy.summarize(timing_rows[phase], timing_choices[phase], 20)}
+    report["forwardComparison"] = strategy.frozen_forward(rows)
     digest = hashlib.sha256(json.dumps(report, sort_keys=True, allow_nan=False).encode()).hexdigest()
     report["artifactId"] = VERSION + ":" + digest[:20]
     return report
@@ -247,7 +270,7 @@ def shadow_snapshot(snapshot, report):
     """No fallback to optimistic raw EV when a closing-odds cell is unsupported."""
     phase = report.get("phases", {}).get(snapshot.get("phase"))
     try:
-        observed_date = (stamp(snapshot["observed_at"]) + timedelta(hours=9)).date().isoformat()
+        observed_date = stamp(snapshot["observed_at"]).astimezone(timezone(timedelta(hours=9))).date().isoformat()
         if (report["asOf"] != observed_date or snapshot.get("model_bundle_sha256") != report["modelSha"]
                 or not phase or not distribution(snapshot.get("exhibition"))
                 or len(snapshot.get("odds", [])) != 120 or len(snapshot.get("combinations", [])) != 120
@@ -256,7 +279,7 @@ def shadow_snapshot(snapshot, report):
             return None
     except (KeyError, TypeError, ValueError):
         return None
-    p = scaled(snapshot["exhibition"], phase["temperature"])
+    p = strategy.calibrate(snapshot["exhibition"], phase.get("probabilityCells", []))
     mean, lower, ev = [], [], []
     for probability, opening in zip(p, snapshot["odds"]):
         cell = phase["oddsCells"].get(str(odds_band(opening)))
@@ -266,12 +289,13 @@ def shadow_snapshot(snapshot, report):
         ev.append(probability * lower[-1] if valid else None)
     return {"artifactId": report["artifactId"], "mode": "shadow", "status": phase["status"],
             "calibratedProbability": p, "estimatedFinalOdds": mean, "lowerFinalOdds": lower,
-            "adjustedEv": ev, "purchaseEnabled": False}
+            "adjustedEv": ev, "purchaseEnabled": False, "experimentId": strategy.EXPERIMENT,
+            "decisions": strategy.selections(snapshot["exhibition"], p, snapshot["odds"], lower, phase.get("trainReady", False))}
 
 
 def daily_report(state_root: Path, as_of: str, model_sha: str):
     """One local-only fit per JST day. Archived artifacts are never overwritten."""
-    target = state_root / "calibration" / (as_of + ".json")
+    target = state_root / "calibration" / VERSION / (as_of + ".json")
     if target.exists():
         report = json.loads(target.read_text())
         if report.get("modelSha") != model_sha or report.get("version") != VERSION:
@@ -286,8 +310,9 @@ def daily_report(state_root: Path, as_of: str, model_sha: str):
     temporary = target.with_suffix(".tmp")
     temporary.write_text(text)
     temporary.replace(target)
-    latest = target.parent / "latest.json"
+    latest = state_root / "calibration" / "latest.json"
     temporary = latest.with_suffix(".tmp")
     temporary.write_text(text)
     temporary.replace(latest)
     return report
+

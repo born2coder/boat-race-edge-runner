@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StrategyComparison } from "./strategy-comparison";
 import styles from "./calibration.module.css";
 import { loadCalibration } from "@/db/calibration-repository";
 import { PageTitle } from "@/components/four-page-common";
@@ -12,7 +13,6 @@ const period = (dates: string[]) => dates.length ? `${dates[0]}〜${dates.at(-1)
 const verdict = (passed: boolean, hasData: boolean, collecting: boolean) =>
   !hasData ? "比較に必要なデータを集めています" : collecting ? "まだデータが少なく、判断待ちです" :
     passed ? "今回の検証では、改善の条件を満たしました" : "今回の検証では、改善の条件を満たしていません";
-const money = (value: number) => `${value.toLocaleString("ja-JP")}円`;
 function ComparisonBars({ title, before, after, percentage = false }: { title: string; before: number | null | undefined; after: number | null | undefined; percentage?: boolean }) {
   const max = Math.max(before ?? 0, after ?? 0, .000001);
   return <figure className={styles.chart}><figcaption>{title}</figcaption>
@@ -62,6 +62,23 @@ export default async function CalibrationPage() {
           </tr>)}</tbody>
         </table></div>
       </section>
+      {report.version === "edge-calibration-v1" && <p role="status">表示中は旧方式の集計です。新しい3方式の比較は、次の日次集計が完了すると表示されます。</p>}
+      {report.forwardComparison && <section className={styles.phase}>
+        <h2>ルールを決めた後の実績</h2>
+        <p>締切前に保存した新方式の判断を、そのまま採点します。結果を見てから買い目を選び直すことはありません。直近{60}日以内の確定分です。各時刻は合算しません。</p>
+        {Object.entries(report.forwardComparison).map(([key, group]) => <details key={key}><summary>約{key.slice(1)}分前：{group.recordedRaces}レースの記録</summary>
+          <StrategyComparison data={group.all} title="新方式の判断を保存した後の成績" />
+          <StrategyComparison data={group.under20} title="判定時20倍未満に絞った成績" />
+        </details>)}
+      </section>}
+      {report.matchedTiming && <section className={styles.phase}>
+        <h2>同じレースで、判断する時刻を比べる</h2>
+        <p>15・10・5分前すべての記録と確定オッズがある{report.matchedTiming.races}レースを対象にした、過去データでの試算です。各時刻で同じ買い目の集合を評価しますが、購入条件を満たす買い目は変わります。</p>
+        {Object.entries(report.matchedTiming.phases).map(([key,group]) => <details key={key}><summary>約{key.slice(1)}分前の判断</summary>
+          <StrategyComparison data={group.all} title={`約${key.slice(1)}分前：同じレースで比較`} />
+          <StrategyComparison data={group.under20} title="その時点で20倍未満の買い目" />
+        </details>)}
+      </section>}
       {Object.entries(report.phases).map(([key, phase]) => <section key={key} id={`phase-${key}`} className={styles.phase}>
         <header className={styles.phaseHeader}><h2>締切の約{key.slice(1)}分前</h2><a href="#overview-title">一覧に戻る ↑</a></header>
         <h3>① 「当たる確率」は、実際に近づいた？</h3>
@@ -92,18 +109,8 @@ export default async function CalibrationPage() {
         <p className={styles.note}>ズレは平均対数誤差で比較しています。オッズの倍率そのものではありません。</p>
         <h3>補正して選ぶと、戻ってくる金額は増えた？</h3>
         <p>実際には購入せず、1点100円で買ったと仮定して比べます。回収率100％なら収支ゼロ、100％未満なら赤字です。</p>
-        {!phase.policyComparison.baseline.tickets && !phase.policyComparison.adjusted.tickets && <p>まだ購入成績を比較できません。下の0点は、比較できた購入がないことを表します。</p>}
-        <ComparisonBars title="使った金額に対して、戻った金額の割合" before={phase.policyComparison.baseline.roi} after={phase.policyComparison.adjusted.roi} percentage />
-        <div className={styles.tableScroll} tabIndex={0} role="region" aria-label="購入したと仮定した成績"><table>
-          <thead><tr><th scope="col">比較するもの</th><th scope="col">これまでの計算</th><th scope="col">補正した計算</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">回収率</th><td>{percent(phase.policyComparison.baseline.roi)}</td><td>{percent(phase.policyComparison.adjusted.roi)}</td></tr>
-            <tr><th scope="row">買ったと仮定した点数／当たった点数</th><td>{phase.policyComparison.baseline.tickets}／{phase.policyComparison.baseline.hits}</td><td>{phase.policyComparison.adjusted.tickets}／{phase.policyComparison.adjusted.hits}</td></tr>
-            <tr><th scope="row">使った金額</th><td>{money(phase.policyComparison.baseline.stake)}</td><td>{money(phase.policyComparison.adjusted.stake)}</td></tr>
-            <tr><th scope="row">戻った金額</th><td>{money(phase.policyComparison.baseline.payout)}</td><td>{money(phase.policyComparison.adjusted.payout)}</td></tr>
-            <tr><th scope="row">差し引きの収支</th><td>{money(phase.policyComparison.baseline.payout - phase.policyComparison.baseline.stake)}</td><td>{money(phase.policyComparison.adjusted.payout - phase.policyComparison.adjusted.stake)}</td></tr>
-          </tbody>
-        </table></div>
+        <StrategyComparison data={phase.policyComparison} title="過去データでの試算：3つの計算方法" />
+        {phase.under20Comparison && <details><summary>判定時20倍未満に絞った場合</summary><StrategyComparison data={phase.under20Comparison} title="過去データでの試算：20倍未満" /></details>}
         <details><summary>詳しい採点方法と数値（専門指標）</summary>
           <p>以下の誤差の点数は、小さいほど実際の結果に近いことを表します。的中率や金額そのものではありません。</p>
           <div style={{ overflowX: "auto" }}><table>
@@ -117,10 +124,11 @@ export default async function CalibrationPage() {
       </section>)}
       <p>各時刻の成績は別々の試算です。同じ買い目が含まれるため、20分前・15分前などの成績は合算しないでください。改善の条件を満たしても、自動で購入推奨に切り替わることはありません。</p>
       <details><summary>比較条件・計算方法を確認する</summary>
-        <p>1点100円・期待値120％以上で計算。補正前は従来の確率×0.8×観測オッズ、補正後は補正確率×控えめな確定オッズ見積もりです。比較対象は確定オッズと補正係数が揃う同じ買い目の集合に限定しています。</p>
+        <p>1点100円・期待値120％以上で計算。現行は元の確率×0.8×観測オッズ、確率だけ補正は補正確率×観測オッズ、両方の補正は補正確率×控えめな確定オッズ見積もりです。新方式では3方式とも元の確率1％以上を条件にします。比較対象は確定オッズと補正係数が揃う同じ買い目の集合に限定しています。</p>
         <p>控えめなオッズには、過去の倍率変化の下位25％点を使います。最低払戻の保証ではありません。検証通過も将来の利益を保証するものではありません。</p>
         <small>補正バージョン：{report.artifactId}</small>
       </details>
     </>}
   </div>;
 }
+

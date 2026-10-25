@@ -7,9 +7,15 @@ const probability = z.object({
   races: metric, logLoss: metric, brier: metric,
   reliability: z.array(z.object({ upper: metric, tickets: metric, predicted: metric, actual: metric })),
 }).nullable();
-const policy = z.object({ tickets: metric, hits: metric, stake: metric, payout: metric, roi: metric.nullable() });
+const policy = z.object({ tickets: metric, hits: metric, stake: metric, payout: metric, roi: metric.nullable(),
+  supportedTickets: metric.optional(), unsupportedTickets: metric.optional(), evaluatedRaces: metric.optional(),
+  maxDailyDrawdown: metric.optional(), top5PayoutShare: metric.nullable().optional(),
+  daily: z.array(z.object({date: z.string(), tickets: metric, hits: metric, stake: metric, payout: metric, net: metric, roi: metric})).optional(),
+});
+const comparison = z.object({ baseline: policy, probability: policy.optional(), adjusted: policy });
+const group = z.object({ all: comparison, under20: comparison });
 export const calibrationSchema = z.object({
-  version: z.literal("edge-calibration-v1"), asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  version: z.enum(["edge-calibration-v1", "edge-calibration-v2"]), asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   artifactId: z.string(), mode: z.literal("shadow"), modelSha: z.string(),
   trainDates: z.array(z.string()), testDates: z.array(z.string()),
   minTrainDays: metric, minTestDays: metric, minRaces: metric,
@@ -20,8 +26,11 @@ export const calibrationSchema = z.object({
     rawProbability: probability, adjustedProbability: probability,
     oddsValidation: z.object({ races: metric, tickets: metric,
       rawLogError: metric.nullable(), adjustedLogError: metric.nullable(), belowLowerRate: metric.nullable() }),
-    policyComparison: z.object({ baseline: policy, adjusted: policy }),
+    policyComparison: comparison, under20Comparison: comparison.optional(),
   })),
+  experimentId: z.string().optional(),
+  matchedTiming: z.object({races: metric, phases: z.record(group)}).optional(),
+  forwardComparison: z.record(group.extend({recordedRaces: metric})).optional(),
 });
 export async function loadCalibration() {
   const revision = await getEdgeV2Revision();
@@ -33,3 +42,4 @@ export async function loadCalibration() {
     return calibrationSchema.parse(await response.json());
   } catch { return null; }
 }
+
