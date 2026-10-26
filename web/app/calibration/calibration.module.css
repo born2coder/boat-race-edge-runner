@@ -38,3 +38,10 @@
 .legend span:nth-child(2) { color: #0c7568; margin-left: 10px; }
 .empty { color: #536984; padding: 20px 8px; font-size: 14px; }
 @media (max-width: 700px) { .chartGrid { grid-template-columns: 1fr; gap: 0; } .overview, .phase { padding: 16px; border-radius: 12px; } .periods { grid-template-columns: 1fr; } .page h2 { font-size: 20px; } .page h3 { font-size: 17px; } .page th, .page td { padding: 11px; } .chart { padding: 12px; } }
+
+
+.strategy { margin: 1.5rem 0; }
+.strategyBar { display: grid; grid-template-columns: 11rem minmax(80px, 1fr) 6rem; align-items: center; gap: .75rem; margin: .8rem 0; }
+.strategyBar .track { position: relative; overflow: visible; }
+.breakEven { position: absolute; top: -3px; bottom: -3px; border-left: 2px dashed currentColor; opacity: .65; }
+@media (max-width: 640px) { .strategyBar { grid-template-columns: minmax(80px, 1fr) 6rem; } .strategyBar > span:first-child { grid-column: 1 / -1; } }

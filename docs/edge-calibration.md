@@ -84,3 +84,21 @@ Supabaseの既存台帳 `finalOdds` はこの変更では埋めない。新し�
 
 テスト：`python -m unittest tests.test_edge_calibration tests.test_edge_v2 tests.test_research_forward tests.test_publication_recovery tests.test_edge_continuity`
 画面：`cd web && npm run build`。
+
+
+
+## v2：2026-10-26に固定した比較戦略
+
+実験ID `calibration-strategy-20261026-v1`。本番購入台帳・HITモデル・取得上限は変更しない。
+
+- 確率は全120通りの学習期間の実績から固定7帯で校正。200件分の元確率への平滑化、単調回帰、線形補間、レース内正規化を行い、順位と総和1を維持する。検証期間の結果で係数を選ばない。
+- 3方式：元p×0.8×観測オッズ、補正p×観測オッズ、補正p×控えめな確定オッズ。すべて元p>=1%、期待値>=1.2、1点100円。現行「購入推奨」の計算を固定時刻で再現した比較で、本番台帳の累積購入成績とは別。
+- 同じ評価可能な集合で比較。確率・確定オッズの学習7日以上、100レース以上を満たさないものは未評価。推測値による埋め合わせはしない。
+- 全件／判定時20倍未満の2枠。20倍ちょうどは限定枠に含めない。
+- 時刻比較は15/10/5分前すべてがある同一レース、同一組合せの評価可能集合。購入条件を満たす組合せは時刻で変わる。20倍未満枠の集合も時刻で変わる。20分前は通常の時刻別表示のみ。
+- 日別収支、日末ベース最大ドローダウン、払戻上位5点への依存率を表示。日中の最大損失を表す指標ではない。
+- `calibration_shadow` に実験ID・3方式の判断配列を締切前に保存。前向き集計は記録時刻<=公開受領時刻<締切、ACK済み、同モデル、新実験IDの記録だけを採点。後から再計算した判断は混ぜない。直近60日の確定分が対象。
+- 日次ファイルは `calibration/edge-calibration-v2/YYYY-MM-DD.json` に固定保存し、v1を上書きしない。`calibration/latest.json` が画面の参照先。画面は旧v1も読めるが、新方式の結果に見せない。
+- 過去の試算・ルール固定後の成績は分離。検証通過しても自動採用しない。今後ルールを変える場合は実験IDも変更する。
+
+検証：`python -m unittest tests.test_calibration_strategy tests.test_edge_calibration`、`cd web && npm run build`。
