@@ -587,7 +587,7 @@
     "BR:20261026:01:01:0081744fb513c14963ad88a875424cea85ea460fe3606aaed3fd0dc0557f33aa"
   ],
   "last_error": null,
-  "last_tick_at": "2026-10-26T06:45:08.820888+00:00",
+  "last_tick_at": "2026-10-26T06:46:16.336113+00:00",
   "races": {
     "202610260101": {
       "calibration_shadow": {
@@ -195219,12 +195219,16 @@
         }
       ],
       "deadline_evidence": {
-        "obtained_at": "2026-10-26T06:37:59.955640+00:00",
-        "sha256": "06bec3767d946d2bea920cabbfb103508024af2ae3888d37280eea1f94044424",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261026&jcd=08&rno=12&_edge_minute=29883277"
+        "obtained_at": "2026-10-26T06:46:07.964707+00:00",
+        "sha256": "baa4dea740a67c08c8992dd941aaa60d17a6652211982d5b68a5223f07966e77",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261026&jcd=08&rno=12&_edge_minute=29883285"
       },
       "eligible_roster": true,
       "errors": {
+        "t15": {
+          "at": "2026-10-26T06:46:16.335988+00:00",
+          "reason": "Official odds grid was incomplete: 60/120"
+        },
         "t20": {
           "at": "2026-10-26T06:38:08.438308+00:00",
           "reason": "Official odds grid was incomplete: 60/120"
@@ -195235,10 +195239,15 @@
         }
       },
       "exhibition_rejections": {
+        "t15": "model_input_incomplete",
         "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
       "forward_skipped_phases": {
+        "t15": {
+          "at": "2026-10-26T06:46:16.335988+00:00",
+          "reason": "Official odds grid was incomplete: 60/120"
+        },
         "t20": {
           "at": "2026-10-26T06:38:08.438308+00:00",
           "reason": "Official odds grid was incomplete: 60/120"
@@ -195249,7 +195258,7 @@
         }
       },
       "preview_error": {
-        "at": "2026-10-26T06:37:59.987782+00:00",
+        "at": "2026-10-26T06:46:07.997958+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
