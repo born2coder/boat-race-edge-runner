@@ -10,6 +10,7 @@ import time
 class DataPublisher:
     branch = "edge-data"
     push_retry_seconds = 10
+    bootstrap_fetch_timeout_seconds = 300
 
     def __init__(self, root, folder):
         self.root, self.folder = root, folder
@@ -19,7 +20,10 @@ class DataPublisher:
             raise RuntimeError("Data branch discovery failed")
         exists = probe.returncode == 0
         if exists:
-            self.git(root, "fetch", "--depth", "1", "origin", self.branch)
+            self.git(
+                root, "fetch", "--depth", "1", "origin", self.branch,
+                timeout=self.bootstrap_fetch_timeout_seconds,
+            )
             self.git(root, "worktree", "add", "--detach", str(folder), "FETCH_HEAD")
         else:
             self.git(root, "worktree", "add", "--detach", str(folder), "HEAD")
@@ -36,8 +40,11 @@ class DataPublisher:
             path.write_text(json.dumps(config, indent=2) + "\n")
 
     @staticmethod
-    def git(folder, *args, check=True):
-        return subprocess.run(["git", *args], cwd=folder, check=check, capture_output=True, text=True, timeout=90)
+    def git(folder, *args, check=True, timeout=90):
+        return subprocess.run(
+            ["git", *args], cwd=folder, check=check,
+            capture_output=True, text=True, timeout=timeout,
+        )
 
     def push_data_branch(self):
         """Verify ambiguous success and retry one safe transient transport failure.
