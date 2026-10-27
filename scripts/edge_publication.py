@@ -10,7 +10,12 @@ import time
 class DataPublisher:
     branch = "edge-data"
     push_retry_seconds = 10
-    push_verify_attempts = 3
+    # GitHub can accept a push while both the push response and several
+    # immediately following ls-remote responses are unavailable. Keep this a
+    # bounded verification-only window: never replay the push while the remote
+    # result is unknown, and never poll after a classified authentication or
+    # policy failure.
+    push_verify_attempts = 5
     push_verify_seconds = 2
     bootstrap_fetch_timeout_seconds = 300
 
