@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-27",
+  "reason": "The observation commit reached edge-data, but git push returned exit 1 and the immediate remote-head verification was temporarily unavailable. The runner conservatively recorded a pause even though the observation was already stored. The publisher now repeats only the remote SHA verification for a few seconds without replaying the push.",
+  "fix_commit": "c3d8f4409c38d652d57c61d26dbd7ea7068175d9",
+  "pull_request": 72,
+  "stop_archive": "state/edge_v2/stop-history/20261026T234453-edge-push-verification-loss.json",
+  "evidence": {
+    "failed_run": 40412941346,
+    "failed_job": 121887990493,
+    "accepted_remote_commit": "1ece43d02949a054ded73e005d44620f9c257b29",
+    "pause_commit": "26b86c69f0e85a0b1033e520395b9946cdd167a1",
+    "pause_at": "2026-10-26T23:44:53.570073+00:00"
+  },
+  "authorization": "User requested diagnosis and resolution of stoppages on 2026-10-11.",
+  "validation": "140 local unit tests passed; 1 pre-existing official-fixture test skipped. Vercel preview deployment for the fix was READY before merge.",
+  "safeguards": {
+    "minimum_send_interval_seconds": 60,
+    "app_daily_admission_budget": 1000,
+    "app_daily_cpu_budget_ms": 60000,
+    "observation_and_result_batch_limit": 24,
+    "execution_limit_minutes": 315,
+    "legacy_automation_enabled": false,
+    "push_replayed_during_verification": false,
+    "authentication_failures_retried": false
+  },
+  "historical_predictions_reconstructed": false
+}
