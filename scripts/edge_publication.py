@@ -10,6 +10,8 @@ import time
 class DataPublisher:
     branch = "edge-data"
     push_retry_seconds = 10
+    push_verify_attempts = 3
+    push_verify_seconds = 2
     bootstrap_fetch_timeout_seconds = 300
 
     def __init__(self, root, folder):
@@ -62,10 +64,23 @@ class DataPublisher:
             self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
         if pushed.returncode == 0:
             return
+        category = self.push_failure_category(pushed)
         remote_head = self.remote_head()
         if remote_head == head:
             return
-        category = self.push_failure_category(pushed)
+        # A push can reach GitHub even when the client loses the final response.
+        # If the first verification request also loses its response, briefly
+        # verify again without replaying the push. A concrete, different remote
+        # head still stops immediately, and authentication failures are never
+        # polled or retried.
+        if not remote_head and category != "hard_stop":
+            for _ in range(self.push_verify_attempts - 1):
+                time.sleep(self.push_verify_seconds)
+                remote_head = self.remote_head()
+                if remote_head == head:
+                    return
+                if remote_head:
+                    break
         retry = category == "transient_transport" and remote_head == parent
         if retry:
             time.sleep(self.push_retry_seconds)
