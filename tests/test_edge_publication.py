@@ -61,6 +61,42 @@ class PublicationTests(unittest.TestCase):
             self.assertTrue(response_lost)
             self.assertEqual(json.loads(run(remote, "show", "edge-data:state/edge_v2/index.json"))["revision"], 2)
 
+    def test_push_and_first_verification_response_loss_does_not_false_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / "code"; remote = base / "remote.git"
+            def run(cwd, *args):
+                return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+            run(base, "init", "--bare", str(remote)); run(base, "init", "-b", "main", str(root))
+            run(root, "config", "user.name", "test"); run(root, "config", "user.email", "test@example.invalid")
+            (root / "web").mkdir(); (root / "web/vercel.json").write_text("{}")
+            state = root / "state/edge_v2/index.json"; state.parent.mkdir(parents=True); state.write_text('{"revision":1}')
+            run(root, "add", "."); run(root, "commit", "-m", "fixture"); run(root, "remote", "add", "origin", str(remote))
+            run(root, "push", "-u", "origin", "main")
+            publisher = DataPublisher(root, base / "data")
+            original_git = publisher.git
+            publisher.push_verify_seconds = 0
+            push_response_lost = False
+            verification_responses = 0
+
+            def ambiguous_git(folder, *args, check=True):
+                nonlocal push_response_lost, verification_responses
+                if args[:2] == ("push", "origin") and not push_response_lost:
+                    push_response_lost = True
+                    original_git(folder, *args)
+                    return subprocess.CompletedProcess(["git", *args], 1, "", "simulated response loss")
+                if args[:2] == ("ls-remote", "--exit-code"):
+                    verification_responses += 1
+                    if verification_responses == 1:
+                        return subprocess.CompletedProcess(["git", *args], 1, "", "simulated verification loss")
+                return original_git(folder, *args, check=check)
+
+            publisher.git = ambiguous_git
+            state.write_text('{"revision":2}')
+            publisher.persist()
+            self.assertTrue(push_response_lost)
+            self.assertEqual(verification_responses, 2)
+            self.assertEqual(json.loads(run(remote, "show", "edge-data:state/edge_v2/index.json"))["revision"], 2)
+
     def test_rejected_push_still_raises_when_remote_does_not_have_local_commit(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp); root = base / "code"; remote = base / "remote.git"
