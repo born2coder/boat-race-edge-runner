@@ -61,7 +61,7 @@ class PublicationTests(unittest.TestCase):
             self.assertTrue(response_lost)
             self.assertEqual(json.loads(run(remote, "show", "edge-data:state/edge_v2/index.json"))["revision"], 2)
 
-    def test_push_and_first_verification_response_loss_does_not_false_stop(self):
+    def test_push_and_several_verification_response_losses_do_not_false_stop(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp); root = base / "code"; remote = base / "remote.git"
             def run(cwd, *args):
@@ -86,7 +86,7 @@ class PublicationTests(unittest.TestCase):
                     return subprocess.CompletedProcess(["git", *args], 1, "", "simulated response loss")
                 if args[:2] == ("ls-remote", "--exit-code"):
                     verification_responses += 1
-                    if verification_responses == 1:
+                    if verification_responses <= 3:
                         return subprocess.CompletedProcess(["git", *args], 1, "", "simulated verification loss")
                 return original_git(folder, *args, check=check)
 
@@ -94,7 +94,7 @@ class PublicationTests(unittest.TestCase):
             state.write_text('{"revision":2}')
             publisher.persist()
             self.assertTrue(push_response_lost)
-            self.assertEqual(verification_responses, 2)
+            self.assertEqual(verification_responses, 4)
             self.assertEqual(json.loads(run(remote, "show", "edge-data:state/edge_v2/index.json"))["revision"], 2)
 
     def test_rejected_push_still_raises_when_remote_does_not_have_local_commit(self):
