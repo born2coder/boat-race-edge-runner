@@ -1,0 +1,25 @@
+{
+  "resumedAt": "2026-10-29T07:03:38.504Z",
+  "reason": "Explicit user approval to rerun the old failed job once, after disclosure of the maximum 315-minute runtime and unknown original push cause.",
+  "authorization": "User: 再実行して (in reply to explicit permission request for old job rerun)",
+  "rootCause": "unknown; original stderr unavailable",
+  "diagnosticsFixCommit": "7fd80211104621d4e6f532418414316371aa2213",
+  "failedRun": 40780522092,
+  "originalStop": "state/edge_v2/stop-history/20261029-032748-push-unknown.json",
+  "preflight": {
+    "activeRuns": 0,
+    "queuedRuns": 0,
+    "requests": 135,
+    "cpuMs": 6266,
+    "stoppedReason": null
+  },
+  "safeguards": {
+    "maxRunMinutes": 315,
+    "minSendSeconds": 60,
+    "maxDailyRequests": 1000,
+    "maxDailyCpuMs": 60000,
+    "maxBatchItems": 24,
+    "backfill": false,
+    "automaticUnknownStopClearance": false
+  }
+}
