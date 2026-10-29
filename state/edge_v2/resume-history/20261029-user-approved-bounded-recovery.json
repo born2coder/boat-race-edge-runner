@@ -1,0 +1,23 @@
+{
+  "resumedAt": "2026-10-29T05:01:00Z",
+  "reason": "User explicitly authorized a bounded recovery despite unrecoverable historical push-error detail after disclosure that root cause remains unknown. This is a one-time manual exception, not automatic unknown-stop clearance.",
+  "rootCause": "unknown: original git output was not retained",
+  "diagnosticsFixCommit": "7fd80211104621d4e6f532418414316371aa2213",
+  "pullRequest": "https://github.com/born2coder/boat-race-edge-runner/pull/74",
+  "failedRun": 40780522092,
+  "pauseCommit": "86634042330feee307b5df23633cbb553718bb68",
+  "observationCommit": "c66aa212b9e292285c9450e9c6d2fbf432058849",
+  "verification": {
+    "relatedTestsPassed": 8,
+    "activeRuns": 0,
+    "queuedRuns": 0,
+    "requests": 135,
+    "cpuMs": 6266,
+    "stoppedReason": null
+  },
+  "safeguards": {
+    "limitsChanged": false,
+    "backfillCreated": false,
+    "automaticUnknownStopClearance": false
+  }
+}
