@@ -187,8 +187,30 @@ class PublicationTests(unittest.TestCase):
                 with self.assertRaises(subprocess.CalledProcessError) as raised:
                     publisher.persist()
                 self.assertEqual(pushes, 1)
-                self.assertEqual(raised.exception.edge_publication_diagnostics,
+                diagnostics = raised.exception.edge_publication_diagnostics
+                self.assertEqual({key: diagnostics[key] for key in
+                                  ("operation", "category", "retryAttempted")},
                     {"operation":"push_edge_data", "category":category, "retryAttempted":False})
+                self.assertEqual(diagnostics["returncode"], 1)
+                self.assertEqual(diagnostics["localHead"], run(publisher.folder, "rev-parse", "HEAD"))
+                self.assertEqual(diagnostics["parentHead"], diagnostics["remoteHeadBeforeRetry"])
+
+    def test_output_evidence_does_not_persist_credentials_or_arbitrary_text(self):
+        result = subprocess.CompletedProcess(["git", "push"], 1, "secret-output",
+            "fatal: https://user:secret-password@example.invalid/path?token=secret-token "
+            "Authorization: Bearer private-value; remote rejected; cannot lock ref")
+        evidence = DataPublisher.output_evidence(result)
+        serialized = json.dumps(evidence)
+        for secret in ("secret-output", "secret-password", "secret-token", "private-value", "example.invalid"):
+            self.assertNotIn(secret, serialized)
+        self.assertEqual(evidence["stderr"]["signals"], ["remote rejected", "cannot lock ref"])
+        self.assertEqual(len(evidence["stderr"]["sha256"]), 64)
+
+    def test_empty_output_has_explicit_evidence(self):
+        evidence = DataPublisher.output_evidence(subprocess.CompletedProcess(["git"], 1, None, b""))
+        self.assertEqual(evidence["stdout"]["bytes"], 0)
+        self.assertEqual(evidence["stderr"]["signals"], [])
+        self.assertEqual(evidence["stdout"], evidence["stderr"])
 
 
 if __name__ == "__main__": unittest.main()

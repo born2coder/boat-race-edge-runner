@@ -1,6 +1,7 @@
 """Separate frequently changing observations from deployable application commits."""
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -94,8 +95,10 @@ class DataPublisher:
             if retried.returncode == 0 or self.remote_head() == head:
                 return
             self.raise_push_error(
-                retried, self.push_failure_category(retried), retry_attempted=True)
-        self.raise_push_error(pushed, category, retry_attempted=False)
+                retried, self.push_failure_category(retried), retry_attempted=True,
+                head=head, parent=parent, remote_head=remote_head)
+        self.raise_push_error(pushed, category, retry_attempted=False,
+                              head=head, parent=parent, remote_head=remote_head)
 
     def remote_head(self):
         remote = self.git(
@@ -126,15 +129,49 @@ class DataPublisher:
         return "unknown"
 
     @staticmethod
-    def raise_push_error(result, category, *, retry_attempted):
+    def raise_push_error(result, category, *, retry_attempted,
+                         head="", parent="", remote_head=""):
         error = subprocess.CalledProcessError(
             result.returncode, result.args, result.stdout, result.stderr)
         error.edge_publication_diagnostics = {
             "operation": "push_edge_data",
             "category": category,
             "retryAttempted": retry_attempted,
+            "returncode": result.returncode,
+            "localHead": head,
+            "parentHead": parent,
+            "remoteHeadBeforeRetry": remote_head,
+            "outputEvidence": DataPublisher.output_evidence(result),
         }
         raise error
+
+    @staticmethod
+    def output_evidence(result):
+        """Persist fingerprints and fixed signals, never arbitrary Git output.
+
+        Git output can contain credential-bearing URLs, headers and server text.
+        A denylist is insufficient: only known literal signals leave the runner.
+        Hashes also distinguish empty output from repeated identical failures.
+        """
+        signals = (
+            "authentication failed", "permission denied", "repository not found",
+            "non-fast-forward", "fetch first", "remote rejected", "remote failure",
+            "failed to push some refs", "pre-receive hook declined", "cannot lock ref",
+            "connection reset", "remote end hung up", "unexpected disconnect",
+            "rpc failed", "http/2 stream", "tls connection", "timed out",
+            "could not resolve host", "empty reply from server", "broken pipe",
+            "internal server error", "service unavailable", "rate limit",
+        )
+        evidence = {}
+        for stream in ("stdout", "stderr"):
+            value = getattr(result, stream, None) or ""
+            raw = value.encode("utf-8") if isinstance(value, str) else value
+            lowered = raw.decode("utf-8", errors="replace").lower()
+            evidence[stream] = {
+                "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+                "signals": [signal for signal in signals if signal in lowered],
+            }
+        return evidence
 
     def persist(self):
         shutil.copytree(self.root / "state/edge_v2", self.folder / "state/edge_v2", dirs_exist_ok=True)
