@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { StrategyComparison } from "./strategy-comparison";
+import { FactorialComparison, StrategyComparison } from "./strategy-comparison";
 import styles from "./calibration.module.css";
 import { loadCalibration } from "@/db/calibration-repository";
 import { PageTitle } from "@/components/four-page-common";
@@ -63,6 +63,26 @@ export default async function CalibrationPage() {
         </table></div>
       </section>
       {report.version === "edge-calibration-v1" && <p role="status">表示中は旧方式の集計です。新しい3方式の比較は、次の日次集計が完了すると表示されます。</p>}
+      <section className={styles.phase}>
+        <h2>確率補正と「×0.8を外す」効果を分けて調べる</h2>
+        <p>A：元確率×0.8、B：元確率×1.0、C：補正確率×0.8、D：補正確率×1.0の4方式を比べます。すべて同じ観測オッズを使い、元確率1％以上・期待回収率120％以上・1点100円を共通条件にします。確定オッズの見積もりは、この比較には使いません。</p>
+        <p>AとC、BとDで確率補正の効果を、AとB、CとDで×0.8を外す効果を確認できます。各時刻と「全件」「20倍未満」は別々の比較です。</p>
+        {!report.factorialForwardComparison ? <p role="status">4方式の集計はまだありません。次の日次集計から表示します。以前の3方式の成績を、新しい4方式の実績として扱うことはありません。</p> : <>
+          <h3>実装後に締切前の判断を保存した成績</h3>
+          <p>新しい実験の判断を締切前に保存し、受領が確認できた記録だけを採点します。過去の判断を後から作り足すことはありません。</p>
+          {Object.entries(report.factorialForwardComparison).map(([key, group]) => <details key={key}><summary>約{key.slice(1)}分前：{group.recordedRaces}レースの記録</summary>
+            <FactorialComparison data={group.all} title="4方式の前向き成績：全件" />
+            <FactorialComparison data={group.under20} title="4方式の前向き成績：判定時20倍未満" />
+          </details>)}
+          <h3>過去データでの試算</h3>
+          <p>学習に使わなかった検証期間で再計算した参考値です。実装後の成績とは分けて表示します。確率補正用の学習が7日・100レースに満たない場合、4方式とも未評価にします。</p>
+          {Object.entries(report.phases).map(([key, phase]) => phase.factorialComparison ? <details key={key}><summary>約{key.slice(1)}分前の試算</summary>
+            <FactorialComparison data={phase.factorialComparison.all} title="4方式の過去試算：全件" />
+            <FactorialComparison data={phase.factorialComparison.under20} title="4方式の過去試算：判定時20倍未満" />
+          </details> : null)}
+          <small>比較実験：{report.factorialExperimentId}</small>
+        </>}
+      </section>
       {report.forwardComparison && <section className={styles.phase}>
         <h2>ルールを決めた後の実績</h2>
         <p>締切前に保存した新方式の判断を、そのまま採点します。結果を見てから買い目を選び直すことはありません。直近{60}日以内の確定分です。各時刻は合算しません。</p>
@@ -109,7 +129,7 @@ export default async function CalibrationPage() {
         <p className={styles.note}>ズレは平均対数誤差で比較しています。オッズの倍率そのものではありません。</p>
         <h3>補正して選ぶと、戻ってくる金額は増えた？</h3>
         <p>実際には購入せず、1点100円で買ったと仮定して比べます。回収率100％なら収支ゼロ、100％未満なら赤字です。</p>
-        <StrategyComparison data={phase.policyComparison} title={report.version === "edge-calibration-v2" ? "過去データでの試算：3つの計算方法" : "旧方式の試算：補正前と補正後"} />
+        <StrategyComparison data={phase.policyComparison} title={report.version !== "edge-calibration-v1" ? "過去データでの試算：従来の3つの計算方法" : "旧方式の試算：補正前と補正後"} />
         {phase.under20Comparison && <details><summary>判定時20倍未満に絞った場合</summary><StrategyComparison data={phase.under20Comparison} title="過去データでの試算：20倍未満" /></details>}
         <details><summary>詳しい採点方法と数値（専門指標）</summary>
           <p>以下の誤差の点数は、小さいほど実際の結果に近いことを表します。的中率や金額そのものではありません。</p>

@@ -9,6 +9,69 @@ from tests.test_edge_calibration import day, race
 
 
 class StrategyTests(unittest.TestCase):
+    def test_factorial_separates_probability_and_coefficient(self):
+        actual = strategy.factorial_selections([.06, .08, .009], [.08, .04, .5], [20, 20, 20])
+        self.assertEqual(actual, {"raw080": [False, True, False], "raw100": [True, True, False],
+                                  "calibrated080": [True, False, False], "calibrated100": [True, False, False]})
+        same = strategy.factorial_selections([.1], [.1], [15])
+        self.assertEqual(same["raw080"], same["calibrated080"])
+        self.assertEqual(same["raw100"], same["calibrated100"])
+        for values in strategy.factorial_selections([.1], [.1], [20], ready=False).values():
+            self.assertEqual(values, [None])
+
+    def test_factorial_does_not_require_closing_odds_and_keeps_common_support(self):
+        days = [day(i) for i in range(1, 11)]
+        for d in days:
+            race(d).pop("final")
+        with patch.object(cal, "MIN_RACES", 1):
+            report = cal.build_report(days, "2026-10-12", "model-a")
+        phase = report["phases"]["t10"]
+        self.assertFalse(phase["trainReady"])
+        self.assertTrue(phase["probabilityTrainReady"])
+        for policy in phase["factorialComparison"]["all"].values():
+            self.assertEqual(policy["supportedTickets"], 360)
+            self.assertEqual(policy["unsupportedTickets"], 0)
+        shadow = cal.shadow_snapshot(race(day(12))["snapshots"]["t10"], report)
+        self.assertEqual(shadow["factorialExperimentId"], strategy.FACTORIAL_EXPERIMENT)
+        self.assertFalse(shadow["purchaseEnabled"])
+        self.assertIsNone(shadow["lowerFinalOdds"][0])
+        self.assertTrue(shadow["factorialDecisions"]["raw080"][0])
+        self.assertTrue(all(v is None for v in shadow["decisions"]["baseline"]))
+
+    def test_factorial_forward_never_replays_old_or_late_decisions(self):
+        d = day()
+        legacy = {"experimentId": strategy.EXPERIMENT,
+                  "decisions": {k: [True] + [False] * 119 for k in strategy.VARIANTS},
+                  "recordedAt": "2026-10-01T00:50:01Z"}
+        race(d)["calibration_shadow"] = {"snapshot-1": legacy}
+        def result():
+            rows, _ = cal.examples([d], "2026-10-12", "model-a")
+            return strategy.factorial_forward(rows)["t10"]
+        self.assertEqual(result()["recordedRaces"], 0)
+        legacy.update(factorialExperimentId=strategy.FACTORIAL_EXPERIMENT,
+                      factorialDecisions={k: [True] + [False] * 119 for k in strategy.FACTORIAL_VARIANTS})
+        scored = result()
+        self.assertEqual(scored["recordedRaces"], 1)
+        self.assertEqual(scored["all"]["raw080"]["payout"], 5000)
+        race(d)["final"] = None  # Actual payout is sufficient; final grid is unrelated.
+        self.assertEqual(result(), scored)
+        legacy["factorialDecisions"]["raw100"][0] = None
+        self.assertEqual(result()["recordedRaces"], 0)
+        legacy["factorialDecisions"]["raw100"][0] = True
+        legacy["recordedAt"] = "2026-10-01T01:20:00Z"
+        self.assertEqual(result()["recordedRaces"], 0)
+
+    def test_factorial_boundaries_actual_payout_and_no_data(self):
+        row = {"date":"2026-10-01", "race_id":"r", "odds":[19.9,20], "winner":0,"payout":1000}
+        choices = {k:[True,True] for k in strategy.FACTORIAL_VARIANTS}
+        result = strategy.summarize([row], [choices], 20, strategy.FACTORIAL_VARIANTS)
+        for p in result.values():
+            self.assertEqual((p["tickets"], p["payout"], p["supportedTickets"]), (1, 1000, 1))
+        report = cal.build_report([], "2026-10-12", "model-a")
+        for phase in report["phases"].values():
+            self.assertFalse(phase["probabilityTrainReady"])
+            self.assertTrue(all(p["roi"] is None for p in phase["factorialComparison"]["all"].values()))
+
     def test_band_fit_preserves_rank_mass_and_does_not_mutate_model(self):
         rows, _ = cal.examples([day(i, i % 3) for i in range(1, 11)], "2026-10-12", "model-a")
         original = copy.deepcopy(rows)
@@ -68,10 +131,14 @@ class StrategyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder); (root/"calibration").mkdir()
             old=root/"calibration/2026-10-12.json";old.write_text('{"version":"v1"}')
+            v2=root/"calibration/edge-calibration-v2/2026-10-12.json"
+            v2.parent.mkdir();v2.write_text('{"version":"edge-calibration-v2"}')
             first=cal.daily_report(root,"2026-10-12","model-a")
             second=cal.daily_report(root,"2026-10-12","model-a")
             self.assertEqual(first,second)
             self.assertEqual(old.read_text(),'{"version":"v1"}')
+            self.assertEqual(v2.read_text(),'{"version":"edge-calibration-v2"}')
+            self.assertTrue((root/"calibration/edge-calibration-v3/2026-10-12.json").exists())
             self.assertFalse(any(v["recordedRaces"] for v in first["forwardComparison"].values()))
 
     def test_timing_uses_shared_races_and_supported_combinations(self):
