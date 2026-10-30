@@ -14,7 +14,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-VERSION = "edge-calibration-v2"
+VERSION = "edge-calibration-v3"
 from scripts import calibration_strategy as strategy
 COMBOS = {"-".join(x) for x in itertools.permutations("123456", 3)}
 PHASES = ("t20", "t15", "t10", "t5")
@@ -200,13 +200,21 @@ def policy_metrics(rows, temperature, cells, points=None, ready=True):
     return strategy.summarize(rows, comparison_choices(rows, points or [], cells, ready))
 
 
+def factorial_comparison(rows, points, ready):
+    choices = [strategy.factorial_selections(r["p"], strategy.calibrate(r["p"], points), r["odds"], ready)
+               for r in rows]
+    return {"all": strategy.summarize(rows, choices, variants=strategy.FACTORIAL_VARIANTS),
+            "under20": strategy.summarize(rows, choices, 20, variants=strategy.FACTORIAL_VARIANTS)}
+
+
 def build_report(days, as_of, model_sha):
     rows, rejected = examples(days, as_of, model_sha)
     dates = sorted({r["date"] for r in rows})
     test_dates = dates[-MIN_TEST_DAYS:]
     train_dates = dates[:-MIN_TEST_DAYS]
     report = {"version": VERSION, "asOf": as_of, "modelSha": model_sha,
-              "mode": "shadow", "experimentId": strategy.EXPERIMENT, "trainDates": train_dates, "testDates": test_dates,
+              "mode": "shadow", "experimentId": strategy.EXPERIMENT,
+              "factorialExperimentId": strategy.FACTORIAL_EXPERIMENT, "trainDates": train_dates, "testDates": test_dates,
               "minTrainDays": MIN_TRAIN_DAYS, "minTestDays": MIN_TEST_DAYS,
               "minRaces": MIN_RACES, "lookbackDays": LOOKBACK_DAYS,
               "rejected": rejected, "phases": {}}
@@ -222,6 +230,7 @@ def build_report(days, as_of, model_sha):
         raw, corrected = probability_metrics(test, 1), probability_metrics(test, 1, points)
         train_ready = (len({r["date"] for r in train}) >= MIN_TRAIN_DAYS and len(train) >= MIN_RACES
                        and len({r["date"] for r in train if r["final"] is not None}) >= MIN_TRAIN_DAYS)
+        probability_train_ready = len({r["date"] for r in train}) >= MIN_TRAIN_DAYS and len(train) >= MIN_RACES
         cells = fit_odds(train)
         odds = odds_metrics(test, cells)
         probability_pass = bool(enough and raw and corrected and
@@ -234,12 +243,14 @@ def build_report(days, as_of, model_sha):
         report["phases"][phase] = {"trainRaces": len(train), "testRaces": len(test),
             "finalGridTrainRaces": sum(r["final"] is not None for r in train),
             "finalGridTestRaces": sum(r["final"] is not None for r in test),
-            "temperature": temperature, "probabilityCells": points, "trainReady": train_ready, "oddsCells": cells,
+            "temperature": temperature, "probabilityCells": points, "trainReady": train_ready,
+            "probabilityTrainReady": probability_train_ready, "oddsCells": cells,
             "rawProbability": raw, "adjustedProbability": corrected, "oddsValidation": odds,
             "probabilityPass": probability_pass, "oddsPass": odds_pass,
             "status": "review_ready" if probability_pass and odds_pass else "collecting" if not enough else "validation_failed",
             "policyComparison": policy_metrics(test, temperature, cells, points, train_ready),
-            "under20Comparison": strategy.summarize(test, comparison_choices(test, points, cells, train_ready), 20)}
+            "under20Comparison": strategy.summarize(test, comparison_choices(test, points, cells, train_ready), 20),
+            "factorialComparison": factorial_comparison(test, points, probability_train_ready)}
     common = set.intersection(*({r["race_id"] for r in rows if r["date"] in test_dates and r["phase"] == phase and r["final"] is not None} for phase in strategy.TIMES))
     report["matchedTiming"] = {"races": len(common), "phases": {}}
     timing_rows, timing_choices = {}, {}
@@ -261,6 +272,7 @@ def build_report(days, as_of, model_sha):
             "all": strategy.summarize(timing_rows[phase], timing_choices[phase]),
             "under20": strategy.summarize(timing_rows[phase], timing_choices[phase], 20)}
     report["forwardComparison"] = strategy.frozen_forward(rows)
+    report["factorialForwardComparison"] = strategy.factorial_forward(rows)
     digest = hashlib.sha256(json.dumps(report, sort_keys=True, allow_nan=False).encode()).hexdigest()
     report["artifactId"] = VERSION + ":" + digest[:20]
     return report
@@ -287,7 +299,11 @@ def shadow_snapshot(snapshot, report):
         mean.append(opening * cell["meanRatio"] if valid else None)
         lower.append(opening * cell["lowerRatio"] if valid else None)
         ev.append(probability * lower[-1] if valid else None)
-    return {"artifactId": report["artifactId"], "mode": "shadow", "status": phase["status"],
+    factorial = ({"factorialExperimentId": strategy.FACTORIAL_EXPERIMENT,
+                  "factorialDecisions": strategy.factorial_selections(snapshot["exhibition"], p, snapshot["odds"],
+                                                                      phase.get("probabilityTrainReady", False))}
+                 if report.get("version") == VERSION else {})
+    return {"artifactId": report["artifactId"], "mode": "shadow", "status": phase["status"], **factorial,
             "calibratedProbability": p, "estimatedFinalOdds": mean, "lowerFinalOdds": lower,
             "adjustedEv": ev, "purchaseEnabled": False, "experimentId": strategy.EXPERIMENT,
             "decisions": strategy.selections(snapshot["exhibition"], p, snapshot["odds"], lower, phase.get("trainReady", False))}

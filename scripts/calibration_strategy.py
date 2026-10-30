@@ -3,6 +3,8 @@ import math
 from collections import defaultdict
 
 EXPERIMENT = "calibration-strategy-20261026-v1"
+FACTORIAL_EXPERIMENT = "calibration-factorial-20261031-v1"
+FACTORIAL_VARIANTS = ("raw080", "raw100", "calibrated080", "calibrated100")
 BOUNDS = (.005, .01, .02, .05, .1, .2, 1.01)
 VARIANTS = ("baseline", "probability", "adjusted")
 TIMES = ("t15", "t10", "t5")
@@ -64,9 +66,20 @@ def selections(raw, corrected, odds, lower, ready=True, cap=None):
     return output
 
 
-def summarize(rows, decisions, cap=None):
+def factorial_selections(raw, corrected, odds, ready=True):
+    """2 x 2 comparison at the same observed odds; no closing-odds dependency."""
+    output = {name: [] for name in FACTORIAL_VARIANTS}
+    for p, calibrated, opening in zip(raw, corrected, odds):
+        eligible = p >= .01
+        for name, probability, factor in (("raw080", p, .8), ("raw100", p, 1.),
+                                          ("calibrated080", calibrated, .8), ("calibrated100", calibrated, 1.)):
+            output[name].append(bool(eligible and probability * factor * opening >= 1.2) if ready else None)
+    return output
+
+
+def summarize(rows, decisions, cap=None, variants=VARIANTS):
     output = {}
-    for name in VARIANTS:
+    for name in variants:
         daily = defaultdict(lambda: {"tickets": 0, "hits": 0, "stake": 0, "payout": 0})
         wins, supported, unsupported, races = [], 0, 0, set()
         for row, choices in zip(rows, decisions):
@@ -105,22 +118,32 @@ def summarize(rows, decisions, cap=None):
     return output
 
 
-def frozen_forward(rows):
+def frozen_forward(rows, variants=VARIANTS, experiment=EXPERIMENT,
+                   experiment_key="experimentId", decisions_key="decisions"):
     """Score only acknowledged pre-close choices actually recorded by v2."""
     output = {}
     for phase in ("t20", *TIMES):
         selected, choices = [], []
         for row in rows:
             shadow = row.get("shadow") or {}
-            if row["phase"] != phase or shadow.get("experimentId") != EXPERIMENT or not row.get("shadow_valid"):
+            if row["phase"] != phase or shadow.get(experiment_key) != experiment or not row.get("shadow_valid"):
                 continue
-            decision = shadow.get("decisions")
+            decision = shadow.get(decisions_key)
             if not isinstance(decision, dict) or any(
                 not isinstance(decision.get(k), list) or len(decision[k]) != 120
-                or any(v is not None and not isinstance(v, bool) for v in decision[k]) for k in VARIANTS):
+                or any(v is not None and not isinstance(v, bool) for v in decision[k]) for k in variants):
+                continue
+            # Every arm must be evaluated on exactly the same supported set.
+            if any(len({decision[k][i] is None for k in variants}) != 1 for i in range(120)):
                 continue
             selected.append(row)
             choices.append(decision)
-        output[phase] = {"all": summarize(selected, choices), "under20": summarize(selected, choices, 20),
+        output[phase] = {"all": summarize(selected, choices, variants=variants),
+                         "under20": summarize(selected, choices, 20, variants=variants),
                          "recordedRaces": len(selected)}
     return output
+
+
+def factorial_forward(rows):
+    return frozen_forward(rows, FACTORIAL_VARIANTS, FACTORIAL_EXPERIMENT,
+                          "factorialExperimentId", "factorialDecisions")
