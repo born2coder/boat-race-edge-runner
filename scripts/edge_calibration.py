@@ -14,8 +14,9 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-VERSION = "edge-calibration-v3"
+VERSION = "edge-calibration-v4"
 from scripts import calibration_strategy as strategy
+from scripts import market_strategy as market
 COMBOS = {"-".join(x) for x in itertools.permutations("123456", 3)}
 PHASES = ("t20", "t15", "t10", "t5")
 ODDS_BOUNDS = (10, 30, 100, 300, math.inf)
@@ -215,6 +216,7 @@ def build_report(days, as_of, model_sha):
     report = {"version": VERSION, "asOf": as_of, "modelSha": model_sha,
               "mode": "shadow", "experimentId": strategy.EXPERIMENT,
               "factorialExperimentId": strategy.FACTORIAL_EXPERIMENT, "trainDates": train_dates, "testDates": test_dates,
+              "marketExperimentId": market.EXPERIMENT, "marketRules": dict(market.RULES),
               "minTrainDays": MIN_TRAIN_DAYS, "minTestDays": MIN_TEST_DAYS,
               "minRaces": MIN_RACES, "lookbackDays": LOOKBACK_DAYS,
               "rejected": rejected, "phases": {}}
@@ -250,7 +252,8 @@ def build_report(days, as_of, model_sha):
             "status": "review_ready" if probability_pass and odds_pass else "collecting" if not enough else "validation_failed",
             "policyComparison": policy_metrics(test, temperature, cells, points, train_ready),
             "under20Comparison": strategy.summarize(test, comparison_choices(test, points, cells, train_ready), 20),
-            "factorialComparison": factorial_comparison(test, points, probability_train_ready)}
+            "factorialComparison": factorial_comparison(test, points, probability_train_ready),
+            "marketComparison": market.historical(test)}
     common = set.intersection(*({r["race_id"] for r in rows if r["date"] in test_dates and r["phase"] == phase and r["final"] is not None} for phase in strategy.TIMES))
     report["matchedTiming"] = {"races": len(common), "phases": {}}
     timing_rows, timing_choices = {}, {}
@@ -273,6 +276,7 @@ def build_report(days, as_of, model_sha):
             "under20": strategy.summarize(timing_rows[phase], timing_choices[phase], 20)}
     report["forwardComparison"] = strategy.frozen_forward(rows)
     report["factorialForwardComparison"] = strategy.factorial_forward(rows)
+    report["marketForwardComparison"] = market.forward(rows)
     digest = hashlib.sha256(json.dumps(report, sort_keys=True, allow_nan=False).encode()).hexdigest()
     report["artifactId"] = VERSION + ":" + digest[:20]
     return report
@@ -302,8 +306,12 @@ def shadow_snapshot(snapshot, report):
     factorial = ({"factorialExperimentId": strategy.FACTORIAL_EXPERIMENT,
                   "factorialDecisions": strategy.factorial_selections(snapshot["exhibition"], p, snapshot["odds"],
                                                                       phase.get("probabilityTrainReady", False))}
-                 if report.get("version") == VERSION else {})
+                 if report.get("version") in ("edge-calibration-v3", VERSION) else {})
+    market_shadow = ({"marketExperimentId": market.EXPERIMENT,
+                      "marketDecisions": market.selections(snapshot["exhibition"], snapshot["odds"])}
+                     if report.get("version") == VERSION else {})
     return {"artifactId": report["artifactId"], "mode": "shadow", "status": phase["status"], **factorial,
+            **market_shadow,
             "calibratedProbability": p, "estimatedFinalOdds": mean, "lowerFinalOdds": lower,
             "adjustedEv": ev, "purchaseEnabled": False, "experimentId": strategy.EXPERIMENT,
             "decisions": strategy.selections(snapshot["exhibition"], p, snapshot["odds"], lower, phase.get("trainReady", False))}

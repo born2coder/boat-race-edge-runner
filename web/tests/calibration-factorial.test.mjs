@@ -19,7 +19,7 @@ async function load(path, mocks = {}) {
   return result;
 }
 const { calibrationSchema } = await load("../db/calibration-repository.ts");
-const { FactorialComparison, StrategyComparison } = await load("../app/calibration/strategy-comparison.tsx");
+const { FactorialComparison, MarketComparison, StrategyComparison } = await load("../app/calibration/strategy-comparison.tsx");
 const policy = {tickets: 10, hits: 1, stake: 1000, payout: 800, roi: .8,
   supportedTickets: 120, unsupportedTickets: 0, evaluatedRaces: 1};
 const legacy = {baseline: policy, probability: policy, adjusted: policy};
@@ -67,6 +67,50 @@ test("unsupported results display unavailable rather than a zero-return performa
   const html = renderToStaticMarkup(createElement(FactorialComparison, {data: noData, title: "未評価"}));
   assert.ok(html.includes("比較に必要なデータがまだありません"));
   assert.ok(!html.includes("0.00％"));
+});
+const market = {marketBaseline: policy, oddsUnder20: {...policy, tickets: 5, stake: 500, roi: 1.6},
+  gapUnder3: policy, under20Gap3: policy, blend50: policy};
+test("market v4 retains five arms and older reports without inventing market results", () => {
+  const value = {...report, version: "edge-calibration-v4", marketExperimentId: "market-strategy-20261031-v1",
+    phases: {t10: {...phase, marketComparison: market}},
+    marketForwardComparison: {t10: {policies: market, recordedRaces: 1}}};
+  const parsed = calibrationSchema.parse(value);
+  assert.equal(parsed.marketForwardComparison.t10.policies.oddsUnder20.tickets, 5);
+  const broken = structuredClone(value);
+  delete broken.marketForwardComparison.t10.policies.blend50;
+  assert.equal(calibrationSchema.safeParse(broken).success, false);
+  for (const version of ["edge-calibration-v1", "edge-calibration-v2", "edge-calibration-v3"]) {
+    assert.equal(calibrationSchema.parse({...report, version}).marketForwardComparison, undefined);
+  }
+});
+test("market comparison shows spending and profit changes alongside return", () => {
+  const html = renderToStaticMarkup(createElement(MarketComparison, {data: market, title: "市場比較"}));
+  for (const label of ["現行方式（比較基準）", "20倍未満＋乖離3倍未満", "モデルと市場を半分ずつ",
+    "+80.00ポイント", "-5点", "購入点数の差", "収支の差"])
+    assert.ok(html.includes(label), label);
+  const empty = Object.fromEntries(Object.keys(market).map(key => [key, {...policy,
+    tickets: 0, hits: 0, stake: 0, payout: 0, roi: null, supportedTickets: 0}]));
+  const waiting = renderToStaticMarkup(createElement(MarketComparison, {data: empty, title: "集計待ち"}));
+  assert.ok(waiting.includes("比較に必要なデータがまだありません"));
+  assert.ok(!waiting.includes("0.00％"));
+});
+test("market page distinguishes frozen future decisions from selection-biased historical trials", async () => {
+  let current = {...report};
+  const page = await load("../app/calibration/page.tsx", {
+    "@/db/calibration-repository": {loadCalibration: async () => current},
+    "@/components/four-page-common": {PageTitle: ({title}) => createElement("h1", null, title)},
+    "@/lib/four-page": {jstDate: () => "2026-10-31"},
+    "./strategy-comparison": {FactorialComparison, MarketComparison, StrategyComparison},
+  });
+  const waiting = renderToStaticMarkup(await page.default());
+  assert.ok(waiting.includes("市場比較の新しい購入条件は、まだ集計されていません"));
+  current = {...current, version: "edge-calibration-v4", marketExperimentId: "market-strategy-20261031-v1",
+    phases: {t10: {...phase, marketComparison: market}},
+    marketForwardComparison: {t10: {policies: market, recordedRaces: 1}}};
+  const ready = renderToStaticMarkup(await page.default());
+  for (const label of ["新しい購入条件を固定した後の成績", "過去データでの参考試算", "この試算だけでは有効性を判定できません",
+    "市場比較：ルール固定後の成績", "市場比較：過去の参考試算", "3倍ちょうど、20倍ちょうど"])
+    assert.ok(ready.includes(label), label);
 });
 test("page labels old-report waiting, historical trials and newly recorded results separately", async () => {
   const page = await load("../app/calibration/page.tsx", {
