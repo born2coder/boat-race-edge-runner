@@ -138,7 +138,7 @@ class StrategyTests(unittest.TestCase):
             self.assertEqual(first,second)
             self.assertEqual(old.read_text(),'{"version":"v1"}')
             self.assertEqual(v2.read_text(),'{"version":"edge-calibration-v2"}')
-            self.assertTrue((root/"calibration/edge-calibration-v3/2026-10-12.json").exists())
+            self.assertTrue((root/"calibration"/cal.VERSION/"2026-10-12.json").exists())
             self.assertFalse(any(v["recordedRaces"] for v in first["forwardComparison"].values()))
 
     def test_timing_uses_shared_races_and_supported_combinations(self):

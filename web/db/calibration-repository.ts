@@ -16,8 +16,10 @@ const comparison = z.object({ baseline: policy, probability: policy.optional(), 
 const group = z.object({ all: comparison, under20: comparison });
 const factorial = z.object({raw080: policy, raw100: policy, calibrated080: policy, calibrated100: policy});
 const factorialGroup = z.object({all: factorial, under20: factorial});
+const market = z.object({marketBaseline: policy, oddsUnder20: policy, gapUnder3: policy,
+  under20Gap3: policy, blend50: policy});
 export const calibrationSchema = z.object({
-  version: z.enum(["edge-calibration-v1", "edge-calibration-v2", "edge-calibration-v3"]), asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  version: z.enum(["edge-calibration-v1", "edge-calibration-v2", "edge-calibration-v3", "edge-calibration-v4"]), asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   artifactId: z.string(), mode: z.literal("shadow"), modelSha: z.string(),
   trainDates: z.array(z.string()), testDates: z.array(z.string()),
   minTrainDays: metric, minTestDays: metric, minRaces: metric,
@@ -30,12 +32,15 @@ export const calibrationSchema = z.object({
       rawLogError: metric.nullable(), adjustedLogError: metric.nullable(), belowLowerRate: metric.nullable() }),
     policyComparison: comparison, under20Comparison: comparison.optional(),
     factorialComparison: factorialGroup.optional(),
+    marketComparison: market.optional(),
   })),
   experimentId: z.string().optional(),
   matchedTiming: z.object({races: metric, phases: z.record(group)}).optional(),
   forwardComparison: z.record(group.extend({recordedRaces: metric})).optional(),
   factorialExperimentId: z.string().optional(),
   factorialForwardComparison: z.record(factorialGroup.extend({recordedRaces: metric})).optional(),
+  marketExperimentId: z.string().optional(),
+  marketForwardComparison: z.record(z.object({policies: market, recordedRaces: metric})).optional(),
 });
 export async function loadCalibration() {
   const revision = await getEdgeV2Revision();

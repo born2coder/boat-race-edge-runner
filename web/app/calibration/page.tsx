@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FactorialComparison, StrategyComparison } from "./strategy-comparison";
+import { FactorialComparison, MarketComparison, StrategyComparison } from "./strategy-comparison";
 import styles from "./calibration.module.css";
 import { loadCalibration } from "@/db/calibration-repository";
 import { PageTitle } from "@/components/four-page-common";
@@ -63,6 +63,26 @@ export default async function CalibrationPage() {
         </table></div>
       </section>
       {report.version === "edge-calibration-v1" && <p role="status">表示中は旧方式の集計です。新しい3方式の比較は、次の日次集計が完了すると表示されます。</p>}
+      <section className={styles.phase}>
+        <h2>市場の予想を、買い目の絞り込みに使う</h2>
+        <p>高配当の買い目や、市場より極端に高く見積もった買い目を外すと、収支は変わるでしょうか。現行方式を基準に、4つの条件を並行して試します。</p>
+        <ul><li>判定時のオッズが20倍未満</li><li>モデルの確率が、市場から推定した確率の3倍未満</li><li>20倍未満と、乖離3倍未満の両方を満たす</li><li>モデルと市場の確率を半分ずつ混ぜる</li></ul>
+        <p>5方式とも元の確率1％以上・係数×0.8・期待回収率120％以上・1点100円です。混合方式だけは、期待回収率の計算に混合した確率を使います。条件を満たす全点を対象とし、点数の上限や順位による絞り込みは加えません。本番の累積購入成績とは別の比較です。</p>
+        <details><summary>市場の確率と、乖離の計算方法</summary><p>同じ時刻に取得した全120通りの「1÷オッズ」を、合計が100％になるようにそろえます。これを市場の推定確率とし、モデルの確率を割った値を乖離と呼びます。例えばモデル6％・市場2％なら3倍です。3倍ちょうど、20倍ちょうどは、それぞれの限定条件に含めません。市場の確率も実際の的中率を保証するものではありません。</p></details>
+        {!report.marketForwardComparison ? <p role="status">市場比較の新しい購入条件は、まだ集計されていません。次の通常起動から判断を記録し、その後の日次集計で表示します。</p> : <>
+          <h3>新しい購入条件を固定した後の成績</h3>
+          <p>実装後に締切前の判断を保存し、受領を確認できた確定レースだけを採点します。直近60日分を時刻別に集計し、時刻の違う成績は合算しません。購入点数が減るため、回収率だけでなく収支と的中件数も比べます。</p>
+          {Object.entries(report.marketForwardComparison).map(([key, group]) => <details key={key}><summary>約{key.slice(1)}分前：{group.recordedRaces}レースの記録</summary>
+            <MarketComparison data={group.policies} title="市場比較：ルール固定後の成績" />
+          </details>)}
+          <h3>過去データでの参考試算</h3>
+          <p>日次レポートの検証期間を使った再計算です。今回の条件は過去の市場比較を見て選んでいるため、この試算だけでは有効性を判定できません。採用の判断には、上のルール固定後の成績を使います。確定オッズの推定や確率補正の学習を使わず、公式の確定払戻で精算します。</p>
+          {Object.entries(report.phases).map(([key, phase]) => phase.marketComparison ? <details key={key}><summary>約{key.slice(1)}分前の参考試算</summary>
+            <MarketComparison data={phase.marketComparison} title="市場比較：過去の参考試算" />
+          </details> : null)}
+          <small>比較実験：{report.marketExperimentId}</small>
+        </>}
+      </section>
       <section className={styles.phase}>
         <h2>確率補正と「×0.8を外す」効果を分けて調べる</h2>
         <p>A：元確率×0.8、B：元確率×1.0、C：補正確率×0.8、D：補正確率×1.0の4方式を比べます。すべて同じ観測オッズを使い、元確率1％以上・期待回収率120％以上・1点100円を共通条件にします。確定オッズの見積もりは、この比較には使いません。</p>
