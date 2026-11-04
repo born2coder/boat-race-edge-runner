@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-04T10:56:45.673805+00:00",
+  "git": {
+    "category": "unknown",
+    "localHead": "57768916c8294605a34a8762dce6c7b13c0b77c2",
+    "operation": "push_edge_data",
+    "outputEvidence": {
+      "stderr": {
+        "bytes": 236,
+        "sha256": "302a9f1ef7e4ebea0758be9692d807bf45a83dda9e5c38fec3ee583732488929",
+        "signals": [
+          "remote rejected",
+          "failed to push some refs"
+        ]
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signals": []
+      }
+    },
+    "parentHead": "2c0e4e25e0f04acf1fb14f3ad3aee524967a3ff3",
+    "remoteHeadBeforeRetry": "2c0e4e25e0f04acf1fb14f3ad3aee524967a3ff3",
+    "retryAttempted": false,
+    "returncode": 1
+  },
+  "kind": "CalledProcessError",
+  "observationErrors": [
+    {
+      "at": "2026-11-04T10:56:02.301040+00:00",
+      "phase": "t30",
+      "raceId": "BR:20261104:19:07",
+      "reason": "Official odds are stale or from the future"
+    }
+  ],
+  "stage": "persist_delivery"
+}
