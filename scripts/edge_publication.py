@@ -161,6 +161,8 @@ class DataPublisher:
             "rpc failed", "http/2 stream", "tls connection", "timed out",
             "could not resolve host", "empty reply from server", "broken pipe",
             "internal server error", "service unavailable", "rate limit",
+            "fatal error in commit_refs", "failed to update ref", "repository size",
+            "file exceeds", "large files detected", "gh001", "gh006", "gh013",
         )
         evidence = {}
         for stream in ("stdout", "stderr"):

@@ -25,6 +25,57 @@ MIN_SEND_INTERVAL_SECONDS = 60
 MAX_BATCH_ITEMS = 24
 PUBLICATION_BACKOFF_SECONDS = 300
 
+def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, stage):
+    """Once/day, resume only after the stop checkpoint proves delivery was saved.
+
+    No ingestion is retried. This uses the existing stop-save attempt, then
+    verifies its remote SHA and ancestry before archiving the marker.
+    """
+    evidence = getattr(error, "edge_publication_diagnostics", {})
+    failed_head = evidence.get("localHead", "")
+    if (stage not in ("persist_delivery", "persist_settlement") or not publisher.ready
+            or evidence.get("operation") != "push_edge_data"
+            or evidence.get("category") not in ("unknown", "transient_transport")
+            or not re.fullmatch(r"[0-9a-f]{40}", failed_head)
+            or state.get("forward_git_recovery") or not stop_path.exists()):
+        return False
+    checkpoint = publisher.git(publisher.folder, "rev-parse", "HEAD").stdout.strip()
+    if (not re.fullmatch(r"[0-9a-f]{40}", checkpoint)
+            or publisher.remote_head() != checkpoint
+            or publisher.git(publisher.folder, "merge-base", "--is-ancestor", failed_head,
+                             checkpoint, check=False).returncode != 0):
+        return False
+    saved_marker = publisher.folder / "state/edge_v2/forward-paused.json"
+    original = stop_path.read_bytes()
+    if not saved_marker.exists() or saved_marker.read_bytes() != original:
+        return False
+    archive = stop_path.parent / "recovery" / (state["date"] + "-confirmed-delivery-stop.json")
+    if archive.exists():
+        return False
+    recovery = {"at": edge.utcnow().isoformat(), "stage": stage,
+                "checkpointSha": checkpoint, "failedSha": failed_head}
+    try:
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        archive.write_bytes(original)
+        state["forward_git_recovery"] = recovery
+        prepare_forward._atomic_json(state_path, state)
+        stop_path.unlink()
+        saved_marker.unlink()  # copytree does not propagate deletions.
+        publisher.persist()
+        if publisher.remote_head() != publisher.revision:
+            raise RuntimeError("Recovery commit was not confirmed")
+    except Exception:
+        # Never turn an uncertain recovery save into an active next startup.
+        stop_path.write_bytes(original)
+        saved_marker.write_bytes(original)
+        state.pop("forward_git_recovery", None)
+        prepare_forward._atomic_json(state_path, state)
+        try: publisher.persist()
+        except Exception: pass
+        return False
+    print(json.dumps({"status": "publication_recovered", **recovery}), flush=True)
+    return True
+
 def confirm_or_defer(state, publisher):
     """Only public GET transport failures may recover, never ingestion failures.
 
@@ -257,7 +308,7 @@ def main():
         stop_path = edge.STATE/"forward-paused.json"
         if stop_path.exists():
             print('{"status":"paused","reason":"persistent_failure_stop"}',flush=True)
-            return
+            raise RuntimeError("Collection is paused by a persistent failure marker")
         observer = edge.Observer(Path(folder))
         started, last_send = time.monotonic(), None
         initialized = set()
@@ -379,10 +430,19 @@ def main():
                     **({"http": error.forward_diagnostics} if hasattr(error,"forward_diagnostics") else {}),
                     **({"git": error.edge_publication_diagnostics}
                        if hasattr(error,"edge_publication_diagnostics") else {})})
-                try: publisher.persist()
+                checkpoint_saved = False
+                try:
+                    publisher.persist()
+                    checkpoint_saved = True
                 except Exception: pass
-                print(json.dumps({"status":"stopped","kind":type(error).__name__}),flush=True)
-                raise
+                recovered = False
+                if checkpoint_saved:
+                    try:
+                        recovered = resume_confirmed_delivery(state, path, stop_path, publisher, error, stage)
+                    except Exception: pass
+                if not recovered:
+                    print(json.dumps({"status":"stopped","kind":type(error).__name__}),flush=True)
+                    raise
             if os.environ.get("RESEARCH_FORWARD_ONCE")=="1": return
             time.sleep(max(1,60-(time.monotonic()-tick)))
         # Scheduled starts, not self-dispatch, continue healthy daytime operation.
