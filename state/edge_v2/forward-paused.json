@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-06T23:45:29.299334+00:00",
+  "git": {
+    "category": "transient_transport",
+    "localHead": "5bcea3d5d1296d5cec364afdfe4274c0ab7d353d",
+    "operation": "push_edge_data",
+    "outputEvidence": {
+      "stderr": {
+        "bytes": 341,
+        "sha256": "bcb34d0d5faeeb260f8fcb9fc2315629ace7d8e6613913a03241bbdcb5c53f98",
+        "signals": [
+          "remote rejected",
+          "failed to push some refs",
+          "internal server error"
+        ]
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signals": []
+      }
+    },
+    "parentHead": "0dc32a1f0f8cc6e3cd83dc8365a61563974b0796",
+    "remoteHeadBeforeRetry": "0dc32a1f0f8cc6e3cd83dc8365a61563974b0796",
+    "retryAttempted": true,
+    "returncode": 1
+  },
+  "kind": "CalledProcessError",
+  "observationErrors": [],
+  "stage": "persist_observations"
+}
