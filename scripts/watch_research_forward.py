@@ -26,14 +26,16 @@ MAX_BATCH_ITEMS = 24
 PUBLICATION_BACKOFF_SECONDS = 300
 
 def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, stage):
-    """Once/day, resume only after the stop checkpoint proves delivery was saved.
+    """Once/day, resume only after the stop checkpoint proves the failed save landed.
 
     No ingestion is retried. This uses the existing stop-save attempt, then
     verifies its remote SHA and ancestry before archiving the marker.
     """
     evidence = getattr(error, "edge_publication_diagnostics", {})
     failed_head = evidence.get("localHead", "")
-    if (stage not in ("persist_delivery", "persist_settlement") or not publisher.ready
+    prepublication = stage == "persist_observations" and evidence.get("category") == "transient_transport"
+    if (stage not in ("persist_delivery", "persist_settlement") and not prepublication
+            or not publisher.ready
             or evidence.get("operation") != "push_edge_data"
             or evidence.get("category") not in ("unknown", "transient_transport")
             or not re.fullmatch(r"[0-9a-f]{40}", failed_head)
@@ -54,10 +56,21 @@ def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, st
         return False
     recovery = {"at": edge.utcnow().isoformat(), "stage": stage,
                 "checkpointSha": checkpoint, "failedSha": failed_head}
+    had_ignored = "forward_observations_ignored" in state
+    original_ignored = list(state.get("forward_observations_ignored", []))
     try:
         archive.parent.mkdir(parents=True, exist_ok=True)
         archive.write_bytes(original)
         state["forward_git_recovery"] = recovery
+        if prepublication:
+            # Never deliver this failed batch later with a fresh receipt.
+            sent = set(state.get("forward_observations_sent", []))
+            ignored = set(original_ignored)
+            pending = {s["snapshot_id"] for r in state["races"].values()
+                       for s in r.get("snapshots", {}).values()
+                       if s["snapshot_id"] not in sent | ignored}
+            state["forward_observations_ignored"] = original_ignored + sorted(pending)
+            recovery["skippedObservations"] = len(pending)
         prepare_forward._atomic_json(state_path, state)
         stop_path.unlink()
         saved_marker.unlink()  # copytree does not propagate deletions.
@@ -69,6 +82,10 @@ def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, st
         stop_path.write_bytes(original)
         saved_marker.write_bytes(original)
         state.pop("forward_git_recovery", None)
+        if had_ignored:
+            state["forward_observations_ignored"] = original_ignored
+        else:
+            state.pop("forward_observations_ignored", None)
         prepare_forward._atomic_json(state_path, state)
         try: publisher.persist()
         except Exception: pass
