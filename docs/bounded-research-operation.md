@@ -35,15 +35,20 @@ the next scheduled runner can start; API admission still enforces durable limits
 Restoration after a safety failure requires investigation, not an automatic
 next-day reset. Retain the historical budget and stop audit data.
 
-### Confirmed delivery checkpoint recovery (2026-11-05)
+### Confirmed checkpoint recovery (2026-11-07)
 
 A Git push can fail, then the existing attempt to persist its stop marker can
 succeed and carry the failed data commit with it. For `persist_delivery` and
-`persist_settlement` only, the runner may archive that marker and continue once
+`persist_settlement`, the runner may archive that marker and continue once
 per JST day if the remote head exactly matches the saved checkpoint, the failed
 commit is its ancestor, and the local and saved stop markers match. Recovery is
 recorded in the daily state and the marker is retained under `recovery/`.
 The marker-removal commit must also be confirmed; otherwise the stop is restored.
+For `persist_observations`, the same checkpoint proof permits recovery only for
+a classified transient transport error. Every unacknowledged observation in that
+failed batch is permanently excluded from forward delivery and comparison;
+subsequent ticks capture fresh observations. Unknown prepublication errors stay
+stopped. The daily recovery limit is shared across all three stages.
 No ingestion POST, receipt or old observation is replayed. Authentication,
 rate-limit/policy errors, ingestion failures, unconfirmed saves and repeated
 same-day publication errors remain stopped. The API and runtime budgets remain

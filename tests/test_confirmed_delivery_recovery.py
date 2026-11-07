@@ -73,24 +73,44 @@ class ConfirmedDeliveryRecoveryTests(unittest.TestCase):
             self.assertEqual(stop.read_bytes(), original)
             self.assertNotIn('forward_git_recovery', state)
 
-    def test_failed_recovery_save_restores_stop_and_preserves_ack(self):
+    def test_prepublication_transport_recovery_excludes_only_unacknowledged_batch(self):
         with tempfile.TemporaryDirectory() as tmp:
             publisher, state, path, stop, error, git, remote = self.fixture(Path(tmp))
-            original, sent = stop.read_bytes(), list(state['forward_observations_sent'])
-            real_persist = publisher.persist
-            calls = 0
-            def fail_first():
-                nonlocal calls
-                calls += 1
-                if calls == 1: raise RuntimeError('save failed')
-                return real_persist()
-            with patch.object(publisher, 'persist', side_effect=fail_first):
-                self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, 'persist_settlement'))
-            self.assertEqual(stop.read_bytes(), original)
-            self.assertEqual((publisher.folder / 'state/edge_v2/forward-paused.json').read_bytes(), original)
-            self.assertEqual(state['forward_observations_sent'], sent)
-            self.assertNotIn('forward_git_recovery', state)
-            self.assertEqual(git(remote, 'show', 'edge-data:state/edge_v2/forward-paused.json'), original.decode())
+            state['races'] = {'r': {'snapshots': {
+                't10': {'snapshot_id': 'ack-1'}, 't5': {'snapshot_id': 'unsent-1'},
+                't15': {'snapshot_id': 'ignored-1'}}}}
+            state['forward_observations_ignored'] = ['ignored-1']
+            path.write_text(json.dumps(state)); publisher.persist()
+            with patch.dict(error.edge_publication_diagnostics, category='transient_transport'):
+                self.assertTrue(flow.resume_confirmed_delivery(state, path, stop, publisher, error, 'persist_observations'))
+            saved = json.loads(git(remote, 'show', 'edge-data:state/edge_v2/days/2026-11-05.json'))
+            self.assertEqual(saved['forward_observations_sent'], ['ack-1'])
+            self.assertEqual(saved['forward_observations_ignored'], ['ignored-1', 'unsent-1'])
+            self.assertEqual(saved['forward_git_recovery']['skippedObservations'], 1)
+            self.assertFalse(stop.exists())
+
+    def test_failed_recovery_save_restores_stop_and_preserves_ack(self):
+        for stage in ('persist_settlement', 'persist_observations'):
+            with tempfile.TemporaryDirectory() as tmp:
+                publisher, state, path, stop, error, git, remote = self.fixture(Path(tmp))
+                error.edge_publication_diagnostics['category'] = 'transient_transport'
+                state['races'] = {'r': {'snapshots': {'t5': {'snapshot_id': 'unsent-1'}}}}
+                original, sent = stop.read_bytes(), list(state['forward_observations_sent'])
+                real_persist = publisher.persist
+                calls = 0
+                def fail_first():
+                    nonlocal calls
+                    calls += 1
+                    if calls == 1: raise RuntimeError('save failed')
+                    return real_persist()
+                with patch.object(publisher, 'persist', side_effect=fail_first):
+                    self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+                self.assertEqual(stop.read_bytes(), original)
+                self.assertEqual((publisher.folder / 'state/edge_v2/forward-paused.json').read_bytes(), original)
+                self.assertEqual(state['forward_observations_sent'], sent)
+                self.assertNotIn('forward_git_recovery', state)
+                self.assertNotIn('forward_observations_ignored', state)
+                self.assertEqual(git(remote, 'show', 'edge-data:state/edge_v2/forward-paused.json'), original.decode())
 
     def test_existing_pause_fails_workflow_before_observation(self):
         with tempfile.TemporaryDirectory() as tmp:
