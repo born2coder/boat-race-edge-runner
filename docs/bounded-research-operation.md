@@ -60,9 +60,16 @@ Public publication readback has a separate, narrow recovery policy. A GET timeou
 and defers fresh capture for five minutes within the existing 315-minute run
 limit. The next tick never replays those old snapshots with a new receipt.
 Results-only/idle ticks skip the full-day readback. Authentication, rate limits,
-invalid publication content, unknown failures and all ingestion POST failures
-still persist the safety stop; POSTs are never retried by this policy. Diagnostic
-state records publication wait/recovery and the stage of any terminal failure.
+invalid publication content and unknown readback failures persist the safety stop.
+
+An observation-only ingestion POST that returns an unexplained Vercel HTTP 500
+with a request ID can defer collection once per JST day. The runner saves the
+incident, permanently excludes unacknowledged observations, and waits five
+minutes before capturing again. The next request uses normal server admission.
+The failed POST is never replayed. An admission rejection, an unconfirmed
+deferral save, a repeated 500, or any other ingestion failure persists the stop.
+
+Diagnostic state records publication wait/recovery and the stage of any terminal failure.
 The existing startup watchdog can resume a successfully finished bounded run,
 but never removes a persistent safety stop or restarts a failed job.
 

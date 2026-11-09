@@ -75,7 +75,7 @@ class PublicationRecoveryTests(unittest.TestCase):
             self.assertTrue(flow.confirm_or_defer(state, Mock()))
         read.assert_not_called()
 
-    def run_main(self, *, exhaust=False, ingestion_failure=False):
+    def run_main(self, *, exhaust=False, ingestion_failure=False, ingestion_500=False):
         clock=[0.0]; captures=[]; reads=[]; deliveries=[]
         base=datetime(2026,10,12,10,tzinfo=timezone.utc)
         fixture=self.state()
@@ -99,7 +99,7 @@ class PublicationRecoveryTests(unittest.TestCase):
             def settle(self,state): pass
         def read(state,revision):
             reads.append(clock[0])
-            if len(reads)==1: raise TimeoutError()
+            if len(reads)==1 and not ingestion_500: raise TimeoutError()
             for race in state["races"].values():
                 for snap in race["snapshots"].values():
                     race["receipts"][snap["snapshot_id"]]=(base+timedelta(seconds=clock[0])).isoformat()
@@ -107,6 +107,10 @@ class PublicationRecoveryTests(unittest.TestCase):
         def send(body):
             deliveries.append(body)
             if ingestion_failure: raise TimeoutError()
+            if ingestion_500 and len(deliveries)==1:
+                error = flow.urllib.error.HTTPError("https://example.test", 500, "", None, None)
+                error.forward_diagnostics = {"httpStatus": 500, "requestId": "request-1"}
+                raise error
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
             with patch.dict(flow.os.environ,{"EDGE_REPOSITORY_VISIBILITY":"public","RESEARCH_FORWARD_ONCE":"0"}), \
@@ -138,6 +142,33 @@ class PublicationRecoveryTests(unittest.TestCase):
         self.assertEqual(len(deliveries),1)
         self.assertEqual(stop["kind"],"TimeoutError")
         self.assertEqual(stop["stage"],"ingestion")
+
+    def test_observation_only_vercel_500_waits_then_delivers_only_fresh_observations(self):
+        captures, deliveries, _, stop = self.run_main(ingestion_500=True)
+        self.assertEqual(captures, [0, 300])
+        self.assertEqual([[o["snapshot"]["snapshot_id"] for o in b["observations"]]
+                          for b in deliveries], [["old"], ["fresh"]])
+        self.assertIsNone(stop)
+
+    def test_ingestion_deferral_rejects_unsafe_cases_and_second_500(self):
+        for code, details, observations, results in (
+            (503, {"requestId": "r"}, [{}], []),
+            (500, {}, [{}], []),
+            (500, {"requestId": "r", "responseStatus": "flow_failed"}, [{}], []),
+            (500, {"requestId": "r"}, [], []),
+            (500, {"requestId": "r"}, [{}], [{}]),
+        ):
+            state = self.state()
+            error = flow.urllib.error.HTTPError("https://example.test", code, "", None, None)
+            error.forward_diagnostics = details
+            self.assertFalse(flow.defer_ingestion_500(state, {"observations": observations, "results": results}, error))
+            self.assertEqual(state, self.state())
+        state = self.state()
+        error = flow.urllib.error.HTTPError("https://example.test", 500, "", None, None)
+        error.forward_diagnostics = {"requestId": "r"}
+        body = {"observations": [{}], "results": []}
+        self.assertTrue(flow.defer_ingestion_500(state, body, error))
+        self.assertFalse(flow.defer_ingestion_500(state, body, error))
 
 
 if __name__ == "__main__": unittest.main()

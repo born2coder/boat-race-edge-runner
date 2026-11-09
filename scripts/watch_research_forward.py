@@ -94,7 +94,7 @@ def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, st
     return True
 
 def confirm_or_defer(state, publisher):
-    """Only public GET transport failures may recover, never ingestion failures.
+    """Recover from selected public GET transport failures.
 
     The failed batch is permanently excluded from forward delivery. A subsequent
     tick captures fresh observations instead of giving old odds a new receipt.
@@ -170,6 +170,27 @@ def http_failure_details(error, body):
         if value and len(value) <= 200 and all(32 <= ord(c) < 127 for c in value):
             details[key] = value
     return details
+
+
+def defer_ingestion_500(state, body, error):
+    """Discard an ambiguous observation-only Vercel 500 once per JST day."""
+    details = getattr(error, "forward_diagnostics", {})
+    if (error.code != 500 or not details.get("requestId") or details.get("responseStatus")
+            or not body["observations"] or body["results"]
+            or state.get("forward_ingestion_deferral")):
+        return False
+    sent = set(state.get("forward_observations_sent", []))
+    ignored = set(state.get("forward_observations_ignored", []))
+    pending = {s["snapshot_id"] for race in state["races"].values()
+               for s in race.get("snapshots", {}).values()
+               if s["snapshot_id"] not in sent | ignored}
+    state.setdefault("forward_observations_ignored", []).extend(sorted(pending))
+    now = edge.utcnow()
+    state["forward_ingestion_deferral"] = {
+        **details, "at": now.isoformat(), "skippedObservations": len(pending),
+        "resumeAt": (now + timedelta(seconds=PUBLICATION_BACKOFF_SECONDS)).isoformat(),
+    }
+    return True
 
 def observation_errors(state, since):
     """Keep the public-source failure evidence, never request credentials."""
@@ -356,6 +377,11 @@ def main():
                     state["calibration_status"] = {"mode": "unavailable", "error": type(error).__name__}
             stage = "capture"
             try:
+                deferral = state.get("forward_ingestion_deferral")
+                if deferral and (remaining := (edge.iso(deferral["resumeAt"]) - now).total_seconds()) > 0:
+                    if os.environ.get("RESEARCH_FORWARD_ONCE") == "1": return
+                    time.sleep(max(0, min(remaining, 315*60-(time.monotonic()-started))))
+                    continue
                 wait_for_send_slot(last_send)
                 if time.monotonic()-started >= 315*60: return
                 tick = time.monotonic()
@@ -417,7 +443,21 @@ def main():
                 bound_results(body, payload(previous,edge.utcnow()) if previous else None)
                 if body["observations"] or body["results"] or last_send is None or tick-last_send>=300:
                     stage = "ingestion"
-                    send(body); last_send = time.monotonic()
+                    try:
+                        send(body)
+                    except urllib.error.HTTPError as error:
+                        if not defer_ingestion_500(state, body, error):
+                            raise
+                        # Require a saved exclusion before trying any new data.
+                        # The next POST still goes through the normal admission gate.
+                        stage = "persist_ingestion_deferral"
+                        prepare_forward._atomic_json(path, state)
+                        publisher.persist()
+                        print(json.dumps({"status": "ingestion_deferred",
+                                          **state["forward_ingestion_deferral"]}), flush=True)
+                        if os.environ.get("RESEARCH_FORWARD_ONCE") == "1": return
+                        continue
+                    last_send = time.monotonic()
                     state["forward_last_send_completed_at"] = edge.utcnow().isoformat()
                     state.setdefault("forward_observations_sent",[]).extend(
                         r["snapshot"]["snapshot_id"] for r in body["observations"])
