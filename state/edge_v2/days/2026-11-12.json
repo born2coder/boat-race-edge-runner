@@ -68,7 +68,7 @@
     "BR:20261112:10:03:9d328a244ec9c7ce60fddc1cb6a19124d566484f39687e0c2cdc77ced1ae385f"
   ],
   "last_error": null,
-  "last_tick_at": "2026-11-12T00:54:48.630005+00:00",
+  "last_tick_at": "2026-11-12T00:56:16.899327+00:00",
   "races": {
     "202611120201": {
       "eligible_roster": true,
@@ -28254,12 +28254,29 @@
     },
     "202611121701": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "errors": {
+        "t20": {
+          "at": "2026-11-12T00:56:16.899196+00:00",
+          "evidence": {
+            "invalid_count": 1,
+            "invalid_samples": [
+              {
+                "combination": "5-3-4",
+                "value": "0.0"
+              }
+            ],
+            "observed_at": "2026-11-12T00:56:16.898944+00:00",
+            "official_update_time": "9:54",
+            "request_started_at": "2026-11-12T00:56:06.662891+00:00",
+            "source_sha256": "14b787346574545e23c327da1ec540925d4cdefa67a4c42545716c6daebeeea0"
+          },
+          "reason": "Invalid odds"
+        },
         "t30": {
           "at": "2026-11-12T00:46:30.450965+00:00",
           "evidence": {
@@ -28279,16 +28296,21 @@
         }
       },
       "exhibition_rejections": {
+        "t20": "model_input_incomplete",
         "t30": "model_input_incomplete"
       },
       "forward_skipped_phases": {
+        "t20": {
+          "at": "2026-11-12T00:56:16.899196+00:00",
+          "reason": "Invalid odds"
+        },
         "t30": {
           "at": "2026-11-12T00:46:30.450965+00:00",
           "reason": "Invalid odds"
         }
       },
       "preview_error": {
-        "at": "2026-11-12T00:46:19.004518+00:00",
+        "at": "2026-11-12T00:56:06.568889+00:00",
         "reason": "Official numeric field missing"
       },
       "preview_status": "model_input_incomplete",
@@ -28330,9 +28352,9 @@
     },
     "202611121702": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28373,9 +28395,9 @@
     },
     "202611121703": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28416,9 +28438,9 @@
     },
     "202611121704": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28459,9 +28481,9 @@
     },
     "202611121705": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28502,9 +28524,9 @@
     },
     "202611121706": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28545,9 +28567,9 @@
     },
     "202611121707": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28588,9 +28610,9 @@
     },
     "202611121708": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28631,9 +28653,9 @@
     },
     "202611121709": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28674,9 +28696,9 @@
     },
     "202611121710": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28717,9 +28739,9 @@
     },
     "202611121711": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
@@ -28760,9 +28782,9 @@
     },
     "202611121712": {
       "deadline_evidence": {
-        "obtained_at": "2026-11-12T00:46:18.953163+00:00",
-        "sha256": "b9bce851df08862abbee2b152fa4d1a075e0234ee87f8e2a56b7b969ff82a33d",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907406"
+        "obtained_at": "2026-11-12T00:56:06.515991+00:00",
+        "sha256": "72ed3e4af035f56e2379a0bfc90c50637844095743bc5518b7d46e2257bb7255",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261112&jcd=17&rno=1&_edge_minute=29907415"
       },
       "eligible_roster": true,
       "race_date": "2026-11-12",
