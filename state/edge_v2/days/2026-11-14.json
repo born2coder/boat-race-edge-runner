@@ -7,7 +7,10 @@
   "forward_last_send_completed_at": "2026-11-14T03:47:17.889636+00:00",
   "forward_observations_ignored": [
     "90249f806a6d012117f7e1e641bafd7ea141c448870ba9c3bb44027d3f98cf83",
-    "d9a7ba5d1d40652e00618b9bc6e1bffa370e57ce9d2698f81966cd5e024fac61"
+    "d9a7ba5d1d40652e00618b9bc6e1bffa370e57ce9d2698f81966cd5e024fac61",
+    "01efe4d72570bced2fad3b224309d278c45cb3998a7d6aadfb62d9612feb42d2",
+    "43f4ba577799c304212a9f37207ebc47f7db5427ce1741bd2ba48ca4d4d2616a",
+    "f9de41ab8216cbf43a32b4e510ec548eae6139913a6a39b06869838835ea849c"
   ],
   "forward_observations_sent": [
     "782f633a46921b0019bb849b2b94a3f98fd30581c2a89b520eb6e4e6ef0c5cb9",
@@ -287,15 +290,15 @@
     "fa8a28add42ff45dc84604f4e5b5fd3ea203db4215713d48e1cf123f9d530458"
   ],
   "forward_publication_wait": {
-    "checked_at": "2026-11-14T02:42:42.408318+00:00",
-    "failures": 1,
+    "checked_at": "2026-11-14T03:49:31.023851+00:00",
+    "failures": 2,
     "first_seen_at": "2026-11-14T02:42:42.408318+00:00",
     "http_status": null,
     "kind": "TimeoutError",
     "recovered_at": "2026-11-14T02:48:32.271194+00:00",
-    "revision": "58eb46a23aa19dee061af3ba2549de09ddcca20b",
-    "skipped_observations": 2,
-    "status": "ready"
+    "revision": "29cc7104c915d5ce8a1622ed48ca0579d0ce12e7",
+    "skipped_observations": 5,
+    "status": "waiting"
   },
   "forward_results_sent": [
     "BR:20261114:10:01:00aed0473eb2be8852c7b52443f2a3eb388e8efd0f35ef3aa9a146c18914de68",
