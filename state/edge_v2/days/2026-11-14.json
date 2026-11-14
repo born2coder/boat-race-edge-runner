@@ -4,7 +4,7 @@
     "mode": "shadow"
   },
   "date": "2026-11-14",
-  "forward_last_send_completed_at": "2026-11-14T02:40:29.669220+00:00",
+  "forward_last_send_completed_at": "2026-11-14T02:48:35.544448+00:00",
   "forward_observations_ignored": [
     "90249f806a6d012117f7e1e641bafd7ea141c448870ba9c3bb44027d3f98cf83",
     "d9a7ba5d1d40652e00618b9bc6e1bffa370e57ce9d2698f81966cd5e024fac61"
@@ -187,7 +187,13 @@
     "36727dfd155c9d6fa838bffb6c397ba02ece278c3cd4c684f01c0d361f12066b",
     "aab04307ce3930e58bdcfd354c2bb8fe7fa151a52f405c59959a56cc63cc4c4e",
     "8138d968bf7a7e70d0178db82bb7368045eded7e2e619a2c14f2fe7ac1bfe2e2",
-    "dcd7e1b3402c13c775e5377f2772c54e6b30482810ed1babfa9335d0166c55f8"
+    "dcd7e1b3402c13c775e5377f2772c54e6b30482810ed1babfa9335d0166c55f8",
+    "475506f35713eefea2ecb52b4b3057144fe99489280631ad3408094ded9fe3d1",
+    "c4b17664b727ce906442da8a1cd7049dc4ba98bb232bc4f78ef5f6e47d3a8714",
+    "a7c891e5082235ed18860502153a6705802f91c9969846152d553b190dd0f664",
+    "11fd9af90a5c9454db081ec1fad6588a9fdc3f2134f24622d3793c4d469b22bb",
+    "071bada904c41a045a61a7ac4a85f8b5f0cd75363ea69653f88684633356468f",
+    "d6a7fc3a7f70cf451a3f3db430124dbab7bd34d9e0a55c182c040af8b549a27f"
   ],
   "forward_publication_wait": {
     "checked_at": "2026-11-14T02:42:42.408318+00:00",
@@ -195,9 +201,10 @@
     "first_seen_at": "2026-11-14T02:42:42.408318+00:00",
     "http_status": null,
     "kind": "TimeoutError",
+    "recovered_at": "2026-11-14T02:48:32.271194+00:00",
     "revision": "58eb46a23aa19dee061af3ba2549de09ddcca20b",
     "skipped_observations": 2,
-    "status": "waiting"
+    "status": "ready"
   },
   "forward_results_sent": [
     "BR:20261114:10:01:00aed0473eb2be8852c7b52443f2a3eb388e8efd0f35ef3aa9a146c18914de68",
@@ -19172,6 +19179,9 @@
       "race_id": "BR:20261114:02:04",
       "race_name": "予選",
       "race_no": 4,
+      "receipts": {
+        "90249f806a6d012117f7e1e641bafd7ea141c448870ba9c3bb44027d3f98cf83": "2026-11-14T02:48:32.267987+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
@@ -34524,7 +34534,9 @@
       "race_name": "予選",
       "race_no": 3,
       "receipts": {
-        "44363dd38e06e4a5d9b14d81a65f3a41739dd360b2820b31af7b8e45ca03e05f": "2026-11-14T02:34:33.725451+00:00"
+        "44363dd38e06e4a5d9b14d81a65f3a41739dd360b2820b31af7b8e45ca03e05f": "2026-11-14T02:34:33.725451+00:00",
+        "475506f35713eefea2ecb52b4b3057144fe99489280631ad3408094ded9fe3d1": "2026-11-14T02:48:32.267987+00:00",
+        "d9a7ba5d1d40652e00618b9bc6e1bffa370e57ce9d2698f81966cd5e024fac61": "2026-11-14T02:48:32.267987+00:00"
       },
       "roster": [
         {
@@ -54892,7 +54904,8 @@
       "race_name": "一般",
       "race_no": 4,
       "receipts": {
-        "10f546ee39c9f428d32e19c4903775e38ed44dc216b10077eb3c90089970fc9d": "2026-11-14T02:37:30.419137+00:00"
+        "10f546ee39c9f428d32e19c4903775e38ed44dc216b10077eb3c90089970fc9d": "2026-11-14T02:37:30.419137+00:00",
+        "c4b17664b727ce906442da8a1cd7049dc4ba98bb232bc4f78ef5f6e47d3a8714": "2026-11-14T02:48:32.267987+00:00"
       },
       "roster": [
         {
@@ -85728,6 +85741,9 @@
       "race_id": "BR:20261114:08:05",
       "race_name": "三Ａ傑戦",
       "race_no": 5,
+      "receipts": {
+        "a7c891e5082235ed18860502153a6705802f91c9969846152d553b190dd0f664": "2026-11-14T02:48:32.267987+00:00"
+      },
       "roster": [
         {
           "lane_no": 1,
@@ -111518,6 +111534,7 @@
       "race_no": 4,
       "receipts": {
         "053d8a38bdb371d2fd650ddf49a3cb176002469398095a1275fe9bacdb773541": "2026-11-14T02:36:01.660949+00:00",
+        "11fd9af90a5c9454db081ec1fad6588a9fdc3f2134f24622d3793c4d469b22bb": "2026-11-14T02:48:32.267987+00:00",
         "8138d968bf7a7e70d0178db82bb7368045eded7e2e619a2c14f2fe7ac1bfe2e2": "2026-11-14T02:40:27.842327+00:00",
         "ce91ce91e852ddfd4e1e2d6771e10c9908a4f96dfa51db3b6d6ad48854507f15": "2026-11-14T02:28:30.591901+00:00"
       },
@@ -175866,6 +175883,7 @@
       "race_name": "予選",
       "race_no": 4,
       "receipts": {
+        "071bada904c41a045a61a7ac4a85f8b5f0cd75363ea69653f88684633356468f": "2026-11-14T02:48:32.267987+00:00",
         "45788a5cf1f2d3778e32f82363e8c1f9831660e8015b232b11e128ab5f09b9f4": "2026-11-14T02:29:59.494435+00:00",
         "dcd7e1b3402c13c775e5377f2772c54e6b30482810ed1babfa9335d0166c55f8": "2026-11-14T02:40:27.842327+00:00"
       },
@@ -294116,7 +294134,8 @@
       "race_name": "予選",
       "race_no": 8,
       "receipts": {
-        "50c3704a518bcd7052b65af3cac3bcd5759623f69f8aa99383d327adc2e487dd": "2026-11-14T02:34:33.725451+00:00"
+        "50c3704a518bcd7052b65af3cac3bcd5759623f69f8aa99383d327adc2e487dd": "2026-11-14T02:34:33.725451+00:00",
+        "d6a7fc3a7f70cf451a3f3db430124dbab7bd34d9e0a55c182c040af8b549a27f": "2026-11-14T02:48:32.267987+00:00"
       },
       "roster": [
         {
