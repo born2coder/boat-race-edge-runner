@@ -16,7 +16,7 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts import edge_shadow, prepare_forward, edge_official, build_fixture
+from scripts import boatcast_program, edge_shadow, prepare_forward, edge_official, build_fixture
 from scripts.edge_v2_model import predict_full
 from scripts.edge_v2_metrics import VERSION, PHASES, comparison, aggregate_days, snapshot_hash, snapshot_deadline, iso
 
@@ -223,6 +223,7 @@ def confirm_publication(state, revision):
 
 class Observer:
     def __init__(self, session):
+        self.use_boatcast = False
         self.session = session
         self.models = None
         self.frozen_date = None
@@ -298,7 +299,14 @@ class Observer:
                 combined.drop_duplicates("レースコード", keep="last").to_csv(path, index=False)
 
     def load(self, date):
-        data = prepare_forward._clone_data(self.session / "boatracecsv", date)
+        if not self.use_boatcast:
+            try:
+                data = prepare_forward._clone_data(self.session / "boatracecsv", date)
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+                self.use_boatcast = True
+                print("Public CSV checkout unavailable; reading the BOATCAST program", flush=True)
+        if self.use_boatcast:
+            data = boatcast_program.refresh(self.session / "boatcast", date)
         require_race_cards(data, date)
         self.overlay_deadlines(data, date)
         extracted = self.session / "model"
