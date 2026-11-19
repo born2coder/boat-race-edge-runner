@@ -6,13 +6,14 @@ import { createRequire } from "node:module";
 import { createHmac } from "node:crypto";
 import { policy as p } from "./four-page/load-policy.mjs";
 const require = createRequire(import.meta.url);
+class UpstreamError extends Error {status=502;responseText="private response";resource="private resource";}
 const compile=async path=>ts.transpileModule(await readFile(new URL(path,import.meta.url),"utf8"),{
   compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 const routeJs=await compile("../app/api/internal/research-forward/route.ts"),payloadJs=await compile("../lib/research-forward-payload.ts");
 function route(handler,writer={recordObservation:async()=>0,settleRecordedRace:async()=>0}) {
   const out={}; const resolve=name=> {
     if(name==="@/lib/four-page"||name==="./four-page")return p;
-    if(name==="@/db/supabase")return {supabaseRequest:handler,SupabaseError:class extends Error{}};
+    if(name==="@/db/supabase")return {supabaseRequest:handler,SupabaseError:UpstreamError};
     if(name==="@/db/four-page-writer")return writer;
     if(name==="@/lib/four-page-source")return {observationsFromSavedRace:()=>[]};
     if(name==="@/lib/research-forward-payload"){const v={};new Function("exports","require",payloadJs)(v,resolve);return v;}
@@ -76,6 +77,70 @@ test("rejected admission reports its reason without writes or lease completion",
     }
   } finally {
     console.warn=originalWarn;
+    for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
+  }
+});
+
+test("flow errors identify the failing stage without leaking upstream data or retrying",async()=>{
+  const old={secret:process.env.INGEST_SECRET,gate:process.env.RESEARCH_FOUR_PAGE_RECORDING};
+  process.env.INGEST_SECRET="test-only";process.env.RESEARCH_FOUR_PAGE_RECORDING="1";
+  const originalError=console.error;const logs=[];console.error=value=>logs.push(JSON.parse(value));
+  try {
+    for(const [path,stage,admitted] of [
+      ["ingestion_nonces","nonce",false],["rpc/four_page_flow_begin","admission",false],
+      ["four_page_feed_status?on_conflict=race_date","feed_status",true],
+      ["rpc/four_page_flow_end","completion",true],
+    ]) {
+      const calls=[];logs.length=0;
+      const r=route(async(resource,init)=>{
+        const data=JSON.parse(init.body);calls.push({resource,data});
+        if(resource===path&&!data.p_failed) {
+          const error=new TypeError("sensitive credentials and payload");
+          error.cause={code:"ECONNRESET",message:"sensitive upstream response"};
+          throw error;
+        }
+        if(resource==="rpc/four_page_flow_begin")return "accepted";
+        return true;
+      });
+      const response=await r.POST(request(body()));
+      assert.equal(response.status,503);assert.deepEqual(await response.json(),{status:"flow_failed"});
+      assert.deepEqual(logs,[{event:"research_forward_flow_failed",stage,admitted,errorType:"TypeError",
+        upstreamStatus:null,networkCode:"ECONNRESET",observationCount:0,resultCount:0}]);
+      assert.equal(calls.filter(c=>c.resource===path&&!c.data.p_failed).length,1);
+      assert.equal(calls.filter(c=>c.data.p_failed).length,admitted?1:0);
+      assert.ok(!JSON.stringify(logs).includes("sensitive"));
+    }
+    logs.length=0;
+    const r=route(async()=>{const e=new Error("private");e.name="private name";e.cause={code:"private code"};throw e;});
+    await r.POST(request(body()));
+    assert.equal(logs[0].errorType,"UnknownError");assert.equal(logs[0].networkCode,null);
+    assert.ok(!JSON.stringify(logs).includes("private"));
+  } finally {
+    console.error=originalError;
+    for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
+  }
+});
+
+test("upstream status is logged before a failed cleanup without exposing response details",async()=>{
+  const old={secret:process.env.INGEST_SECRET,gate:process.env.RESEARCH_FOUR_PAGE_RECORDING};
+  process.env.INGEST_SECRET="test-only";process.env.RESEARCH_FOUR_PAGE_RECORDING="1";
+  const originalError=console.error;const logs=[];console.error=value=>logs.push(JSON.parse(value));
+  try {
+    const r=route(async(path,init)=>{
+      if(path==="rpc/four_page_flow_begin")return "accepted";
+      if(path.startsWith("four_page_feed_status"))throw new UpstreamError("private message");
+      if(path==="rpc/four_page_flow_end") {
+        assert.equal(logs.length,1);assert.equal(JSON.parse(init.body).p_failed,true);
+        throw new Error("private cleanup failure");
+      }
+      return null;
+    });
+    assert.equal((await r.POST(request(body()))).status,503);
+    assert.deepEqual(logs,[{event:"research_forward_flow_failed",stage:"feed_status",admitted:true,
+      errorType:"SupabaseError",upstreamStatus:502,networkCode:null,observationCount:0,resultCount:0}]);
+    assert.ok(!JSON.stringify(logs).includes("private"));
+  } finally {
+    console.error=originalError;
     for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
   }
 });
