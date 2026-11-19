@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     o.race_date!==parsed.data.date || !o.race_id.startsWith(`BR:${parsed.data.date.replaceAll("-", "")}:`)))
     return Response.json({ status: "invalid_payload" }, { status: 400 });
   const lease = randomUUID(); let admitted = false;
+  let stage = "nonce";
   try {
     try {
       await supabaseRequest("ingestion_nonces", { method: "POST", signal: AbortSignal.timeout(8000),
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
         return Response.json({ status: "replay_rejected" }, { status: 409 });
       throw error;
     }
+    stage = "admission";
     const admission = await rpc<string>("four_page_flow_begin", { p_lease: lease });
     if (admission!=="accepted") {
       console.warn(JSON.stringify({ event: "research_forward_admission_rejected", status: admission,
@@ -59,6 +61,7 @@ export async function POST(request: Request) {
       });
     }
     admitted = true; let entries = 0, settled = 0;
+    stage = "observations";
     const observations = parsed.data.observations;
     for (let i=0; i<observations.length; i+=4) {
       const counts = await Promise.allSettled(observations.slice(i,i+4).map(async r => {
@@ -71,7 +74,9 @@ export async function POST(request: Request) {
       // Wait for all DB writers before releasing or stopping the lease.
       for (const count of counts) { if (count.status==="rejected") throw count.reason; entries+=count.value; }
     }
+    stage = "results";
     for (const r of parsed.data.results) settled += await settleRecordedRace(r.raceId,r.result);
+    stage = "feed_status";
     await supabaseRequest("four_page_feed_status?on_conflict=race_date", {
       method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
       signal: AbortSignal.timeout(8000),
@@ -79,14 +84,26 @@ export async function POST(request: Request) {
         data: { ...parsed.data.progress, stopped: false, error: null } }),
     }, "service");
     const cpu = process.cpuUsage(cpuStart), cpuMs = Math.ceil((cpu.user+cpu.system)/1000);
+    stage = "completion";
     const running = await rpc<boolean>("four_page_flow_end", { p_lease: lease, p_cpu_ms: cpuMs, p_failed: false });
     return Response.json({ status: running ? "recorded" : "paused", entries, settled, cpuMs }, { status: running ? 200 : 503 });
-  } catch {
+  } catch (error) {
+    // Log before cleanup; never serialize payloads, credentials, DB responses or error messages.
+    const errorType = error instanceof SupabaseError ? "SupabaseError"
+      : error instanceof Error && ["TimeoutError", "AbortError", "TypeError", "SyntaxError", "Error"].includes(error.name)
+        ? error.name : "UnknownError";
+    const cause = error instanceof Error ? error.cause : null;
+    const code = cause && typeof cause === "object" && "code" in cause ? cause.code : null;
+    const networkCode = typeof code === "string" &&
+      ["ECONNRESET", "ECONNREFUSED", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN", "UND_ERR_CONNECT_TIMEOUT",
+        "UND_ERR_HEADERS_TIMEOUT", "UND_ERR_SOCKET"].includes(code) ? code : null;
+    console.error(JSON.stringify({ event: "research_forward_flow_failed", stage, admitted, errorType,
+      upstreamStatus: error instanceof SupabaseError ? error.status : null, networkCode,
+      observationCount: parsed.data.observations.length, resultCount: parsed.data.results.length }));
     if (admitted) {
       const cpu = process.cpuUsage(cpuStart);
       try { await rpc("four_page_flow_end", { p_lease: lease, p_cpu_ms: Math.ceil((cpu.user+cpu.system)/1000), p_failed: true }); } catch { /* unfinished lease stops the next attempt */ }
     }
-    console.error("Research forward flow stopped after an error");
     return Response.json({ status: "flow_failed" }, { status: 503 });
   }
 }
