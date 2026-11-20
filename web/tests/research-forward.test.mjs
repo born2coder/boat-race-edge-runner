@@ -144,3 +144,35 @@ test("upstream status is logged before a failed cleanup without exposing respons
     for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
   }
 });
+
+test("only an empty heartbeat whose nonce write times out can be deferred",async()=>{
+  const old={secret:process.env.INGEST_SECRET,gate:process.env.RESEARCH_FOUR_PAGE_RECORDING};
+  process.env.INGEST_SECRET="test-only";process.env.RESEARCH_FOUR_PAGE_RECORDING="1";
+  const originalError=console.error;console.error=()=>{};
+  try {
+    const result = {
+      raceId:"BR:20261008:01:01",
+      result:{cancelled:false,refundedLanes:[],combination:"1-2-3",payoutPer100Yen:100,
+        unsupported:false,confirmedAt:new Date().toISOString()},
+    };
+    for (const [failAt,value,status] of [
+      ["ingestion_nonces",body(),"heartbeat_nonce_timeout"],
+      ["ingestion_nonces",{...body(),results:[result]},"flow_failed"],
+      ["rpc/four_page_flow_begin",body(),"flow_failed"],
+    ]) {
+      const calls=[];
+      const r=route(async path=>{
+        calls.push(path);
+        if(path===failAt)throw new DOMException("mock timeout","TimeoutError");
+        return null;
+      });
+      const response=await r.POST(request(value));
+      assert.equal(response.status,503);
+      assert.deepEqual(await response.json(),{status});
+      assert.deepEqual(calls,failAt==="ingestion_nonces"?[failAt]:["ingestion_nonces",failAt]);
+    }
+  } finally {
+    console.error=originalError;
+    for(const [key,value] of [["INGEST_SECRET",old.secret],["RESEARCH_FOUR_PAGE_RECORDING",old.gate]])value===undefined?delete process.env[key]:process.env[key]=value;
+  }
+});

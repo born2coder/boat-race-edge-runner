@@ -1,8 +1,10 @@
 import copy
+import io
 import json
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
+from email.message import Message
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -75,7 +77,8 @@ class PublicationRecoveryTests(unittest.TestCase):
             self.assertTrue(flow.confirm_or_defer(state, Mock()))
         read.assert_not_called()
 
-    def run_main(self, *, exhaust=False, ingestion_failure=False, ingestion_500=False):
+    def run_main(self, *, exhaust=False, ingestion_failure=False, ingestion_500=False,
+                 heartbeat_timeout=False):
         clock=[0.0]; captures=[]; reads=[]; deliveries=[]
         base=datetime(2026,10,12,10,tzinfo=timezone.utc)
         fixture=self.state()
@@ -91,15 +94,20 @@ class PublicationRecoveryTests(unittest.TestCase):
             def tick(self,state,max_observations=None):
                 captures.append(clock[0])
                 if len(captures)==1:
+                    if heartbeat_timeout:
+                        return
                     state["races"]=copy.deepcopy(fixture["races"])
                     if exhaust: clock[0]=315*60-2
                 else:
+                    if heartbeat_timeout:
+                        state["races"]=copy.deepcopy(fixture["races"])
+                        state["races"]["202610120101"]["snapshots"].clear()
                     state["races"]["202610120101"]["snapshots"]["t15"]={"snapshot_id":"fresh"}
                     flow.os.environ["RESEARCH_FORWARD_ONCE"]="1"
             def settle(self,state): pass
         def read(state,revision):
             reads.append(clock[0])
-            if len(reads)==1 and not ingestion_500: raise TimeoutError()
+            if len(reads)==1 and not (ingestion_500 or heartbeat_timeout): raise TimeoutError()
             for race in state["races"].values():
                 for snap in race["snapshots"].values():
                     race["receipts"][snap["snapshot_id"]]=(base+timedelta(seconds=clock[0])).isoformat()
@@ -110,6 +118,15 @@ class PublicationRecoveryTests(unittest.TestCase):
             if ingestion_500 and len(deliveries)==1:
                 error = flow.urllib.error.HTTPError("https://example.test", 500, "", None, None)
                 error.forward_diagnostics = {"httpStatus": 500, "requestId": "request-1"}
+                raise error
+            if heartbeat_timeout and len(deliveries)==1:
+                headers = Message()
+                headers["X-Vercel-Id"] = "request-1"
+                error = flow.urllib.error.HTTPError(
+                    "https://example.test", 503, "", headers,
+                    io.BytesIO(b'{"status":"heartbeat_nonce_timeout"}'),
+                )
+                error.forward_diagnostics = flow.http_failure_details(error, body)
                 raise error
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
@@ -150,9 +167,22 @@ class PublicationRecoveryTests(unittest.TestCase):
                           for b in deliveries], [["old"], ["fresh"]])
         self.assertIsNone(stop)
 
-    def test_ingestion_deferral_rejects_unsafe_cases_and_second_500(self):
+    def test_heartbeat_timeout_waits_then_captures_and_delivers_fresh_observations(self):
+        captures, deliveries, _, stop = self.run_main(heartbeat_timeout=True)
+        self.assertEqual(captures, [0, 300])
+        self.assertEqual([[o["snapshot"]["snapshot_id"] for o in b["observations"]]
+                          for b in deliveries], [[], ["fresh"]])
+        self.assertIsNone(stop)
+
+    def test_ingestion_deferral_rejects_unsafe_cases_and_shares_one_daily_attempt(self):
+        timed_out = {"requestId": "r", "responseStatus": "heartbeat_nonce_timeout"}
         for code, details, observations, results in (
             (503, {"requestId": "r"}, [{}], []),
+            (503, {"requestId": "r", "responseStatus": "flow_failed"}, [], []),
+            (503, {"responseStatus": "heartbeat_nonce_timeout"}, [], []),
+            (503, timed_out, [{}], []),
+            (503, timed_out, [], [{}]),
+            (429, timed_out, [], []),
             (500, {}, [{}], []),
             (500, {"requestId": "r", "responseStatus": "flow_failed"}, [{}], []),
             (500, {"requestId": "r"}, [], []),
@@ -161,14 +191,20 @@ class PublicationRecoveryTests(unittest.TestCase):
             state = self.state()
             error = flow.urllib.error.HTTPError("https://example.test", code, "", None, None)
             error.forward_diagnostics = details
-            self.assertFalse(flow.defer_ingestion_500(state, {"observations": observations, "results": results}, error))
+            self.assertFalse(flow.defer_ingestion_failure(state, {"observations": observations, "results": results}, error))
             self.assertEqual(state, self.state())
         state = self.state()
         error = flow.urllib.error.HTTPError("https://example.test", 500, "", None, None)
         error.forward_diagnostics = {"requestId": "r"}
         body = {"observations": [{}], "results": []}
-        self.assertTrue(flow.defer_ingestion_500(state, body, error))
-        self.assertFalse(flow.defer_ingestion_500(state, body, error))
+        heartbeat = flow.urllib.error.HTTPError("https://example.test", 503, "", None, None)
+        heartbeat.forward_diagnostics = timed_out
+        empty = {"observations": [], "results": []}
+        for first, second in (((body,error),(empty,heartbeat)), ((empty,heartbeat),(body,error))):
+            state = self.state()
+            self.assertTrue(flow.defer_ingestion_failure(state, *first))
+            self.assertFalse(flow.defer_ingestion_failure(state, *first))
+            self.assertFalse(flow.defer_ingestion_failure(state, *second))
 
 
 if __name__ == "__main__": unittest.main()

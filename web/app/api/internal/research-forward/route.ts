@@ -104,6 +104,12 @@ export async function POST(request: Request) {
       const cpu = process.cpuUsage(cpuStart);
       try { await rpc("four_page_flow_end", { p_lease: lease, p_cpu_ms: Math.ceil((cpu.user+cpu.system)/1000), p_failed: true }); } catch { /* unfinished lease stops the next attempt */ }
     }
+    // A timed-out nonce write for an empty heartbeat precedes admission and
+    // carries no observations or results. The runner can capture again later.
+    if (stage === "nonce" && errorType === "TimeoutError" &&
+        parsed.data.observations.length === 0 && parsed.data.results.length === 0) {
+      return Response.json({ status: "heartbeat_nonce_timeout" }, { status: 503 });
+    }
     return Response.json({ status: "flow_failed" }, { status: 503 });
   }
 }

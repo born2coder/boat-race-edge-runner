@@ -160,7 +160,7 @@ def http_failure_details(error, body):
     try:
         response = json.loads(error.read(8192))
         if isinstance(response, dict) and response.get("status") in {
-            "rate_limited", "busy", "paused", "flow_failed", "unauthorized",
+            "rate_limited", "busy", "paused", "flow_failed", "heartbeat_nonce_timeout", "unauthorized",
             "invalid_payload", "payload_too_large", "replay_rejected", "recorded"}:
             details["responseStatus"] = response["status"]
     except Exception:
@@ -172,12 +172,16 @@ def http_failure_details(error, body):
     return details
 
 
-def defer_ingestion_500(state, body, error):
-    """Discard an ambiguous observation-only Vercel 500 once per JST day."""
+def defer_ingestion_failure(state, body, error):
+    """Share one daily deferral across the two recognized ingestion failures."""
     details = getattr(error, "forward_diagnostics", {})
-    if (error.code != 500 or not details.get("requestId") or details.get("responseStatus")
-            or not body["observations"] or body["results"]
-            or state.get("forward_ingestion_deferral")):
+    if not details.get("requestId") or state.get("forward_ingestion_deferral") or body["results"]:
+        return False
+    observation_failure = (error.code == 500 and not details.get("responseStatus")
+                           and bool(body["observations"]))
+    heartbeat_timeout = (error.code == 503 and details.get("responseStatus") == "heartbeat_nonce_timeout"
+                         and not body["observations"])
+    if not (observation_failure or heartbeat_timeout):
         return False
     sent = set(state.get("forward_observations_sent", []))
     ignored = set(state.get("forward_observations_ignored", []))
@@ -446,7 +450,7 @@ def main():
                     try:
                         send(body)
                     except urllib.error.HTTPError as error:
-                        if not defer_ingestion_500(state, body, error):
+                        if not defer_ingestion_failure(state, body, error):
                             raise
                         # Require a saved exclusion before trying any new data.
                         # The next POST still goes through the normal admission gate.
