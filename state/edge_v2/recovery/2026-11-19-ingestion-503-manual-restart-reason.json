@@ -1,0 +1,23 @@
+{
+  "original_stop_file": "state/edge_v2/forward-paused.json",
+  "original_run_id": 44412212248,
+  "previous_edge_data_head": "4eb38d479b3333639998d32f970572cdd293a0fc",
+  "authorization": "Explicit operator instruction on 2026-11-20 to restart after review of the unresolved incident. One manual recovery attempt for this stop only.",
+  "cause_assessment": "The initial receiver-side Supabase write is the likely failure boundary. An eight-second timeout reproduces the symptom; the exact production exception is unavailable. No timeout change was deployed as part of this restart.",
+  "evidence": "The failed POST carried zero observations and zero results. Recording is enabled; no database stop or active lease was present. The normal runner excludes old unsent observations. No failed POST is replayed.",
+  "baseline": {
+    "checked_at": "2026-11-20 04:23:57.968933+00",
+    "race_date": "2026-11-20",
+    "feed_updated_at": null,
+    "races_remaining": null,
+    "races_confirming": null,
+    "recording_enabled": true,
+    "requests": null,
+    "cpu_ms": null,
+    "stopped_reason": null,
+    "lease_present": false,
+    "lease_until": null,
+    "observation_count": 0,
+    "last_observation_at": null
+  }
+}
