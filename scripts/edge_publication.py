@@ -11,6 +11,7 @@ import time
 class DataPublisher:
     branch = "edge-data"
     push_retry_seconds = 10
+    push_timeout_returncode = 124
     # GitHub can accept a push while both the push response and several
     # immediately following ls-remote responses are unavailable. Keep this a
     # bounded verification-only window: never replay the push while the remote
@@ -66,8 +67,7 @@ class DataPublisher:
         head = self.git(self.folder, "rev-parse", "HEAD").stdout.strip()
         parent_result = self.git(self.folder, "rev-parse", "HEAD^", check=False)
         parent = parent_result.stdout.strip() if parent_result.returncode == 0 else ""
-        pushed = self.git(
-            self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
+        pushed = self.push_branch()
         if pushed.returncode == 0:
             return
         category = self.push_failure_category(pushed)
@@ -87,11 +87,13 @@ class DataPublisher:
                     return
                 if remote_head:
                     break
-        retry = category == "transient_transport" and remote_head == parent
+        # A client timeout leaves an in-flight remote push possible. Verify it
+        # above, then let the existing checkpoint recovery handle any failure.
+        retry = (category == "transient_transport" and remote_head == parent
+                 and pushed.returncode != self.push_timeout_returncode)
         if retry:
             time.sleep(self.push_retry_seconds)
-            retried = self.git(
-                self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
+            retried = self.push_branch()
             if retried.returncode == 0 or self.remote_head() == head:
                 return
             self.raise_push_error(
@@ -100,15 +102,29 @@ class DataPublisher:
         self.raise_push_error(pushed, category, retry_attempted=False,
                               head=head, parent=parent, remote_head=remote_head)
 
+    def push_branch(self):
+        try:
+            return self.git(
+                self.folder, "push", "origin", f"HEAD:refs/heads/{self.branch}", check=False)
+        except subprocess.TimeoutExpired as error:
+            return subprocess.CompletedProcess(
+                error.cmd, self.push_timeout_returncode, error.stdout, error.stderr)
+
     def remote_head(self):
-        remote = self.git(
-            self.folder, "ls-remote", "--exit-code", "--heads", "origin",
-            f"refs/heads/{self.branch}", check=False)
+        try:
+            remote = self.git(
+                self.folder, "ls-remote", "--exit-code", "--heads", "origin",
+                f"refs/heads/{self.branch}", check=False)
+        except subprocess.TimeoutExpired:
+            return ""
         return remote.stdout.split(maxsplit=1)[0] if remote.returncode == 0 and remote.stdout.strip() else ""
 
     @staticmethod
     def push_failure_category(result):
-        detail = (result.stderr or "").lower()
+        detail = result.stderr or ""
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", errors="replace")
+        detail = detail.lower()
         hard_stop = (
             "authentication failed", "permission denied", "repository not found",
             "could not read username", "write access to repository not granted",
@@ -124,7 +140,8 @@ class DataPublisher:
         )
         if any(marker in detail for marker in hard_stop):
             return "hard_stop"
-        if any(marker in detail for marker in transient):
+        if (result.returncode == DataPublisher.push_timeout_returncode
+                or any(marker in detail for marker in transient)):
             return "transient_transport"
         return "unknown"
 

@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock
 
 from scripts.edge_publication import DataPublisher
 
@@ -194,6 +195,43 @@ class PublicationTests(unittest.TestCase):
                 self.assertEqual(diagnostics["returncode"], 1)
                 self.assertEqual(diagnostics["localHead"], run(publisher.folder, "rev-parse", "HEAD"))
                 self.assertEqual(diagnostics["parentHead"], diagnostics["remoteHeadBeforeRetry"])
+
+    def test_push_timeout_verifies_the_remote_without_replaying_the_push(self):
+        head, parent = "a" * 40, "b" * 40
+        for remote, stderr, category in (
+            (head, b"", None),
+            (parent, b"", "transient_transport"),
+            (parent, b"Authentication failed", "hard_stop"),
+        ):
+            with self.subTest(remote=remote, category=category):
+                publisher = DataPublisher.__new__(DataPublisher)
+                publisher.folder = Path(".")
+                publisher.push_verify_seconds = 0
+                command = ["git", "push", "origin", "HEAD:refs/heads/edge-data"]
+                timeout = subprocess.TimeoutExpired(command, 90, stderr=stderr)
+                results = [
+                    subprocess.CompletedProcess([], 0, head + "\n"),
+                    subprocess.CompletedProcess([], 0, parent + "\n"),
+                    timeout,
+                ]
+                if remote == head:
+                    results.append(subprocess.TimeoutExpired(["git", "ls-remote"], 90))
+                results.append(subprocess.CompletedProcess([], 0, remote + "\trefs/heads/edge-data\n"))
+                publisher.git = Mock(side_effect=results)
+                if category is None:
+                    publisher.push_data_branch()
+                else:
+                    with self.assertRaises(subprocess.CalledProcessError) as raised:
+                        publisher.push_data_branch()
+                    evidence = raised.exception.edge_publication_diagnostics
+                    self.assertEqual(evidence["operation"], "push_edge_data")
+                    self.assertEqual(evidence["category"], category)
+                    self.assertFalse(evidence["retryAttempted"])
+                    self.assertEqual(evidence["localHead"], head)
+                    self.assertEqual(evidence["parentHead"], parent)
+                    self.assertEqual(evidence["remoteHeadBeforeRetry"], remote)
+                pushes = [call for call in publisher.git.call_args_list if call.args[1] == "push"]
+                self.assertEqual(len(pushes), 1)
 
     def test_output_evidence_does_not_persist_credentials_or_arbitrary_text(self):
         result = subprocess.CompletedProcess(["git", "push"], 1, "secret-output",
