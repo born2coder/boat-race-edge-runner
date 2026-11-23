@@ -5,7 +5,9 @@
   },
   "date": "2026-11-23",
   "forward_last_send_completed_at": "2026-11-23T10:37:04.933256+00:00",
-  "forward_observations_ignored": [],
+  "forward_observations_ignored": [
+    "4a1695ae78071d125a352c9a475930059259d7f936573556514e115cc41a780e"
+  ],
   "forward_observations_sent": [
     "6c560b0b421cb657aa5ccce22ee468cadb928438cecaf1dabe809744f03a2cb6",
     "bda51dfeb9b7c21fe3be835d21e0fa456ed6f6d9b0db386297c3af5f4f88eeb4",
@@ -606,6 +608,16 @@
     "25c2053ff19095dd0dfa56e80ce1fafb07dbc093123d773eb783cb3eff19d2ed",
     "0ede59ed582c873bbc336e0dfb0177c62ddf7e58a03b32e7775b97d43ad0ff8c"
   ],
+  "forward_publication_wait": {
+    "checked_at": "2026-11-23T10:39:35.497280+00:00",
+    "failures": 1,
+    "first_seen_at": "2026-11-23T10:39:35.497280+00:00",
+    "http_status": 503,
+    "kind": "HTTPError",
+    "revision": "7e3e7e9dfdf06f89e85acdae27e231938960c8f8",
+    "skipped_observations": 1,
+    "status": "waiting"
+  },
   "forward_results_sent": [
     "BR:20261123:14:01:1b32cc681fcf099cbdb6c551de42768f7ef4a1f04d99cf557d58adafe410f0b3",
     "BR:20261123:21:01:0197366a6381f2f6744c0a621305bbb68f867aa7a4a10459f316973ee3ce85b5",
