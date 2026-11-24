@@ -896,7 +896,7 @@
     "BR:20261124:19:11:072309a8a389820ade3dbcd78de70a3678b01b74d05818f8172329fbe1fa5a07"
   ],
   "last_error": null,
-  "last_tick_at": "2026-11-24T11:31:07.562200+00:00",
+  "last_tick_at": "2026-11-24T11:31:59.031144+00:00",
   "races": {
     "202611240201": {
       "calibration_shadow": {
@@ -653274,10 +653274,21 @@
           "status": "validation_failed"
         }
       },
+      "deadline_changes": [
+        {
+          "current": "2026-11-24T20:45:00+09:00",
+          "evidence": {
+            "obtained_at": "2026-11-24T11:31:58.813328+00:00",
+            "sha256": "569b33968b9612c716259b1698fb5d44ff0c920a914c90266b7488a6ae7c6ef4",
+            "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261124&jcd=12&rno=12&_edge_minute=29925331"
+          },
+          "previous": "2026-11-24T20:38:00+09:00"
+        }
+      ],
       "deadline_evidence": {
-        "obtained_at": "2026-11-24T11:26:53.025491+00:00",
-        "sha256": "55a3eb226835f1f4f64f98f8bda687819362d5057248b1b868482f67b29b3c59",
-        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261124&jcd=12&rno=12&_edge_minute=29925326"
+        "obtained_at": "2026-11-24T11:31:58.813328+00:00",
+        "sha256": "569b33968b9612c716259b1698fb5d44ff0c920a914c90266b7488a6ae7c6ef4",
+        "url": "https://www.boatrace.jp/owpc/pc/race/beforeinfo?hd=20261124&jcd=12&rno=12&_edge_minute=29925331"
       },
       "eligible_roster": true,
       "exhibition_rejections": {
@@ -653473,6 +653484,12 @@
           "racer_id": "4012"
         }
       ],
+      "snapshot_deadlines": {
+        "0f8cf94c23e948556d09865e3f97f49ad1424abe1c62b3fc1b5d624bbd25a4c4": "2026-11-24T20:38:00+09:00",
+        "8f1e32bbc097b14d44142a05bc31c807beb05647287fb323208a326e6df58b81": "2026-11-24T20:38:00+09:00",
+        "b3eaf89173e847e01270fe38f2ffe688aea092ee1f893fad0c1dd91be11b7f81": "2026-11-24T20:38:00+09:00",
+        "cc2a7325241356492b374f33cc3e1b7da881724f3165f4afdc4bb9f83d32ffb6": "2026-11-24T20:38:00+09:00"
+      },
       "snapshots": {
         "t10": {
           "close_at": "2026-11-24T20:38:00+09:00",
@@ -655249,8 +655266,8 @@
           "version": "edge-full120-v2"
         }
       },
-      "start_at": "2026-11-24T20:38:00+09:00",
-      "start_time_jst": "20:38",
+      "start_at": "2026-11-24T20:45:00+09:00",
+      "start_time_jst": "20:45",
       "venue": "住之江",
       "venue_code": "12"
     },
