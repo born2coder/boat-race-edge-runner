@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-25T13:06:03.624705+00:00",
+  "git": {
+    "category": "unknown",
+    "localHead": "bdb611b4cbd124908915585f5dbef8c10ab81092",
+    "operation": "push_edge_data",
+    "outputEvidence": {
+      "stderr": {
+        "bytes": 268,
+        "sha256": "39f9ee815f3f9d3a11619c282f28abc202919c1931ac9f507133275f59773a0e",
+        "signals": [
+          "remote rejected",
+          "failed to push some refs",
+          "fatal error in commit_refs"
+        ]
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signals": []
+      }
+    },
+    "parentHead": "d27075c1e634b3ec8a39c96b75b06514bce1610a",
+    "remoteHeadBeforeRetry": "d27075c1e634b3ec8a39c96b75b06514bce1610a",
+    "retryAttempted": false,
+    "returncode": 1
+  },
+  "kind": "CalledProcessError",
+  "observationErrors": [],
+  "stage": "persist_observations"
+}
