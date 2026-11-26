@@ -11,7 +11,8 @@ from scripts import watch_research_forward as flow
 
 
 class ConfirmedDeliveryRecoveryTests(unittest.TestCase):
-    def fixture(self, root):
+    def fixture(self, root, *, stage='persist_delivery',
+                stderr='remote rejected; failed to push some refs', snapshots=None):
         code, remote = root / 'code', root / 'remote.git'
         def git(cwd, *args):
             return subprocess.run(['git', *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
@@ -23,18 +24,21 @@ class ConfirmedDeliveryRecoveryTests(unittest.TestCase):
         git(code, 'add', '.'); git(code, 'commit', '-m', 'initial'); git(code, 'remote', 'add', 'origin', str(remote))
         git(code, 'push', '-u', 'origin', 'main')
         publisher = DataPublisher(code, root / 'data'); publisher.ready = True
+        publisher.persist()
         state['forward_last_send_completed_at'] = '2026-11-05T01:00:00Z'
+        if snapshots:
+            state['races'] = {'r': {'snapshots': snapshots}}
         path.write_text(json.dumps(state))
         real_git = publisher.git
         def reject_once(folder, *args, **kwargs):
             if args[:2] == ('push', 'origin'):
-                return subprocess.CompletedProcess(['git', *args], 1, '', 'remote rejected; failed to push some refs')
+                return subprocess.CompletedProcess(['git', *args], 1, '', stderr)
             return real_git(folder, *args, **kwargs)
         with patch.object(publisher, 'git', side_effect=reject_once):
             try: publisher.persist()
             except subprocess.CalledProcessError as error: failure = error
         stop = code / 'state/edge_v2/forward-paused.json'
-        stop.write_text(json.dumps({'git': failure.edge_publication_diagnostics, 'stage': 'persist_delivery'}))
+        stop.write_text(json.dumps({'git': failure.edge_publication_diagnostics, 'stage': stage}))
         publisher.persist()  # Existing stop-save succeeds, carrying the failed data commit.
         return publisher, state, path, stop, failure, git, remote
 
@@ -87,6 +91,43 @@ class ConfirmedDeliveryRecoveryTests(unittest.TestCase):
             self.assertEqual(saved['forward_observations_sent'], ['ack-1'])
             self.assertEqual(saved['forward_observations_ignored'], ['ignored-1', 'unsent-1'])
             self.assertEqual(saved['forward_git_recovery']['skippedObservations'], 1)
+            self.assertFalse(stop.exists())
+
+    def test_ref_rejection_recovers_only_after_its_own_stop_checkpoint(self):
+        stage = 'persist_observations'
+        stderr = (
+            'remote: fatal error in commit_refs\n'
+            ' ! [remote rejected] HEAD -> edge-data (failure)\n'
+            "error: failed to push some refs to 'origin'\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            publisher, state, path, stop, error, git, remote = self.fixture(
+                Path(tmp), stage=stage, stderr=stderr,
+                snapshots={'t10': {'snapshot_id': 'ack-1'}, 't5': {'snapshot_id': 'unsent-1'}},
+            )
+            evidence = error.edge_publication_diagnostics
+            original = stop.read_bytes()
+            checkpoint = publisher.revision
+            self.assertEqual(evidence['category'], 'unknown')
+            with patch.dict(evidence, remoteHeadBeforeRetry=''):
+                self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+            with patch.dict(evidence, category='hard_stop'):
+                self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+            other_output = copy.deepcopy(evidence['outputEvidence'])
+            other_output['stderr']['signals'].append('pre-receive hook declined')
+            with patch.dict(evidence, outputEvidence=other_output):
+                self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+            with patch.object(publisher, 'remote_head', return_value=evidence['parentHead']):
+                self.assertFalse(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+            self.assertEqual(stop.read_bytes(), original)
+            self.assertTrue(flow.resume_confirmed_delivery(state, path, stop, publisher, error, stage))
+            saved = json.loads(git(remote, 'show', 'edge-data:state/edge_v2/days/2026-11-05.json'))
+            self.assertEqual(saved['forward_observations_ignored'], ['unsent-1'])
+            self.assertEqual(saved['forward_observations_sent'], ['ack-1'])
+            self.assertEqual(saved['forward_git_recovery']['checkpointSha'], checkpoint)
+            self.assertEqual(saved['forward_git_recovery']['reason'], 'confirmed_github_ref_transaction_rejection')
+            archive = stop.parent / 'recovery/2026-11-05-confirmed-delivery-stop.json'
+            self.assertEqual(archive.read_bytes(), original)
             self.assertFalse(stop.exists())
 
     def test_failed_recovery_save_restores_stop_and_preserves_ack(self):

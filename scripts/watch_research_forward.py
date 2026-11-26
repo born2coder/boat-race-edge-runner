@@ -25,6 +25,20 @@ MIN_SEND_INTERVAL_SECONDS = 60
 MAX_BATCH_ITEMS = 24
 PUBLICATION_BACKOFF_SECONDS = 300
 
+def ref_transaction_rejection(evidence):
+    """Identify a GitHub reference transaction rejection without retrying the push."""
+    output = evidence.get("outputEvidence", {})
+    return (
+        evidence.get("category") == "unknown"
+        and evidence.get("returncode") == 1
+        and evidence.get("retryAttempted") is False
+        and output.get("stdout", {}).get("bytes") == 0
+        and output.get("stderr", {}).get("signals") == [
+            "remote rejected", "failed to push some refs", "fatal error in commit_refs",
+        ]
+    )
+
+
 def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, stage):
     """Once/day, resume only after the stop checkpoint proves the failed save landed.
 
@@ -33,7 +47,10 @@ def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, st
     """
     evidence = getattr(error, "edge_publication_diagnostics", {})
     failed_head = evidence.get("localHead", "")
-    prepublication = stage == "persist_observations" and evidence.get("category") == "transient_transport"
+    ref_rejection = stage == "persist_observations" and ref_transaction_rejection(evidence)
+    prepublication = stage == "persist_observations" and (
+        evidence.get("category") == "transient_transport" or ref_rejection
+    )
     if (stage not in ("persist_delivery", "persist_settlement") and not prepublication
             or not publisher.ready
             or evidence.get("operation") != "push_edge_data"
@@ -51,11 +68,24 @@ def resume_confirmed_delivery(state, state_path, stop_path, publisher, error, st
     original = stop_path.read_bytes()
     if not saved_marker.exists() or saved_marker.read_bytes() != original:
         return False
+    if ref_rejection:
+        # Require the same writer's immediate, marker-only checkpoint. Its
+        # successful push proves that the rejected reference update was temporary.
+        parent = evidence.get("parentHead", "")
+        if (not re.fullmatch(r"[0-9a-f]{40}", parent)
+                or evidence.get("remoteHeadBeforeRetry") != parent
+                or publisher.git(publisher.folder, "rev-parse", "HEAD^", "HEAD^^").stdout.split()
+                != [failed_head, parent]
+                or publisher.git(publisher.folder, "diff", "--name-only", failed_head, checkpoint).stdout.splitlines()
+                != ["state/edge_v2/forward-paused.json"]):
+            return False
     archive = stop_path.parent / "recovery" / (state["date"] + "-confirmed-delivery-stop.json")
     if archive.exists():
         return False
     recovery = {"at": edge.utcnow().isoformat(), "stage": stage,
                 "checkpointSha": checkpoint, "failedSha": failed_head}
+    if ref_rejection:
+        recovery["reason"] = "confirmed_github_ref_transaction_rejection"
     had_ignored = "forward_observations_ignored" in state
     original_ignored = list(state.get("forward_observations_ignored", []))
     try:
