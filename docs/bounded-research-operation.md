@@ -44,11 +44,14 @@ per JST day if the remote head exactly matches the saved checkpoint, the failed
 commit is its ancestor, and the local and saved stop markers match. Recovery is
 recorded in the daily state and the marker is retained under `recovery/`.
 The marker-removal commit must also be confirmed; otherwise the stop is restored.
-For `persist_observations`, the same checkpoint proof permits recovery only for
-a classified transient transport error. Every unacknowledged observation in that
-failed batch is permanently excluded from forward delivery and comparison;
-subsequent ticks capture fresh observations. Unknown prepublication errors stay
-stopped. The daily recovery limit is shared across all three stages.
+For `persist_observations`, the same checkpoint proof permits recovery for a
+classified transient transport error. A GitHub `fatal error in commit_refs`
+rejection also qualifies when the first remote check still saw the original
+parent and the next push saved the failed commit followed immediately by a
+commit containing only the stop marker. Every unacknowledged observation in
+the failed batch is permanently excluded from forward delivery and comparison.
+Subsequent ticks capture fresh observations. Other unknown prepublication
+errors stay stopped. The daily recovery limit is shared across all three stages.
 No ingestion POST, receipt or old observation is replayed. Authentication,
 rate-limit/policy errors, ingestion failures, unconfirmed saves and repeated
 same-day publication errors remain stopped. The API and runtime budgets remain
