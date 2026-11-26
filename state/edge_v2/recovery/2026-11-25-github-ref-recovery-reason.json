@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-26T05:04:54.710511Z",
+  "incidentAt": "2026-11-25T13:06:03.624705Z",
+  "originalRunId": 45549827473,
+  "stage": "persist_observations",
+  "reason": "confirmed_github_ref_transaction_rejection",
+  "failedSha": "bdb611b4cbd124908915585f5dbef8c10ab81092",
+  "originalRemoteParentSha": "d27075c1e634b3ec8a39c96b75b06514bce1610a",
+  "checkpointSha": "60bc54ca0842c25d7a779af28506f7e1c624f382",
+  "repairPullRequest": 84,
+  "repairSha": "538e1b3c88ad507d2719c9cad2073090e7aad044",
+  "decision": "GitHub initially retained the old ref. The same run subsequently fast-forwarded the failed commit and its marker-only child to the same branch. The revised recovery guard requires this evidence for this rejection. Restart normal capture on the next race date, using the existing delivery and admission rules."
+}
